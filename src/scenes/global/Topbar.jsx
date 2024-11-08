@@ -17,7 +17,7 @@ const Topbar = () => {
     <Box
       display="flex"
       justifyContent="space-between"
-      p={2}
+      p={1.5}
       bgcolor={colors.grey[900]}
     >
       {/* SEARCH BAR */}
@@ -38,12 +38,12 @@ const Topbar = () => {
             <DarkModeOutlinedIcon />
           </IconButton>
         )}
-        <IconButton>
+        {/* <IconButton>
           <NotificationsIcon />
         </IconButton>
         <IconButton>
           <SettingsIcon />
-        </IconButton>
+        </IconButton> */}
         <IconButton>
           <PersonIcon />
         </IconButton>

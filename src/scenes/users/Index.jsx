@@ -1,19 +1,13 @@
-import {
-  Box,
-  Typography,
-  useTheme,
-  Button,
-  TextField,
-  InputBase,
-} from "@mui/material";
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, useTheme, Button, TextField, InputBase } from "@mui/material";
 import DataTable from "react-data-table-component";
-import { tokens } from "../../theme";
-import axios from "axios";
+import axios from 'axios';
+import { tokens } from '../../theme';
+import mockUsers from '../data/mockData'; // Import the mock data
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import Header from "../../components/Header";
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import SearchIcon from "@mui/icons-material/Search";
@@ -42,7 +36,10 @@ const Users = () => {
         setUsers(response.data);
         setFilteredUsers(response.data);
       } catch (error) {
-        console.error(error);
+        console.error('Error fetching data from database:', error);
+        // Use mock data if there's an error
+        setUsers(mockUsers);
+        setFilteredUsers(mockUsers);
       }
     };
     fetchData();
@@ -68,9 +65,9 @@ const Users = () => {
       cell: (row) => {
         let accessLevel;
 
-        if (row.user_role_id === 1) {
+        if (row.user_role_id === 'admin') {
           accessLevel = "Admin";
-        } else if (row.user_role_id === 2) {
+        } else if (row.user_role_id === 'user') {
           accessLevel = "User";
         } else {
           accessLevel = "Guest";
@@ -84,18 +81,7 @@ const Users = () => {
                 Edit
               </Button>
             </Link>
-            <Button variant="outlined" color="error" sx={{ ml: 1 }} onClick={
-              async () => {
-                try {
-                  await axios.delete(`http://localhost:3030/user/delete/${row.user_id}`);
-                  const response = await axios.get("http://localhost:3030/user/all");
-                  setUsers(response.data);
-                  setFilteredUsers(response.data);
-                } catch (error) {
-                  console.error(error);
-                }
-              }
-            }>
+            <Button variant="outlined" color="error" sx={{m: 1}}>
               Delete
             </Button>
           </StyledBox>
@@ -132,27 +118,33 @@ const Users = () => {
           data={filteredUsers}
           pagination
           highlightOnHover
-          pointerOnHover
           responsive
           striped
           subHeader
           subHeaderComponent={
-            <InputBase
-              placeholder={`Search Name`}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              sx={{
-                ml: 2,
-                border: "1px solid",
-                borderColor: colors.grey[700],
-                borderRadius: "4px",
-                width: "150px",
-                height: "35px",
-                padding: "10px",
-                color: colors.grey[100],
-                bgcolor: colors.grey[900],
-              }}
-            />
+            <Box display="flex" alignItems="center">
+              <InputBase
+                placeholder="Search Name"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                sx={{
+                  ml: 2,
+                  border: "1px solid",
+                  borderColor: colors.grey[700],
+                  borderRadius: "4px",
+                  width: "150px",
+                  height: "35px",
+                  padding: "10px",
+                  color: colors.grey[100],
+                  bgcolor: colors.grey[900],
+                }}
+              />
+              <Link to="/add-user" style={{ textDecoration: 'none', marginLeft: '10px' }}>
+                <Button variant="contained" sx={{bgcolor: colors.blueAccent[200]}}>
+                  Add User
+                </Button>
+              </Link>
+            </Box>
           }
           customStyles={customStyles}
         />

@@ -1,22 +1,12 @@
-import {
-  Box,
-  Typography,
-  useTheme,
-  Button,
-  TextField,
-  InputBase,
-} from "@mui/material";
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, useTheme, Button, InputBase } from "@mui/material";
 import DataTable from "react-data-table-component";
-import { tokens } from "../../theme";
-import axios from "axios";
-import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
-import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
-import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
-import Header from "../../components/Header";
-import { useEffect, useState } from "react";
+import axios from 'axios';
+import { tokens } from '../../theme';
+import mockCompanies from '../data/mockDataCompany'; // Import the mock data for companies
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import SearchIcon from "@mui/icons-material/Search";
+import Header from "../../components/Header";
 
 // Example styled-component using transient props
 const StyledBox = styled.div`
@@ -27,7 +17,7 @@ const StyledBox = styled.div`
   width: 100%;
 `;
 
-const Company = () => {
+const Companies = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -42,7 +32,10 @@ const Company = () => {
         setCompanies(response.data);
         setFilteredCompanies(response.data);
       } catch (error) {
-        console.error(error);
+        console.error('Error fetching data from database:', error);
+        // Use mock data if there's an error
+        setCompanies(mockCompanies);
+        setFilteredCompanies(mockCompanies);
       }
     };
     fetchData();
@@ -59,14 +52,13 @@ const Company = () => {
   }, [search, companies]);
 
   const columns = [
-    { name: "ID", selector: (row) => row.company_id, sortable: true, width: "100px" },
-    { name: "Company Name", selector: (row) => row.company_name, sortable: true, width: "20%" },
-    { name: "Acronym", selector: (row) => row.company_acronym, sortable: true, width: "100"},
+    { name: "ID", selector: (row) => row.company_id, sortable: true },
+    { name: "Name", selector: (row) => row.company_name, sortable: true },
+    { name: "Acronym", selector: (row) => row.company_acronym, sortable: true },
     {
-      name: "Active Status",
+      name: "Status",
       selector: (row) => row.company_status_id,
       sortable: true,
-      width: "50%",
       cell: (row) => {
         let status;
 
@@ -74,19 +66,17 @@ const Company = () => {
           status = "Active";
         } else if (row.company_status_id === 2) {
           status = "Inactive";
-        } else {
-          status = "Holding";
         }
 
         return (
           <StyledBox $align="space-between">
             <Typography color={colors.grey[100]}>{status}</Typography>
-            <Link to={`/user/${row.user_id}`} style={{ marginLeft: "auto" }}>
+            <Link to={`/company/${row.company_id}`} style={{ marginLeft: "auto" }}>
               <Button variant="outlined" color="primary">
                 Edit
               </Button>
             </Link>
-            <Button variant="outlined" color="error" sx={{ ml: 1 }}>
+            <Button variant="outlined" color="error" sx={{ m: 1 }}>
               Delete
             </Button>
           </StyledBox>
@@ -98,21 +88,14 @@ const Company = () => {
   const customStyles = {
     headCells: {
       style: {
-        // backgroundColor: colors.grey[700], // Set your desired background color here
-        // color: colors.grey[100], // Set your desired text color here
         borderTop: `1px solid ${colors.grey[800]}`,
       },
     },
-    // subHeader: {
-    //   style: {
-    //     backgroundColor: colors.grey[700], // Set your desired background color here
-    //   },
-    // },
   };
 
   return (
     <Box m="20px">
-      <Header title="Company" subTitle="Manage companies" />
+      <Header title="Companies" subTitle="Manage companies" />
       <Box
         m="10px 0 0 0"
         height="auto"
@@ -123,27 +106,33 @@ const Company = () => {
           data={filteredCompanies}
           pagination
           highlightOnHover
-          pointerOnHover
           responsive
           striped
           subHeader
           subHeaderComponent={
-            <InputBase
-              placeholder={`Search Name`}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              sx={{
-                ml: 2,
-                border: "1px solid",
-                borderColor: colors.grey[700],
-                borderRadius: "4px",
-                width: "150px",
-                height: "35px",
-                padding: "10px",
-                color: colors.grey[100],
-                bgcolor: colors.grey[900],
-              }}
-            />
+            <Box display="flex" alignItems="center">
+              <InputBase
+                placeholder="Search Name"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                sx={{
+                  ml: 2,
+                  border: "1px solid",
+                  borderColor: colors.grey[700],
+                  borderRadius: "4px",
+                  width: "150px",
+                  height: "35px",
+                  padding: "10px",
+                  color: colors.grey[100],
+                  bgcolor: colors.grey[900],
+                }}
+              />
+              <Link to="/add-company" style={{ textDecoration: 'none', marginLeft: '10px' }}>
+                <Button variant="contained" sx={{ bgcolor: colors.blueAccent[200] }}>
+                  Add Company
+                </Button>
+              </Link>
+            </Box>
           }
           customStyles={customStyles}
         />
@@ -152,4 +141,4 @@ const Company = () => {
   );
 };
 
-export default Company;
+export default Companies;
