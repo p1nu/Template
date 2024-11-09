@@ -1,13 +1,31 @@
-import { useState } from "react";
-import { ProSidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
+import React, { useState } from "react";
+import {
+  ProSidebar,
+  Menu,
+  MenuItem,
+  SubMenu,
+  SidebarHeader,
+  SidebarContent,
+  SidebarFooter,
+} from "react-pro-sidebar";
 import "react-pro-sidebar/dist/css/styles.css";
-import { Box, IconButton, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Collapse,
+  IconButton,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Typography,
+  useTheme,
+  Button
+} from "@mui/material";
 import { Link } from "react-router-dom";
 import { tokens } from "../../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
-import CollectionsOutlinedIcon from '@mui/icons-material/CollectionsOutlined';
+import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
 import HelpOutlinedIcon from "@mui/icons-material/HelpOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
@@ -16,6 +34,10 @@ import PieChartOutlinedIcon from "@mui/icons-material/PieChartOutlined";
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import { Expand, ExpandLess, ExpandMore } from "@mui/icons-material";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -26,7 +48,8 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
       onClick={() => setSelected(title)}
       style={{
         color: selected === title ? colors.grey[900] : colors.grey[700],
-        backgroundColor: selected === title ? colors.primary[300] : "transparent",
+        backgroundColor:
+          selected === title ? colors.primary[300] : "transparent",
       }}
     >
       <Typography>{title}</Typography>
@@ -39,6 +62,9 @@ const Sidenav = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [openUser, setOpenUser] = useState(false);
+  const [openCompany, setOpenCompany] = useState(false);
+
   const [selected, setSelected] = useState("Dashboard");
 
   const handleMenuClick = () => {
@@ -64,110 +90,121 @@ const Sidenav = () => {
         "& .pro-menu-item.active": {
           color: `${colors.blueAccent[700]} !important`,
         },
+        "& .MuiListItemButton-root:hover": {
+          backgroundColor: `${colors.primary[300]} !important`,
+          color: `${colors.grey[900]} !important`,
+        },
+        "& .pro-inner-list-item": {
+          backgroundColor: `${colors.primary[400]} !important`,
+          padding: "0 !important",
+        },
+        "& .pro-inner-list-item ul": {
+          backgroundColor: `${colors.primary[400]} !important`,
+          padding: "0 !important",
+        },
+        "& .pro-inner-list-item ul li": {
+          backgroundColor: `${colors.primary[400]} !important`,
+          paddingLeft: "40px !important",
+        },
+        "& .pro-inner-list-item ul li:hover": {
+          backgroundColor: `${colors.primary[300]} !important`,
+          paddingLeft: "40px !important",
+        },
+        "& .pro-inner-list-item ul li.active": {
+          backgroundColor: `${colors.primary[300]} !important`,
+          paddingLeft: "40px !important",
+        },
+        "& .popper-inner": {
+          backgroundColor: `${colors.primary[400]} !important`,
+        },
       }}
     >
       <ProSidebar collapsed={isCollapsed}>
-        <Menu>
-          <MenuItem
-            id="admin-menu-item"
-            onClick={handleMenuClick}
-            icon={isCollapsed ? <MenuOutlinedIcon /> : null}
-            // style={{ margin: "10px 0 10px 8px", color: colors.grey[900] }}
+        <SidebarHeader>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            p={2}
           >
+            <IconButton onClick={handleMenuClick}>
+              <MenuOutlinedIcon sx={{ color: colors.primary[900] }} />
+            </IconButton>
             {!isCollapsed && (
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                ml="20px"
-              >
+              <Box flexGrow={1} display="flex" justifyContent="center">
                 <Typography variant="h3" color={colors.grey[900]}>
                   ADMIN
                 </Typography>
-                <IconButton onClick={handleMenuClick} sx={{
-                  color: colors.grey[900],
-                }}>
-                  <MenuOutlinedIcon />
-                </IconButton>
               </Box>
             )}
-          </MenuItem>
-
-          {/* USER
-          {!isCollapsed && (
-            <Box mb="25px">
-              <Box display="flex" justifyContent="center" alignItems="center">
-                <img
-                  alt="profile-use"
-                  width="100px"
-                  height="100px"
-                  src={`../../assets/user.png`}
-                  style={{ cursor: "pointer", borderRadius: "50%" }}
-                />
-              </Box>
-
-              <Box textAlign={"center"}>
-                <Typography
-                  variant="h2"
-                  color={colors.grey[100]}
-                  fontWeight={"bold"}
-                  sx={{ m: "10px 0 0 0" }}
-                >
-                  John Doe
-                </Typography>
-                <Typography variant="h5" color={colors.greenAccent[500]}>
-                  Admin
-                </Typography>
-              </Box>
-            </Box>
-          )} */}
-
-          {/* MENU ITEMS */}
-          <Box paddingLeft={!isCollapsed ? undefined : undefined}>
-            <Item
-              title="Dashboard"
-              to="/"
-              icon={<HomeOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Users"
-              to="/users"
-              icon={<PeopleOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Companies"
-              to="/company"
-              icon={<ContactsOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Gallery"
-              to="/gallery"
-              icon={<CollectionsOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Dashboard"
-              to="/"
-              icon={<HomeOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Dashboard"
-              to="/"
-              icon={<HomeOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
           </Box>
-        </Menu>
+        </SidebarHeader>
+        <SidebarContent>
+          <Menu>
+            <Item
+              title="Dashboard"
+              to="/"
+              icon={<HomeOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <SubMenu title={"Users"} icon={<PeopleOutlinedIcon />}>
+              <Item
+                title="All Users"
+                to="/users"
+                icon={<PeopleOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item
+                title="Add User"
+                to="/add-user"
+                icon={<AddIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            </SubMenu>
+            <SubMenu title={"Companies"} icon={<ContactsOutlinedIcon />}>
+              <Item
+                title="All Companies"
+                to="/company"
+                icon={<PeopleOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item
+                title="Add Company"
+                to="/add-Company"
+                icon={<AddIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            </SubMenu>
+          </Menu>
+        </SidebarContent>
+        <Link to="/login">
+        <SidebarFooter>
+        <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            p={1}
+          >
+            <IconButton >
+              <LogoutOutlinedIcon sx={{ color: colors.primary[900] }} />
+            </IconButton>
+            {!isCollapsed && (
+              <Box flexGrow={1} display="flex" justifyContent="center">
+                <Typography variant="h3" color={colors.grey[900]} sx={{
+                  textDecoration: 'none',
+                }}>
+                  LOG OUT
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        </SidebarFooter>
+        </Link>
       </ProSidebar>
     </Box>
   );
