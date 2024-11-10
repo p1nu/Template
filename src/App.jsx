@@ -15,6 +15,7 @@ import Login from "./scenes/users/Login.jsx";
 import Contact from "./scenes/contact/contact.jsx";
 import AddContact from "./scenes/contact/AddContact.jsx";
 import UpdateContact from "./scenes/contact/UpdateContact.jsx";
+import News from "./scenes/news/News.jsx";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -43,6 +44,7 @@ function App() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/add-contact" element={<AddContact />} />
               <Route path="/contact/:id" element={<UpdateContact />} />
+              <Route path="/news" element={<News />} />
             </Routes>
           </main>
         </div>
