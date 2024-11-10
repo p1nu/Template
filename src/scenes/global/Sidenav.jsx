@@ -27,9 +27,8 @@ import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
 import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
 import PermContactCalendarOutlinedIcon from "@mui/icons-material/PermContactCalendarOutlined";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
-import PieChartOutlinedIcon from "@mui/icons-material/PieChartOutlined";
+import NewspaperOutlinedIcon from '@mui/icons-material/NewspaperOutlined';
+import RecyclingOutlinedIcon from '@mui/icons-material/RecyclingOutlined';
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
@@ -202,6 +201,20 @@ const Sidenav = () => {
                 setSelected={setSelected}
               />
             </SubMenu>
+            <Item
+              title="News"
+              to="/news"
+              icon={<NewspaperOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+                        <Item
+              title="CSR"
+              to="/csr"
+              icon={<RecyclingOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
           </Menu>
         </SidebarContent>
         <Link to="/login">
