@@ -18,7 +18,7 @@ import {
   ListItemText,
   Typography,
   useTheme,
-  Button
+  Button,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { tokens } from "../../theme";
@@ -26,15 +26,14 @@ import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
 import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
-import HelpOutlinedIcon from "@mui/icons-material/HelpOutlined";
+import PermContactCalendarOutlinedIcon from "@mui/icons-material/PermContactCalendarOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import PieChartOutlinedIcon from "@mui/icons-material/PieChartOutlined";
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
-import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import { Expand, ExpandLess, ExpandMore } from "@mui/icons-material";
@@ -174,7 +173,30 @@ const Sidenav = () => {
               />
               <Item
                 title="Add Company"
-                to="/add-Company"
+                to="/add-company"
+                icon={<AddIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            </SubMenu>
+            <Item
+              title="Gallery"
+              to="/gallery"
+              icon={<CollectionsOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <SubMenu title={"Contacts"} icon={<PermContactCalendarOutlinedIcon />}>
+              <Item
+                title="All Contacts"
+                to="/contact"
+                icon={<PermContactCalendarOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item
+                title="Add Contact"
+                to="/add-contact"
                 icon={<AddIcon />}
                 selected={selected}
                 setSelected={setSelected}
@@ -183,27 +205,31 @@ const Sidenav = () => {
           </Menu>
         </SidebarContent>
         <Link to="/login">
-        <SidebarFooter>
-        <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            p={1}
-          >
-            <IconButton >
-              <LogoutOutlinedIcon sx={{ color: colors.primary[900] }} />
-            </IconButton>
-            {!isCollapsed && (
-              <Box flexGrow={1} display="flex" justifyContent="center">
-                <Typography variant="h3" color={colors.grey[900]} sx={{
-                  textDecoration: 'none',
-                }}>
-                  LOG OUT
-                </Typography>
-              </Box>
-            )}
-          </Box>
-        </SidebarFooter>
+          <SidebarFooter>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              p={1}
+            >
+              <IconButton>
+                <LogoutOutlinedIcon sx={{ color: colors.primary[900] }} />
+              </IconButton>
+              {!isCollapsed && (
+                <Box flexGrow={1} display="flex" justifyContent="center">
+                  <Typography
+                    variant="h3"
+                    color={colors.grey[900]}
+                    sx={{
+                      textDecoration: "none",
+                    }}
+                  >
+                    LOG OUT
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          </SidebarFooter>
         </Link>
       </ProSidebar>
     </Box>
