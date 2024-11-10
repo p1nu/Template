@@ -29,7 +29,7 @@ import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
 import PermContactCalendarOutlinedIcon from "@mui/icons-material/PermContactCalendarOutlined";
 import NewspaperOutlinedIcon from '@mui/icons-material/NewspaperOutlined';
 import RecyclingOutlinedIcon from '@mui/icons-material/RecyclingOutlined';
-import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
+import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
@@ -174,6 +174,13 @@ const Sidenav = () => {
                 title="Add Company"
                 to="/add-company"
                 icon={<AddIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item
+                title="All Services"
+                to="/services"
+                icon={<CategoryOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}
               />
