@@ -76,6 +76,11 @@ const Companies = () => {
                 Edit
               </Button>
             </Link>
+            <Link to={`/services`}>
+              <Button variant="outlined" color="primary" sx={{ m: 1 }}>
+                Services
+              </Button>
+            </Link>
             <Button variant="outlined" color="error" sx={{ m: 1 }}>
               Delete
             </Button>
