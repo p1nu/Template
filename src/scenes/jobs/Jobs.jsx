@@ -3,7 +3,7 @@ import { Box, Typography, useTheme, Button, InputBase } from "@mui/material";
 import DataTable from "react-data-table-component";
 import axios from 'axios';
 import { tokens } from '../../theme';
-import mockCompanies from '../data/mockDataCompany'; // Import the mock data for companies
+import mockJobs from '../data/mockJobs'; // Import the mock data for jobs
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../../components/Header";
@@ -17,68 +17,63 @@ const StyledBox = styled.div`
   width: 100%;
 `;
 
-const Companies = () => {
+const Jobs = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const [companies, setCompanies] = useState([]);
-  const [filteredCompanies, setFilteredCompanies] = useState([]);
+  const [jobs, setJobs] = useState([]);
+  const [filteredJobs, setFilteredJobs] = useState([]);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3030/company/all");
-        setCompanies(response.data);
-        setFilteredCompanies(response.data);
+        const response = await axios.get("http://localhost:3030/jobs/all");
+        setJobs(response.data);
+        setFilteredJobs(response.data);
       } catch (error) {
         console.error('Error fetching data from database:', error);
         // Use mock data if there's an error
-        setCompanies(mockCompanies);
-        setFilteredCompanies(mockCompanies);
+        setJobs(mockJobs);
+        setFilteredJobs(mockJobs);
       }
     };
     fetchData();
   }, []);
 
   useEffect(() => {
-    const result = companies.filter((company) => {
+    const result = jobs.filter((job) => {
       return (
-        company.company_name &&
-        company.company_name.toLowerCase().includes(search.toLowerCase())
+        job.jobs_title &&
+        job.jobs_title.toLowerCase().includes(search.toLowerCase())
       );
     });
-    setFilteredCompanies(result);
-  }, [search, companies]);
+    setFilteredJobs(result);
+  }, [search, jobs]);
 
   const columns = [
-    { name: "ID", selector: (row) => row.company_id, sortable: true, width: "50px" },
-    { name: "Name", selector: (row) => row.company_name, sortable: true },
-    { name: "Acronym", selector: (row) => row.company_acronym, sortable: true },
+    { name: "ID", selector: (row) => row.jobs_id, sortable: true, width: "50px" },
+    { name: "Title", selector: (row) => row.jobs_title, sortable: true },
+    { name: "Description", selector: (row) => row.jobs_description, sortable: true },
     {
       name: "Status",
-      selector: (row) => row.company_status_id,
+      selector: (row) => row.jobs_status_id,
       sortable: true,
       cell: (row) => {
         let status;
 
-        if (row.company_status_id === 1) {
+        if (row.jobs_status_id === 1) {
           status = "Active";
-        } else if (row.company_status_id === 2) {
+        } else if (row.jobs_status_id === 2) {
           status = "Inactive";
         }
 
         return (
           <StyledBox $align="space-between">
             <Typography color={colors.grey[100]}>{status}</Typography>
-            <Link to={`/company/${row.company_id}`} style={{ marginLeft: "auto" }}>
+            <Link to={`/jobs/${row.jobs_id}`} style={{ marginLeft: "auto" }}>
               <Button variant="outlined" color="primary">
                 Edit
-              </Button>
-            </Link>
-            <Link to={`/services`}>
-              <Button variant="outlined" color="primary" sx={{ m: 1 }}>
-                Services
               </Button>
             </Link>
             <Button variant="outlined" color="error" sx={{ m: 1 }}>
@@ -100,7 +95,7 @@ const Companies = () => {
 
   return (
     <Box m="20px">
-      <Header title="Companies" subTitle="Manage companies" />
+      <Header title="Jobs" subTitle="Manage jobs" />
       <Box
         m="10px 0 0 0"
         height="auto"
@@ -108,7 +103,7 @@ const Companies = () => {
       >
         <DataTable
           columns={columns}
-          data={filteredCompanies}
+          data={filteredJobs}
           pagination
           highlightOnHover
           responsive
@@ -117,7 +112,7 @@ const Companies = () => {
           subHeaderComponent={
             <Box display="flex" alignItems="center">
               <InputBase
-                placeholder="Search Name"
+                placeholder="Search Title"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 sx={{
@@ -132,9 +127,9 @@ const Companies = () => {
                   bgcolor: colors.grey[900],
                 }}
               />
-              <Link to="/add-company" style={{ textDecoration: 'none', marginLeft: '10px' }}>
+              <Link to="/add-job" style={{ textDecoration: 'none', marginLeft: '10px' }}>
                 <Button variant="contained" sx={{ bgcolor: colors.blueAccent[200] }}>
-                  Add Company
+                  Add Job
                 </Button>
               </Link>
             </Box>
@@ -146,4 +141,4 @@ const Companies = () => {
   );
 };
 
-export default Companies;
+export default Jobs;
