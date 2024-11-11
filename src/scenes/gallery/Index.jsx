@@ -1,225 +1,400 @@
-import { Box, Button, Grid2, TextField, Typography, useTheme } from "@mui/material";
-import { tokens } from "../../theme.jsx";
-import axios from "axios";
-import BlockOutlinedIcon from '@mui/icons-material/BlockOutlined';
+import React, { useCallback, useState, useEffect } from 'react';
+import {
+  Box,
+  Button,
+  Typography,
+  Modal,
+  Tabs,
+  Tab,
+  ImageList,
+  ImageListItem,
+  ImageListItemBar,
+  IconButton,
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { tokens } from '../../theme.jsx';
+import axios from 'axios';
+import BrokenImageOutlinedIcon from '@mui/icons-material/BrokenImageOutlined';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import Header from "../../components/Header.jsx";
-import { styled } from '@mui/material/styles';
-import Grid from '@mui/material/Grid2';
-import Item from '@mui/material/Grid2';
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import CheckIcon from '@mui/icons-material/Check';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DangerousIcon from '@mui/icons-material/Dangerous';
+import { useDropzone } from 'react-dropzone';
+import Header from '../../components/Header.jsx';
+import { MediaGalleryProvider, useMediaGallery } from './MediaGalleryContext';
+
+const Dropzone = ({ onDrop }) => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+
+  const onDropAccepted = useCallback(
+    (acceptedFiles) => {
+      onDrop(acceptedFiles);
+    },
+    [onDrop]
+  );
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: onDropAccepted,
+    accept: 'image/*',
+    multiple: true,
+  });
+
+  return (
+    <Box
+      {...getRootProps()}
+      sx={{
+        border: '2px dashed',
+        borderColor: colors.primary[500],
+        borderRadius: '10px',
+        padding: '15%',
+        textAlign: 'center',
+        cursor: 'pointer',
+        bgcolor: isDragActive ? colors.grey[700] : colors.grey[800],
+      }}
+    >
+      <input {...getInputProps()} />
+      <CloudUploadIcon sx={{ fontSize: 50, color: colors.primary[500] }} />
+      <Typography variant="h6" color={colors.primary[500]}>
+        {isDragActive
+          ? 'Drop the images here ...'
+          : 'Drag & drop some images here, or click to select images'}
+      </Typography>
+    </Box>
+  );
+};
+
+const CustomTabPanel = (props) => {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  );
+};
+
+const a11yProps = (index) => {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+};
 
 const MediaGallery = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const { open, handleClose, value, handleChange } = useMediaGallery();
 
-  const VisuallyHiddenInput = styled('input')({
-    clip: 'rect(0 0 0 0)',
-    clipPath: 'inset(50%)',
-    height: 1,
-    overflow: 'hidden',
+  const style = {
     position: 'absolute',
-    bottom: 0,
-    left: 0,
-    whiteSpace: 'nowrap',
-    width: 1,
-  });
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '60%',
+    height: '80%',
+    bgcolor: colors.grey[900],
+    // border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+    borderRadius: '10px',
+    color: colors.primary[500],
+  };
 
   const [files, setFiles] = useState([]);
-  const [image, setImage] = useState({
-    il_name: "",
-    il_desc: "",
-    il_path: "",
-    il_company_id: "",
-  })
+  const [images, setImages] = useState([]);
+  const [message, setMessage] = useState('');
+  const [previewFiles, setPreviewFiles] = useState([]);
 
-  const handleUpload = async (event) => {
+  const handleDrop = async (acceptedFiles) => {
+    setFiles([...files, ...acceptedFiles]);
+    setPreviewFiles([...acceptedFiles]);
     const formData = new FormData();
-    for (let i = 0; i < event.length; i++) {
-      formData.append('images', event[i]);
-    }
+    acceptedFiles.forEach((file) => {
+      formData.append('images', file);
+    });
+
     try {
-      const response = await axios.post("http://localhost:3030/api/upload-image", formData, {
+      await axios.post('http://localhost:3030/image/upload', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       });
-      alert("Files uploaded successfully");
-      const {data} = response;
-      setFiles(data.filename);
-      console.log(files);
+      setMessage('Image uploaded successfully');
+      fetchImages();
     } catch (error) {
-      alert("Error uploading files");
+      setMessage('An error occurred');
       console.error(error);
     }
-  }
+  };
 
-  const handleChange = (e) => {
-    setImage({ ...image, [e.target.name]: e.target.value });
-  }
-
-
-  const displayUpload = () => {
-    if (files.length > 0) {
-      return (
-        <Box sx={
-          {
-            border: "1px solid #ccc",
-            borderRadius: "5px",
-            padding: "10px",
-            marginTop: "20px"
-          }
-        }>
-          <Grid container spacing={2}>
-            {files.map((file, index) => (
-              <Grid size={12}>
-                <Box key={index} sx={
-                  {
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    border: "1px solid #ccc",
-                  }
-                }>
-                  <Box 
-                    component={"img"}
-                    src={`http://localhost:3030/uploads/${file}`}
-                    alt={file}
-                    sx={{
-                      height: "233px",
-                      width: "350px"
-                    }}
-                    contain
-                  />
-                  <TextField
-                    sx={{ mb: 2 }}
-                    label="Name"
-                    name="il_name"
-                    onChange={handleChange}
-                    color="secondary"
-                    variant="outlined"
-                  />
-                  <TextField
-                    sx={{ mb: 2 }}
-                    label="Description"
-                    name="il_desc"
-                    onChange={handleChange}
-                    color="secondary"
-                    variant="outlined"
-                  />
-                  <TextField
-                    sx={{ mb: 2 }}
-                    label="Company"
-                    name="il_company_id"
-                    onChange={handleChange}
-                    color="secondary"
-                    variant="outlined"
-                  />
-                  <Box 
-                display="flex"
-                justifyContent="space-evenly"
-                alignItems="center"
-                gap="20px"
-                flexDirection="row"
-                flex="1"
-              >
-                  <Button
-                    variant="contained"
-                    sx={{
-                      backgroundColor: colors.greenAccent[500],
-                      color: colors.primary[400],
-                      width: "50%"
-                    }}
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      try {
-                        const response = await axios.post("http://localhost:3030/api/new-image", {
-                          il_name: image.il_name,
-                          il_desc: image.il_desc,
-                          il_path: file,
-                          il_company_id: image.il_company_id
-                        });
-                        alert("Image saved successfully");
-                        setFiles(files.filter((img) => img !== file));
-                      } catch (error) {
-                        alert("Error saving image");
-                        console.error(error);
-                      }
-                    }}
-                  >
-                    Save
-                  </Button>
-                  <Button 
-                    variant="contained"
-                    sx={{
-                      backgroundColor: colors.redAccent[500],
-                      color: colors.grey[100],
-                      width: "50%"
-                    }}
-                    onClick={
-                      async () => {
-                        try {
-                          const response = await axios.delete('http://localhost:3030/api/delete-images', {
-                            data: {
-                              il_path: file
-                            }
-                          })
-                          alert("Image deleted successfully")
-                          setFiles(files.filter((img) => img !== file))
-                        } catch (error) {
-                          alert("An error occurred")
-                          console.error(error)
-                        }
-                      }
-                    }
-                  >
-                    Cancel
-                  </Button>
-                </Box>
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-      )
+  const fetchImages = async () => {
+    try {
+      const response = await axios.get('http://localhost:3030/image/all');
+      const { data } = response;
+      setImages(data);
+    } catch (error) {
+      setMessage('An error occurred');
+      console.error(error);
     }
-  }
+  };
+
+  useEffect(() => {
+    fetchImages();
+  }, []);
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage('');
+      }, 3000); // Clear message after 3 seconds
+
+      return () => clearTimeout(timer); // Cleanup the timer on component unmount
+    }
+    if (previewFiles.length > 0) {
+      const timer = setTimeout(() => {
+        setPreviewFiles([]);
+      }, 3000); // Clear preview files after 3 seconds
+
+      return () => clearTimeout(timer); // Cleanup the timer on component unmount
+    }
+  }, [message, previewFiles]);
+
+  const displayImages = () => {
+    if (images.length > 0) {
+      return (
+        <>
+          <ImageList sx={{ width: '100%', height: 'inherit' }} cols={3}>
+            {images.toReversed().map((item) => (
+              <ImageListItem key={item.il_id}>
+                <img
+                  src={`http://localhost:3030/uploads/${item.il_path}`}
+                  alt={item.il_name}
+                  loading="lazy"
+                />
+                <ImageListItemBar
+                  title={item.il_name}
+                  subtitle={item.il_desc}
+                  actionIcon={
+                    <IconButton
+                      sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
+                      aria-label={`info about ${item.il_name}`}
+                      onClick={async () => {
+                        try {
+                          await axios.delete(
+                            `http://localhost:3030/image/delete/${item.il_id}`
+                          );
+                          setMessage('Image deleted successfully');
+                          setImages(
+                            images.filter((img) => img.il_id !== item.il_id)
+                          );
+                        } catch (error) {
+                          setMessage('An error occurred');
+                          console.error(error);
+                        }
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  }
+                />
+              </ImageListItem>
+            ))}
+          </ImageList>
+          {message === 'Image uploaded successfully' ? (
+            <Typography
+              sx={{
+                color: colors.greenAccent[600],
+                fontSize: '1.5rem',
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              {message}
+              <CheckIcon
+                sx={{
+                  color: colors.greenAccent[600],
+                  fontSize: '2rem',
+                  marginLeft: '10px',
+                }}
+              />
+            </Typography>
+          ) : (
+            <Typography
+              sx={{
+                color: colors.redAccent[500],
+                fontSize: '1.5rem',
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              {message}
+              {message && (
+                <DeleteIcon
+                  sx={{
+                    color: colors.redAccent[500],
+                    fontSize: '2rem',
+                    marginLeft: '10px',
+                  }}
+                />
+              )}
+            </Typography>
+          )}
+        </>
+      );
+    }
+  };
 
   return (
     <>
-      <Box m={"20px"}>
+      <Box m={'20px'}>
         <Header title="Media Gallery" />
+        {OpenMediaButton()}
         <Box>
-          <Box>
-            <Button
-              component="label"
-              role={undefined}
-              variant="contained"
-              tabIndex={-1}
-              startIcon={<CloudUploadIcon />}
-              sx={{
-                backgroundColor: colors.primary[400],
-                color: colors.grey[900]
-              }}
-            >
-              Upload files
-              <VisuallyHiddenInput
-                type="file"
-                onChange={
-                  event => handleUpload(event.target.files)
-                }
-                multiple
-              />
-            </Button>
-          </Box>
-          <Box>
-            {displayUpload()}
-          </Box>
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={style}>
+              <Box sx={{ width: '100%' }}>
+                <Box sx={{ borderBottom: 1, borderColor: colors.grey[600] }}>
+                  <Tabs
+                    value={value}
+                    onChange={handleChange}
+                    aria-label="basic tabs example"
+                  >
+                    <Tab
+                      label="Gallery"
+                      {...a11yProps(0)}
+                      sx={{
+                        bgcolor:
+                          value === 0 ? colors.grey[700] : colors.grey[700],
+                        borderRadius: '10px 10px 0 0',
+                        color: colors.primary[500],
+                        '&.Mui-selected': {
+                          bgcolor: colors.primary[500],
+                          color: colors.grey[900],
+                        },
+                      }}
+                    />
+                    <Tab
+                      label="Upload"
+                      {...a11yProps(1)}
+                      sx={{
+                        bgcolor:
+                          value === 0 ? colors.grey[700] : colors.grey[700],
+                        borderRadius: '10px 10px 0 0',
+                        color: colors.primary[500],
+                        '&.Mui-selected': {
+                          bgcolor: colors.primary[500],
+                          color: colors.grey[900],
+                        },
+                      }}
+                    />
+                  </Tabs>
+                </Box>
+                <CustomTabPanel value={value} index={0}>
+                  <Box mt={2} height={'50vh'}>
+                    {displayImages()}
+                  </Box>
+                </CustomTabPanel>
+                <CustomTabPanel value={value} index={1}>
+                  <Dropzone onDrop={handleDrop} />
+                  <Box mt={2}>
+                    {message === 'Image uploaded successfully' ? (
+                      <Typography
+                        sx={{
+                          color: colors.greenAccent[600],
+                          fontSize: '1.5rem',
+                          display: 'flex',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        {message}
+                        <CheckIcon
+                          sx={{
+                            color: colors.greenAccent[600],
+                            fontSize: '2rem',
+                            marginLeft: '10px',
+                          }}
+                        />
+                      </Typography>
+                    ) : (
+                      <Typography
+                        sx={{
+                          color: colors.redAccent[500],
+                          fontSize: '1.5rem',
+                          display: 'flex',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        {message && (
+                          <DangerousIcon
+                            sx={{
+                              color: colors.redAccent[500],
+                              fontSize: '2rem',
+                              marginLeft: '10px',
+                            }}
+                          />
+                        )}
+                      </Typography>
+                    )}
+                    {previewFiles.length > 0 && (
+                      <Box
+                        mt={2}
+                        display={'flex'}
+                        flexDirection={'column'}
+                        alignItems={'center'}
+                      >
+                        {previewFiles.map((file, index) => (
+                          <Typography key={index} variant="h5">
+                            {file.name}
+                          </Typography>
+                        ))}
+                      </Box>
+                    )}
+                  </Box>
+                </CustomTabPanel>
+              </Box>
+            </Box>
+          </Modal>
+        </Box>
+        <Box mt={2} height={'65vh'}>
+          {displayImages()}
         </Box>
       </Box>
     </>
-  )
+  );
 };
 
-export default MediaGallery;
+const OpenMediaButton = () => {
+  const { handleOpen } = useMediaGallery();
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+
+  return (
+    <Button
+      component="label"
+      tabIndex={-1}
+      onClick={handleOpen}
+      variant="contained"
+      sx={{
+        backgroundColor: colors.primary[400],
+        color: colors.grey[900],
+      }}
+      startIcon={<BrokenImageOutlinedIcon />}
+    >
+      Open Media
+    </Button>
+  );
+};
+
+export { MediaGallery, OpenMediaButton };

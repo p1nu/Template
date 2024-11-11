@@ -12,7 +12,7 @@ import UpdateCompany from "./scenes/company/UpdateCompany";
 import Services from "./scenes/company/Services.jsx";
 import AddService from "./scenes/company/AddService.jsx";
 import UpdateService from "./scenes/company/UpdateService.jsx";
-import MediaGallery from "./scenes/gallery/Index.jsx";
+import {MediaGallery} from "./scenes/gallery/Index.jsx";
 import Dashboard from "./scenes/dashboard/index.jsx";
 import Login from "./scenes/users/Login.jsx";
 import Contact from "./scenes/contact/contact.jsx";
