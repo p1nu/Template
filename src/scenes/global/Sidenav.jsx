@@ -26,7 +26,7 @@ import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
 import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
-import PermContactCalendarOutlinedIcon from "@mui/icons-material/PermContactCalendarOutlined";
+import CorporateFareOutlinedIcon from '@mui/icons-material/CorporateFareOutlined';
 import NewspaperOutlinedIcon from "@mui/icons-material/NewspaperOutlined";
 import RecyclingOutlinedIcon from "@mui/icons-material/RecyclingOutlined";
 import CategoryOutlinedIcon from "@mui/icons-material/CategoryOutlined";
@@ -34,8 +34,6 @@ import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import { Expand, ExpandLess, ExpandMore } from "@mui/icons-material";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -162,11 +160,11 @@ const Sidenav = () => {
                 setSelected={setSelected}
               />
             </SubMenu>
-            <SubMenu title={"Companies"} icon={<ContactsOutlinedIcon />}>
+            <SubMenu title={"Companies"} icon={<CorporateFareOutlinedIcon/>}>
               <Item
                 title="All Companies"
                 to="/company"
-                icon={<PeopleOutlinedIcon />}
+                icon={<CorporateFareOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}
               />
@@ -194,12 +192,12 @@ const Sidenav = () => {
             />
             <SubMenu
               title={"Contacts"}
-              icon={<PermContactCalendarOutlinedIcon />}
+              icon={<ContactsOutlinedIcon />}
             >
               <Item
                 title="All Contacts"
                 to="/contact"
-                icon={<PermContactCalendarOutlinedIcon />}
+                icon={<ContactsOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}
               />
