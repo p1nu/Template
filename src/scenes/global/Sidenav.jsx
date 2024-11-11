@@ -27,9 +27,9 @@ import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
 import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
 import PermContactCalendarOutlinedIcon from "@mui/icons-material/PermContactCalendarOutlined";
-import NewspaperOutlinedIcon from '@mui/icons-material/NewspaperOutlined';
-import RecyclingOutlinedIcon from '@mui/icons-material/RecyclingOutlined';
-import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
+import NewspaperOutlinedIcon from "@mui/icons-material/NewspaperOutlined";
+import RecyclingOutlinedIcon from "@mui/icons-material/RecyclingOutlined";
+import CategoryOutlinedIcon from "@mui/icons-material/CategoryOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
@@ -192,7 +192,10 @@ const Sidenav = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            <SubMenu title={"Contacts"} icon={<PermContactCalendarOutlinedIcon />}>
+            <SubMenu
+              title={"Contacts"}
+              icon={<PermContactCalendarOutlinedIcon />}
+            >
               <Item
                 title="All Contacts"
                 to="/contact"
@@ -208,6 +211,25 @@ const Sidenav = () => {
                 setSelected={setSelected}
               />
             </SubMenu>
+            <SubMenu
+              title={"Jobs"}
+              icon={<PermContactCalendarOutlinedIcon />}
+            >
+              <Item
+                title="All Jobs"
+                to="/jobs"
+                icon={<PermContactCalendarOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item
+                title="Add Job"
+                to="/add-job"
+                icon={<AddIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            </SubMenu>
             <Item
               title="News"
               to="/news"
@@ -215,7 +237,7 @@ const Sidenav = () => {
               selected={selected}
               setSelected={setSelected}
             />
-                        <Item
+            <Item
               title="CSR"
               to="/csr"
               icon={<RecyclingOutlinedIcon />}

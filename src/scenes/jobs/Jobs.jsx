@@ -71,7 +71,7 @@ const Jobs = () => {
         return (
           <StyledBox $align="space-between">
             <Typography color={colors.grey[100]}>{status}</Typography>
-            <Link to={`/jobs/${row.jobs_id}`} style={{ marginLeft: "auto" }}>
+            <Link to={`/job/${row.jobs_id}`} style={{ marginLeft: "auto" }}>
               <Button variant="outlined" color="primary">
                 Edit
               </Button>
