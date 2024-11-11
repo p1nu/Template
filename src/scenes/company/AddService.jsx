@@ -5,15 +5,16 @@ import {
   InputBase,
   Typography,
   useTheme,
-  MenuItem,
-  Select,
   FormControl,
-  TextField,
+  Select,
+  MenuItem,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
+import { useNavigate } from "react-router-dom";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 
 const AddService = () => {
   const theme = useTheme();
@@ -37,18 +38,9 @@ const AddService = () => {
     setService((prevService) => ({ ...prevService, [name]: value }));
   };
 
-  useEffect(() => {
-    //Fetch company data
-    const fetchCompany = async () => {
-      try {
-        const response = await axios.get("http://localhost:3030/company/all");
-        setCompanies(response.data);
-      } catch (error) {
-        console.error("Error fetching company data:", error);
-      }
-    };
-    fetchCompany();
-  }, []);
+  const handleQuillChange = (field, value) => {
+    setService((prevService) => ({ ...prevService, [field]: value }));
+  };
 
   const handleAddService = async () => {
     try {
@@ -74,6 +66,19 @@ const AddService = () => {
   };
 
   useEffect(() => {
+    // Fetch company data
+    const fetchCompany = async () => {
+      try {
+        const response = await axios.get("http://localhost:3030/company/all");
+        setCompanies(response.data);
+      } catch (error) {
+        console.error("Error fetching company data:", error);
+      }
+    };
+    fetchCompany();
+  }, []);
+
+  useEffect(() => {
     if (error) {
       const timer = setTimeout(() => {
         setError("");
@@ -94,6 +99,12 @@ const AddService = () => {
         height="100%"
         padding={2}
         bgcolor={colors.grey[800]}
+        sx={{
+          "& .ql-container.ql-snow": {
+            width: "100% !important",
+            height: "84% !important",
+          },
+        }}
       >
         <Box
           display="flex"
@@ -103,172 +114,103 @@ const AddService = () => {
           p={4}
           bgcolor={colors.grey[900]}
           borderRadius="2px"
+          width="100%"
           boxShadow={3}
-          width="50%"
         >
-          <Typography variant="h4" color={colors.grey[100]} mb={2}>
-            Add Service
-          </Typography>
-          <InputBase
-            placeholder="Service Name"
-            name="service_name"
-            value={service.service_name}
-            onChange={handleChange}
-            sx={{
-              width: "100%",
-              margin: "10px 0",
-              padding: "10px",
-              border: `1px solid ${colors.grey[800]}`,
-              borderRadius: "2px",
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
-            }}
-          />
-          <TextField
-            placeholder="Service Description"
-            name="service_desc"
-            value={service.service_desc}
-            onChange={handleChange}
-            multiline
-            rows={4}
-            variant="outlined"
-            InputProps={{
-              style: {
-                color: colors.grey[100],
-                backgroundColor: colors.grey[900],
-                borderRadius: "2px",
-                padding: "10px",
-              },
-            }}
-            InputLabelProps={{
-              style: {
-                color: colors.grey[100],
-              },
-            }}
-            sx={{
-              width: "100%",
-              margin: "10px 0",
-              border: `1px solid ${colors.grey[800]}`,
-            }}
-          />
-          <TextField
-            placeholder="Service Value"
-            name="service_value"
-            value={service.service_value}
-            onChange={handleChange}
-            multiline
-            rows={4}
-            variant="outlined"
-            InputProps={{
-              style: {
-                color: colors.grey[100],
-                backgroundColor: colors.grey[900],
-                borderRadius: "2px",
-                padding: "10px",
-              },
-            }}
-            InputLabelProps={{
-              style: {
-                color: colors.grey[100],
-              },
-            }}
-            sx={{
-              width: "100%",
-              margin: "10px 0",
-              border: `1px solid ${colors.grey[800]}`,
-            }}
-          />
-          <TextField
-            placeholder="Service Vision"
-            name="service_vision"
-            value={service.service_vision}
-            onChange={handleChange}
-            multiline
-            rows={4}
-            variant="outlined"
-            InputProps={{
-              style: {
-                color: colors.grey[100],
-                backgroundColor: colors.grey[900],
-                borderRadius: "2px",
-                padding: "10px",
-              },
-            }}
-            InputLabelProps={{
-              style: {
-                color: colors.grey[100],
-              },
-            }}
-            sx={{
-              width: "100%",
-              margin: "10px 0",
-              border: `1px solid ${colors.grey[800]}`,
-            }}
-          />
-          <TextField
-            placeholder="Service Mission"
-            name="service_mission"
-            value={service.service_mission}
-            onChange={handleChange}
-            multiline
-            rows={4}
-            variant="outlined"
-            InputProps={{
-              style: {
-                color: colors.grey[100],
-                backgroundColor: colors.grey[900],
-                borderRadius: "2px",
-                padding: "10px",
-              },
-            }}
-            InputLabelProps={{
-              style: {
-                color: colors.grey[100],
-              },
-            }}
-            sx={{
-              width: "100%",
-              margin: "10px 0",
-              border: `1px solid ${colors.grey[800]}`,
-            }}
-          />
-          <FormControl fullWidth sx={{ margin: "10px 0" }} placeholder="Status"> 
-            <Select
-              name="service_status_id"
-              value={service.service_status_id}
+          <Box
+            display="flex"
+            justifyContent={"space-between"}
+            width="100%"
+            gap={"20px"}
+            alignContent={"center"}
+            height="100%"
+          >
+            <InputBase
+              placeholder="Service Name"
+              name="service_name"
+              value={service.service_name}
               onChange={handleChange}
               sx={{
-                border: `1px solid ${colors.grey[800]}`,
+                width: "100%",
+                padding: "10px",
+                border: `1px solid #000`,
                 borderRadius: "2px",
                 backgroundColor: colors.grey[900],
                 color: colors.grey[100],
-                marginTop: "10px",
               }}
-            >
-              <MenuItem value="1">Active</MenuItem>
-              <MenuItem value="2">Inactive</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl fullWidth sx={{ margin: "10px 0" }}>
-            <Select
-              name="service_company_id"
-              value={service.service_company_id}
-              onChange={handleChange}
-              sx={{
-                border: `1px solid ${colors.grey[800]}`,
-                borderRadius: "2px",
-                backgroundColor: colors.grey[900],
-                color: colors.grey[100],
-                marginTop: "10px",
-              }}
-            >
-              {companies.map((company) => (
-                <MenuItem key={company.company_id} value={company.company_id}>
-                  {company.company_name}
+            />
+            <FormControl fullWidth >
+              <Select
+                name="service_company_id"
+                value={service.service_company_id}
+                onChange={handleChange}
+                displayEmpty
+                sx={{
+                  border: `1px solid #000`,
+                  borderRadius: "2px",
+                  backgroundColor: colors.grey[900],
+                  color: colors.grey[100],
+                }}
+              >
+                <MenuItem value="" disabled>
+                  Select Company
                 </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+                {companies.map((company) => (
+                  <MenuItem key={company.company_id} value={company.company_id}>
+                    {company.company_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+          <ReactQuill
+            value={service.service_desc}
+            onChange={(value) => handleQuillChange("service_desc", value)}
+            theme="snow"
+            placeholder="Enter service description..."
+            style={{
+              height: "250px",
+              width: "100%",
+              margin: "10px 0",
+              border: `1px solid #000`,
+            }}
+          />
+          <ReactQuill
+            value={service.service_value}
+            onChange={(value) => handleQuillChange("service_value", value)}
+            theme="snow"
+            placeholder="Enter service value..."
+            style={{
+              height: "250px",
+              width: "100%",
+              margin: "10px 0",
+              border: `1px solid #000`,
+            }}
+          />
+          <ReactQuill
+            value={service.service_vision}
+            onChange={(value) => handleQuillChange("service_vision", value)}
+            theme="snow"
+            placeholder="Enter service vision..."
+            style={{
+              height: "250px",
+              width: "100%",
+              margin: "10px 0",
+              border: `1px solid #000`,
+            }}
+          />
+          <ReactQuill
+            value={service.service_mission}
+            onChange={(value) => handleQuillChange("service_mission", value)}
+            theme="snow"
+            placeholder="Enter service mission..."
+            style={{
+              height: "250px",
+              width: "100%",
+              margin: "10px 0",
+              border: `1px solid #000`,
+            }}
+          />
           <InputBase
             placeholder="Created By User ID"
             name="service_created_by_user_id"
@@ -278,10 +220,10 @@ const AddService = () => {
               width: "100%",
               margin: "10px 0",
               padding: "10px",
-              border: `1px solid ${colors.grey[800]}`,
+              border: `1px solid #000`,
               borderRadius: "2px",
               backgroundColor: colors.grey[900],
-              color: colors.grey[100],
+              // color: colors.grey[100],
             }}
           />
           <Button
