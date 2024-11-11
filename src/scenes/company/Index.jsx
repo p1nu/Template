@@ -52,7 +52,7 @@ const Companies = () => {
   }, [search, companies]);
 
   const columns = [
-    { name: "ID", selector: (row) => row.company_id, sortable: true, width: "50px" },
+    { name: "ID", selector: (row) => row.company_id, sortable: true, width: "60px" },
     { name: "Name", selector: (row) => row.company_name, sortable: true },
     { name: "Acronym", selector: (row) => row.company_acronym, sortable: true },
     {
@@ -76,7 +76,7 @@ const Companies = () => {
                 Edit
               </Button>
             </Link>
-            <Link to={`/services`}>
+            <Link to={`/company/service/${row.company_id}`}>
               <Button variant="outlined" color="primary" sx={{ m: 1 }}>
                 Services
               </Button>

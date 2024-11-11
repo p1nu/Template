@@ -1,44 +1,68 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, InputBase, Typography, useTheme, MenuItem, Select, FormControl, TextField } from '@mui/material';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { tokens } from '../../theme';
 import Header from '../../components/Header';
 
-const AddCompany = () => {
+const AddServiceByCompany = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [service, setService] = useState({
+    service_name: '',
+    service_desc: '',
+    service_value: '',
+    service_vision: '',
+    service_mission: '',
+    service_company_id: id,
+    service_status_id: '',
+    service_created_by_user_id: '',
+  });
   const [company, setCompany] = useState({
     company_name: '',
-    company_acronym: '',
-    company_status_id: '',
-    company_value: '',
-    company_vision: '',
-    company_mission: '',
-    company_description: '',
   });
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setCompany((prevCompany) => ({ ...prevCompany, [name]: value }));
+    setService((prevService) => ({ ...prevService, [name]: value }));
   };
 
-  const handleAddCompany = async () => {
+  useEffect(() => {
+    // fetch company by ID
+    const fetchCompany = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3030/company/${id}`);
+        setCompany(response.data[0]);
+      } catch (error) {
+        console.error('Error fetching data from database:', error);
+      }
+    };
+    fetchCompany();
+  }, [id]);
+
+  const handleAddService = async () => {
     try {
-      await axios.post('http://localhost:3030/company', company);
-      setError('Company added successfully');
-      setCompany({
-        company_name: '',
-        company_acronym: '',
-        company_status_id: '',
-        company_value: '',
-        company_vision: '',
-        company_mission: '',
-        company_desc: '',
+      await axios.post(`http://localhost:3030/service/new`, service);
+      setError('Service added successfully');
+      setService({
+        service_name: '',
+        service_desc: '',
+        service_value: '',
+        service_vision: '',
+        service_mission: '',
+        service_company_id: id,
+        service_status_id: '',
+        service_created_by_user_id: '',
       }); // Reset form
+      setTimeout(() => {
+        navigate('/services');
+      }, 3000); // Navigate to services page after 3 seconds
     } catch (error) {
-      console.error('Error adding company:', error);
-      setError('Error adding company');
+      console.error('Error adding service:', error);
+      setError('Error adding service');
     }
   };
 
@@ -54,7 +78,7 @@ const AddCompany = () => {
 
   return (
     <Box m={2}>
-      <Header title="Add New Company" subTitle="Create a new company" />
+      <Header title="Add New Service" subTitle={`Create a new service for : ${company.company_name}`} />
       <Box
         display="flex"
         flexDirection="column"
@@ -72,31 +96,16 @@ const AddCompany = () => {
           p={4}
           bgcolor={colors.grey[900]}
           borderRadius="2px"
-          width="50%" 
           boxShadow={3}
+          width="50%"
         >
           <Typography variant="h4" color={colors.grey[100]} mb={2}>
-            Add Company
+            Add Service
           </Typography>
           <InputBase
-            placeholder="Company Name"
-            name="company_name"
-            value={company.company_name}
-            onChange={handleChange}
-            sx={{
-              width: '100%',
-              margin: '10px 0',
-              padding: '10px',
-              border: `1px solid ${colors.grey[800]}`,
-              borderRadius: '2px',
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
-            }}
-          />
-          <InputBase
-            placeholder="Company Acronym"
-            name="company_acronym"
-            value={company.company_acronym}
+            placeholder="Service Name"
+            name="service_name"
+            value={service.service_name}
             onChange={handleChange}
             sx={{
               width: '100%',
@@ -109,9 +118,9 @@ const AddCompany = () => {
             }}
           />
           <TextField
-            placeholder="Company Value"
-            name="company_value"
-            value={company.company_value}
+            placeholder="Service Description"
+            name="service_desc"
+            value={service.service_desc}
             onChange={handleChange}
             multiline
             rows={4}
@@ -136,9 +145,9 @@ const AddCompany = () => {
             }}
           />
           <TextField
-            placeholder="Company Vision"
-            name="company_vision"
-            value={company.company_vision}
+            placeholder="Service Value"
+            name="service_value"
+            value={service.service_value}
             onChange={handleChange}
             multiline
             rows={4}
@@ -163,9 +172,9 @@ const AddCompany = () => {
             }}
           />
           <TextField
-            placeholder="Company Mission"
-            name="company_mission"
-            value={company.company_mission}
+            placeholder="Service Vision"
+            name="service_vision"
+            value={service.service_vision}
             onChange={handleChange}
             multiline
             rows={4}
@@ -190,9 +199,9 @@ const AddCompany = () => {
             }}
           />
           <TextField
-            placeholder="Company Description"
-            name="company_description"
-            value={company.company_description}
+            placeholder="Service Mission"
+            name="service_mission"
+            value={service.service_mission}
             onChange={handleChange}
             multiline
             rows={4}
@@ -218,8 +227,9 @@ const AddCompany = () => {
           />
           <FormControl fullWidth sx={{ margin: '10px 0' }}>
             <Select
-              name="company_status_id"
-              value={company.company_status_id}
+              name="service_status_id"
+              defaultValue='1'
+              value={"service.service_status_id"}
               onChange={handleChange}
               sx={{
                 border: `1px solid ${colors.grey[800]}`,
@@ -233,13 +243,44 @@ const AddCompany = () => {
               <MenuItem value="2">Inactive</MenuItem>
             </Select>
           </FormControl>
+          <InputBase
+            placeholder="Company Name"
+            name="service_company_id"
+            value={company.company_name}
+            onChange={handleChange}
+            disabled
+            sx={{
+              width: '100%',
+              margin: '10px 0',
+              padding: '10px',
+              border: `1px solid ${colors.grey[800]}`,
+              borderRadius: '2px',
+              backgroundColor: colors.grey[900],
+              color: colors.grey[100],
+            }}
+          />
+          <InputBase
+            placeholder="Created By User ID"
+            name="service_created_by_user_id"
+            value={service.service_created_by_user_id}
+            onChange={handleChange}
+            sx={{
+              width: '100%',
+              margin: '10px 0',
+              padding: '10px',
+              border: `1px solid ${colors.grey[800]}`,
+              borderRadius: '2px',
+              backgroundColor: colors.grey[900],
+              color: colors.grey[100],
+            }}
+          />
           <Button
             variant="contained"
             fullWidth
-            onClick={handleAddCompany}
+            onClick={handleAddService}
             sx={{ mt: 2, backgroundColor: colors.blueAccent[200] }}
           >
-            Add Company
+            Add Service
           </Button>
           {error && (
             <Typography variant="body1" color={error.includes('successfully') ? 'green' : 'red'} mt={2}>
@@ -252,4 +293,4 @@ const AddCompany = () => {
   );
 };
 
-export default AddCompany;
+export default AddServiceByCompany;

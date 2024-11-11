@@ -10,7 +10,9 @@ import Company from "./scenes/company/Index.jsx";
 import AddCompany from "./scenes/company/AddCompany";
 import UpdateCompany from "./scenes/company/UpdateCompany";
 import Services from "./scenes/company/Services.jsx";
+import ServiceCompany from "./scenes/company/ServiceCompany.jsx";
 import AddService from "./scenes/company/AddService.jsx";
+import AddServiceByCompany from "./scenes/company/AddServiceByCompany.jsx";
 import UpdateService from "./scenes/company/UpdateService.jsx";
 import {MediaGallery} from "./scenes/gallery/Index.jsx";
 import Dashboard from "./scenes/dashboard/index.jsx";
@@ -50,7 +52,9 @@ function App() {
               <Route path="/add-company" element={<AddCompany />} />
               <Route path="/company/:id" element={<UpdateCompany />} />
               <Route path="/services" element={<Services />} />
+              <Route path="/company/service/:id" element={<ServiceCompany />} />
               <Route path="/add-service" element={<AddService />} />
+              <Route path="/add-service/:id" element={<AddServiceByCompany />} />
               <Route path="/service/:id" element={<UpdateService />} />
               <Route path="/gallery" element={<MediaGallery />} />
               <Route path="/contact" element={<Contact />} />
