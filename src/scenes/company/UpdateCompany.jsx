@@ -1,19 +1,11 @@
-import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Button,
-  InputBase,
-  Typography,
-  useTheme,
-  MenuItem,
-  Select,
-  FormControl,
-  TextField,
-} from "@mui/material";
-import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { tokens } from "../../theme";
-import Header from "../../components/Header";
+import React, { useState, useEffect } from 'react';
+import { Box, Button, InputBase, Typography, useTheme } from '@mui/material';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { tokens } from '../../theme';
+import Header from '../../components/Header';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 
 const UpdateCompany = () => {
   const theme = useTheme();
@@ -21,20 +13,16 @@ const UpdateCompany = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [company, setCompany] = useState({
-    company_name: "",
-    company_acronym: "",
-    company_value: "",
-    company_vision: "",
-    company_mission: "",
-    company_desc: "",
-    company_status_id: "",
-    company_created_by_user_id: "",
-    company_updated_by_user_id: "",
+    company_name: '',
+    company_acronym: '',
+    company_value: '',
+    company_vision: '',
+    company_mission: '',
+    company_desc: '',
+    company_created_by_user_id: '',
+    company_updated_by_user_id: '',
   });
-  const [user, setUser] = useState({
-    user_name: "",
-  });
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   useEffect(() => {
     // Fetch company data by ID
@@ -43,51 +31,38 @@ const UpdateCompany = () => {
         const response = await axios.get(`http://localhost:3030/company/${id}`);
         setCompany(response.data[0]);
       } catch (error) {
-        console.error("Error fetching company data:", error);
+        console.error('Error fetching company data:', error);
       }
     };
     fetchCompany();
   }, [id]);
-
-  useEffect(() => {
-    //Fetch user data by ID
-    const fetchUser = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3030/user/${company.company_created_by_user_id}`
-        );
-        setUser(response.data[0]);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-    if (company.company_created_by_user_id) {
-      fetchUser();
-    }
-  }, [company.company_created_by_user_id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCompany((prevCompany) => ({ ...prevCompany, [name]: value }));
   };
 
+  const handleQuillChange = (field, value) => {
+    setCompany((prevCompany) => ({ ...prevCompany, [field]: value }));
+  };
+
   const handleUpdateCompany = async () => {
     try {
       await axios.put(`http://localhost:3030/company/update/${id}`, company);
-      setError("Company updated successfully");
+      setError('Company updated successfully');
       setTimeout(() => {
-        navigate("/company");
+        navigate('/company');
       }, 3000); // Navigate to companies page after 3 seconds
     } catch (error) {
-      console.error("Error updating company:", error);
-      setError("Error updating company");
+      console.error('Error updating company:', error);
+      setError('Error updating company');
     }
   };
 
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => {
-        setError("");
+        setError('');
       }, 3000); // Clear error after 3 seconds
 
       return () => clearTimeout(timer); // Cleanup the timer on component unmount
@@ -96,10 +71,7 @@ const UpdateCompany = () => {
 
   return (
     <Box m={2}>
-      <Header
-        title="Update Company"
-        subTitle={`Update details for ${company.company_name}`}
-      />
+      <Header title="Update Company" subTitle={`Update details for ${company.company_name}`} />
       <Box
         display="flex"
         flexDirection="column"
@@ -129,11 +101,11 @@ const UpdateCompany = () => {
             value={company.company_name}
             onChange={handleChange}
             sx={{
-              width: "100%",
-              margin: "10px 0",
-              padding: "10px",
+              width: '100%',
+              margin: '10px 0',
+              padding: '10px',
               border: `1px solid ${colors.grey[800]}`,
-              borderRadius: "2px",
+              borderRadius: '2px',
               backgroundColor: colors.grey[900],
               color: colors.grey[100],
             }}
@@ -144,152 +116,99 @@ const UpdateCompany = () => {
             value={company.company_acronym}
             onChange={handleChange}
             sx={{
-              width: "100%",
-              margin: "10px 0",
-              padding: "10px",
+              width: '100%',
+              margin: '10px 0',
+              padding: '10px',
               border: `1px solid ${colors.grey[800]}`,
-              borderRadius: "2px",
+              borderRadius: '2px',
               backgroundColor: colors.grey[900],
               color: colors.grey[100],
             }}
           />
-          <TextField
-            placeholder="Company Value"
-            name="company_value"
-            value={company.company_value}
-            onChange={handleChange}
-            multiline
-            rows={4}
-            variant="outlined"
-            InputProps={{
-              style: {
-                color: colors.grey[100],
-                backgroundColor: colors.grey[900],
-                borderRadius: "2px",
-                padding: "10px",
-              },
-            }}
-            InputLabelProps={{
-              style: {
-                color: colors.grey[100],
-              },
-            }}
+          <Box
             sx={{
-              width: "100%",
-              margin: "10px 0",
+              width: '100%',
+              margin: '10px 0',
+              padding: '10px',
               border: `1px solid ${colors.grey[800]}`,
+              borderRadius: '2px',
+              backgroundColor: colors.grey[900],
+              color: colors.grey[100],
             }}
-          />
-          <TextField
-            placeholder="Company Vision"
-            name="company_vision"
-            value={company.company_vision}
-            onChange={handleChange}
-            multiline
-            rows={4}
-            variant="outlined"
-            InputProps={{
-              style: {
-                color: colors.grey[100],
-                backgroundColor: colors.grey[900],
-                borderRadius: "2px",
-                padding: "10px",
-              },
-            }}
-            InputLabelProps={{
-              style: {
-                color: colors.grey[100],
-              },
-            }}
+          >
+            <ReactQuill
+              value={company.company_value}
+              onChange={(value) => handleQuillChange('company_value', value)}
+              theme="snow"
+              placeholder="Enter company value..."
+            />
+          </Box>
+          <Box
             sx={{
-              width: "100%",
-              margin: "10px 0",
+              width: '100%',
+              margin: '10px 0',
+              padding: '10px',
               border: `1px solid ${colors.grey[800]}`,
+              borderRadius: '2px',
+              backgroundColor: colors.grey[900],
+              color: colors.grey[100],
             }}
-          />
-          <TextField
-            placeholder="Company Mission"
-            name="company_mission"
-            value={company.company_mission}
-            onChange={handleChange}
-            multiline
-            rows={4}
-            variant="outlined"
-            InputProps={{
-              style: {
-                color: colors.grey[100],
-                backgroundColor: colors.grey[900],
-                borderRadius: "2px",
-                padding: "10px",
-              },
-            }}
-            InputLabelProps={{
-              style: {
-                color: colors.grey[100],
-              },
-            }}
+          >
+            <ReactQuill
+              value={company.company_vision}
+              onChange={(value) => handleQuillChange('company_vision', value)}
+              theme="snow"
+              placeholder="Enter company vision..."
+            />
+          </Box>
+          <Box
             sx={{
-              width: "100%",
-              margin: "10px 0",
+              width: '100%',
+              margin: '10px 0',
+              padding: '10px',
               border: `1px solid ${colors.grey[800]}`,
+              borderRadius: '2px',
+              backgroundColor: colors.grey[900],
+              color: colors.grey[100],
             }}
-          />
-          <TextField
-            placeholder="Company Description"
-            name="company_desc"
-            value={company.company_desc}
-            onChange={handleChange}
-            multiline
-            rows={4}
-            variant="outlined"
-            InputProps={{
-              style: {
-                color: colors.grey[100],
-                backgroundColor: colors.grey[900],
-                borderRadius: "2px",
-                padding: "10px",
-              },
-            }}
-            InputLabelProps={{
-              style: {
-                color: colors.grey[100],
-              },
-            }}
+          >
+            <ReactQuill
+              value={company.company_mission}
+              onChange={(value) => handleQuillChange('company_mission', value)}
+              theme="snow"
+              placeholder="Enter company mission..."
+            />
+          </Box>
+          <Box
             sx={{
-              width: "100%",
-              margin: "10px 0",
+              width: '100%',
+              margin: '10px 0',
+              padding: '10px',
               border: `1px solid ${colors.grey[800]}`,
+              borderRadius: '2px',
+              backgroundColor: colors.grey[900],
+              color: colors.grey[100],
             }}
-          />
-          <FormControl fullWidth sx={{ margin: "10px 0" }}>
-            <Select
-              name="company_status_id"
-              value={company.company_status_id}
-              onChange={handleChange}
-              sx={{
-                border: `1px solid ${colors.grey[800]}`,
-                borderRadius: "2px",
-                backgroundColor: colors.grey[900],
-                color: colors.grey[100],
-                marginTop: "10px",
-              }}
-            >
-              <MenuItem value="1">Active</MenuItem>
-              <MenuItem value="2">Inactive</MenuItem>
-            </Select>
-          </FormControl>
+          >
+            <ReactQuill
+              value={company.company_desc}
+              onChange={(value) => handleQuillChange('company_desc', value)}
+              theme="snow"
+              placeholder="Enter company description..."
+            />
+          </Box>
           <InputBase
             placeholder="Created By User ID"
             name="company_created_by_user_id"
-            value={user.user_name}
+            value={company.company_created_by_user_id}
             disabled
             onChange={handleChange}
             sx={{
-              width: "100%",
-              margin: "10px 0",
-              padding: "10px",
+              width: '100%',
+              margin: '10px 0',
+              padding: '10px',
               border: `1px solid ${colors.grey[800]}`,
-              borderRadius: "2px",
+              borderRadius: '2px',
               backgroundColor: colors.grey[900],
               color: colors.grey[100],
             }}
@@ -300,11 +219,11 @@ const UpdateCompany = () => {
             value={company.company_updated_by_user_id}
             onChange={handleChange}
             sx={{
-              width: "100%",
-              margin: "10px 0",
-              padding: "10px",
+              width: '100%',
+              margin: '10px 0',
+              padding: '10px',
               border: `1px solid ${colors.grey[800]}`,
-              borderRadius: "2px",
+              borderRadius: '2px',
               backgroundColor: colors.grey[900],
               color: colors.grey[100],
             }}
@@ -318,11 +237,7 @@ const UpdateCompany = () => {
             Update Company
           </Button>
           {error && (
-            <Typography
-              variant="body1"
-              color={error.includes("successfully") ? "green" : "red"}
-              mt={2}
-            >
+            <Typography variant="body1" color={error.includes('successfully') ? 'green' : 'red'} mt={2}>
               {error}
             </Typography>
           )}

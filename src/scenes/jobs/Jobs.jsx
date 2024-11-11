@@ -52,13 +52,14 @@ const Jobs = () => {
   }, [search, jobs]);
 
   const columns = [
-    { name: "ID", selector: (row) => row.jobs_id, sortable: true, width: "50px" },
+    { name: "ID", selector: (row) => row.jobs_id, sortable: true, width: "60px" },
     { name: "Title", selector: (row) => row.jobs_title, sortable: true },
     { name: "Description", selector: (row) => row.jobs_description, sortable: true },
     {
       name: "Status",
       selector: (row) => row.jobs_status_id,
       sortable: true,
+      width: "50%",
       cell: (row) => {
         let status;
 

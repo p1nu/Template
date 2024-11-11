@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, InputBase, Typography, useTheme, MenuItem, Select, FormControl, TextField } from '@mui/material';
+import { Box, Button, InputBase, Typography, useTheme, TextField } from '@mui/material';
 import axios from 'axios';
 import { tokens } from '../../theme';
 import Header from '../../components/Header';
 import { useNavigate } from 'react-router-dom';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 
 const AddCompany = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const navigate = useNavigate();
   const [company, setCompany] = useState({
     company_name: '',
     company_acronym: '',
@@ -19,11 +22,13 @@ const AddCompany = () => {
   });
   const [error, setError] = useState('');
 
-  const navigate = useNavigate();
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCompany((prevCompany) => ({ ...prevCompany, [name]: value }));
+  };
+
+  const handleQuillChange = (field, value) => {
+    setCompany((prevCompany) => ({ ...prevCompany, [field]: value }));
   };
 
   const handleAddCompany = async () => {
@@ -114,114 +119,78 @@ const AddCompany = () => {
               color: colors.grey[100],
             }}
           />
-          <TextField
-            placeholder="Company Value"
-            name="company_value"
-            value={company.company_value}
-            onChange={handleChange}
-            multiline
-            rows={4}
-            variant="outlined"
-            InputProps={{
-              style: {
-                color: colors.grey[100],
-                backgroundColor: colors.grey[900],
-                borderRadius: '2px',
-                padding: '10px',
-              },
-            }}
-            InputLabelProps={{
-              style: {
-                color: colors.grey[100],
-              },
-            }}
+          <Box
             sx={{
               width: '100%',
               margin: '10px 0',
+              padding: '10px',
               border: `1px solid ${colors.grey[800]}`,
+              borderRadius: '2px',
+              backgroundColor: colors.grey[900],
+              color: colors.grey[100],
             }}
-          />
-          <TextField
-            placeholder="Company Vision"
-            name="company_vision"
-            value={company.company_vision}
-            onChange={handleChange}
-            multiline
-            rows={4}
-            variant="outlined"
-            InputProps={{
-              style: {
-                color: colors.grey[100],
-                backgroundColor: colors.grey[900],
-                borderRadius: '2px',
-                padding: '10px',
-              },
-            }}
-            InputLabelProps={{
-              style: {
-                color: colors.grey[100],
-              },
-            }}
+          >
+            <ReactQuill
+              value={company.company_value}
+              onChange={(value) => handleQuillChange('company_value', value)}
+              theme="snow"
+              placeholder="Enter company value..."
+            />
+          </Box>
+          <Box
             sx={{
               width: '100%',
               margin: '10px 0',
+              padding: '10px',
               border: `1px solid ${colors.grey[800]}`,
+              borderRadius: '2px',
+              backgroundColor: colors.grey[900],
+              color: colors.grey[100],
             }}
-          />
-          <TextField
-            placeholder="Company Mission"
-            name="company_mission"
-            value={company.company_mission}
-            onChange={handleChange}
-            multiline
-            rows={4}
-            variant="outlined"
-            InputProps={{
-              style: {
-                color: colors.grey[100],
-                backgroundColor: colors.grey[900],
-                borderRadius: '2px',
-                padding: '10px',
-              },
-            }}
-            InputLabelProps={{
-              style: {
-                color: colors.grey[100],
-              },
-            }}
+          >
+            <ReactQuill
+              value={company.company_vision}
+              onChange={(value) => handleQuillChange('company_vision', value)}
+              theme="snow"
+              placeholder="Enter company vision..."
+            />
+          </Box>
+          <Box
             sx={{
               width: '100%',
               margin: '10px 0',
+              padding: '10px',
               border: `1px solid ${colors.grey[800]}`,
+              borderRadius: '2px',
+              backgroundColor: colors.grey[900],
+              color: colors.grey[100],
             }}
-          />
-          <TextField
-            placeholder="Company Description"
-            name="company_desc"
-            value={company.company_desc}
-            onChange={handleChange}
-            multiline
-            rows={4}
-            variant="outlined"
-            InputProps={{
-              style: {
-                color: colors.grey[100],
-                backgroundColor: colors.grey[900],
-                borderRadius: '2px',
-                padding: '10px',
-              },
-            }}
-            InputLabelProps={{
-              style: {
-                color: colors.grey[100],
-              },
-            }}
+          >
+            <ReactQuill
+              value={company.company_mission}
+              onChange={(value) => handleQuillChange('company_mission', value)}
+              theme="snow"
+              placeholder="Enter company mission..."
+            />
+          </Box>
+          <Box
             sx={{
               width: '100%',
               margin: '10px 0',
+              padding: '10px',
               border: `1px solid ${colors.grey[800]}`,
+              borderRadius: '2px',
+              backgroundColor: colors.grey[900],
+              color: colors.grey[100],
             }}
-          />
+          >
+            <ReactQuill
+              value={company.company_desc}
+              onChange={(value) => handleQuillChange('company_desc', value)}
+              theme="snow"
+              placeholder="Enter company description..."
+            />
+          </Box>
           <InputBase
             placeholder="Created By User ID"
             name="company_created_by_user_id"
