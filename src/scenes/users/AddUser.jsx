@@ -3,12 +3,15 @@ import { Box, Button, InputBase, Typography, useTheme, MenuItem, Select, FormCon
 import axios from 'axios';
 import { tokens } from '../../theme';
 import Header from '../../components/Header';
+import { useNavigate } from 'react-router-dom';
 
 const AddUser = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [user, setUser] = useState({ user_name: '', user_password: '', user_role_id: '' });
   const [error, setError] = useState('');
+
+  const navegate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,9 +20,12 @@ const AddUser = () => {
 
   const handleAddUser = async () => {
     try {
-      await axios.post('http://localhost:3030/user', user);
+      await axios.post('http://localhost:3030/user/new', user);
       setError('User added successfully');
       setUser({ user_name: '', user_password: '', user_role_id: '' }); // Reset form
+      setTimeout(() => {
+        navegate('/users');
+      }, 3000); // Navigate to users page after 3 seconds
     } catch (error) {
       console.error('Error adding user:', error);
       setError('Error adding user');
@@ -93,6 +99,7 @@ const AddUser = () => {
           />
           <FormControl fullWidth sx={{ margin: '10px 0' }}>
             <Select
+              placeholder='User Role'
               name="user_role_id"
               value={user.user_role_id}
               onChange={handleChange}
@@ -106,7 +113,7 @@ const AddUser = () => {
             >
               <MenuItem value="1">Admin</MenuItem>
               <MenuItem value="2">User</MenuItem>
-              <MenuItem value="3">Guest</MenuItem>
+              {/* <MenuItem value="3">Guest</MenuItem> */}
             </Select>
           </FormControl>
           <Button
