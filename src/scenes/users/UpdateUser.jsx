@@ -94,9 +94,6 @@ const UpdateUser = () => {
           width="50%"
           boxShadow={3}
         >
-          <Typography variant="h4" color={colors.grey[100]} mb={2}>
-            Update User
-          </Typography>
           <InputBase
             placeholder="Username"
             name="user_name"
@@ -106,8 +103,8 @@ const UpdateUser = () => {
               width: "100%",
               margin: "10px 0",
               padding: "10px",
-              border: `1px solid ${colors.grey[800]}`,
-              borderRadius: "4px",
+              border: `1px solid #000`,
+              borderRadius: "2px",
               backgroundColor: colors.grey[900],
               color: colors.grey[100],
             }}
@@ -123,26 +120,28 @@ const UpdateUser = () => {
                 width: "100%",
                 margin: "10px 0",
                 padding: "10px",
+                borderRadius: "2px",
                 border: `1px solid ${colors.grey[800]}`,
-                borderRadius: "4px",
                 backgroundColor: colors.grey[900],
                 color: colors.grey[100],
               }}
             />
           )}
-          <FormControl fullWidth sx={{ margin: "10px 0" }}>
+          <FormControl fullWidth sx={{ margin: "10px 0", borderRadius: "2px", }}>
             <Select
               name="user_role_id"
               value={user.user_role_id}
               onChange={handleChange}
+              displayEmpty
               sx={{
-                border: `1px solid ${colors.grey[800]}`,
+                border: `1px solid #000`,
                 borderRadius: "2px",
                 backgroundColor: colors.grey[900],
-                color: colors.grey[100],
+                color: "#000",
                 marginTop: "10px",
               }}
-            >
+            > 
+              <MenuItem value="" disabled>User Role</MenuItem>
               <MenuItem value="1">Admin</MenuItem>
               <MenuItem value="2">User</MenuItem>
             </Select>
