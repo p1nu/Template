@@ -64,9 +64,6 @@ const AddUser = () => {
           boxShadow={3}
           width="50%"
         >
-          <Typography variant="h4" color={colors.grey[100]} mb={2}>
-            Add User
-          </Typography>
           <InputBase
             placeholder="Username"
             name="user_name"
@@ -76,7 +73,7 @@ const AddUser = () => {
               width: '100%',
               margin: '10px 0',
               padding: '10px',
-              border: `1px solid ${colors.grey[800]}`,
+              border: `1px solid #000`,
               borderRadius: '2px',
               backgroundColor: colors.grey[900],
               color: colors.grey[100],
@@ -92,7 +89,7 @@ const AddUser = () => {
               width: '100%',
               margin: '10px 0',
               padding: '10px',
-              border: `1px solid ${colors.grey[800]}`,
+              border: `1px solid #000`,
               borderRadius: '2px',
               backgroundColor: colors.grey[900],
               color: colors.grey[100],
@@ -104,14 +101,16 @@ const AddUser = () => {
               name="user_role_id"
               value={user.user_role_id}
               onChange={handleChange}
+              displayEmpty
               sx={{
-                border: `1px solid ${colors.grey[800]}`,
+                border: `1px solid #000`,
                 borderRadius: '2px',
                 backgroundColor: colors.grey[900],
                 color: colors.grey[100],
                 marginTop: '10px',
               }}
-            >
+            > 
+              <MenuItem value="" disabled>User Role</MenuItem>
               <MenuItem value="1">Admin</MenuItem>
               <MenuItem value="2">User</MenuItem>
               {/* <MenuItem value="3">Guest</MenuItem> */}
