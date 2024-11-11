@@ -66,9 +66,9 @@ const Users = () => {
       cell: (row) => {
         let accessLevel;
 
-        if (row.user_role_id === 'admin') {
+        if (row.user_role_id === 1) {
           accessLevel = "Admin";
-        } else if (row.user_role_id === 'user') {
+        } else if (row.user_role_id === 2) {
           accessLevel = "User";
         } else {
           accessLevel = "Guest";
