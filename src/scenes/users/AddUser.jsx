@@ -62,6 +62,7 @@ const AddUser = () => {
           bgcolor={colors.grey[900]}
           borderRadius="2px"
           boxShadow={3}
+          width="50%"
         >
           <Typography variant="h4" color={colors.grey[100]} mb={2}>
             Add User

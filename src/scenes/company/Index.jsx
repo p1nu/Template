@@ -70,6 +70,7 @@ const Companies = () => {
       name: "Status",
       selector: (row) => row.company_status_id,
       sortable: true,
+      width: "60%",
       cell: (row) => {
         let status;
 
