@@ -55,10 +55,6 @@ const Services = () => {
   const columns = [
     { name: "ID", selector: (row) => row.service_id, sortable: true, width: "60px" },
     { name: "Name", selector: (row) => row.service_name, sortable: true },
-    { name: "Description", selector: (row) => row.service_desc, sortable: true },
-    { name: "Value", selector: (row) => row.service_value, sortable: true },
-    { name: "Vision", selector: (row) => row.service_vision, sortable: true },
-    { name: "Mission", selector: (row) => row.service_mission, sortable: true },
     {
       name: "Actions",
       cell: (row) => (
