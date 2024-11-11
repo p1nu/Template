@@ -56,12 +56,13 @@ const Users = () => {
   }, [search, users]);
 
   const columns = [
-    { name: "ID", selector: (row) => row.user_id, sortable: true },
+    { name: "ID", selector: (row) => row.user_id, sortable: true, width: "60px" },
     { name: "Name", selector: (row) => row.user_name, sortable: true },
     {
       name: "Access Level",
       selector: (row) => row.user_role_id,
       sortable: true,
+      width: "60%",
       cell: (row) => {
         let accessLevel;
 
