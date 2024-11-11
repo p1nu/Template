@@ -51,6 +51,17 @@ const Companies = () => {
     setFilteredCompanies(result);
   }, [search, companies]);
 
+  const handleDelete = async (id) => {
+    try {
+      await axios.put(`http://localhost:3030/company/delete/${id}`);
+      const response = await axios.get("http://localhost:3030/company/all");
+      setCompanies(response.data);
+      setFilteredCompanies(response.data);
+    } catch (error) {
+      console.error('Error deleting company:', error);
+    }
+  };
+
   const columns = [
     { name: "ID", selector: (row) => row.company_id, sortable: true, width: "60px" },
     { name: "Name", selector: (row) => row.company_name, sortable: true },
@@ -81,7 +92,7 @@ const Companies = () => {
                 Services
               </Button>
             </Link>
-            <Button variant="outlined" color="error" sx={{ m: 1 }}>
+            <Button variant="outlined" color="error" sx={{ m: 1 }} onClick={() => handleDelete(row.company_id)}>
               Delete
             </Button>
           </StyledBox>
