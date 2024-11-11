@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, InputBase, Typography, useTheme, MenuItem, Select, FormControl, TextField } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { tokens } from '../../theme';
 import Header from '../../components/Header';
@@ -9,14 +9,19 @@ const UpdateCompany = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { id } = useParams();
+  const navigate = useNavigate();
   const [company, setCompany] = useState({
     company_name: '',
     company_acronym: '',
-    company_status_id: '',
     company_value: '',
     company_vision: '',
     company_mission: '',
-    company_description: '',
+    company_desc: '',
+    company_created_by_user_id: '',
+    company_updated_by_user_id: '',
+  });
+  const [user, setUser] = useState({
+    user_name: '',
   });
   const [error, setError] = useState('');
 
@@ -25,7 +30,7 @@ const UpdateCompany = () => {
     const fetchCompany = async () => {
       try {
         const response = await axios.get(`http://localhost:3030/company/${id}`);
-        setCompany(response.data);
+        setCompany(response.data[0]);
       } catch (error) {
         console.error('Error fetching company data:', error);
       }
@@ -33,15 +38,34 @@ const UpdateCompany = () => {
     fetchCompany();
   }, [id]);
 
+  useEffect(() => {
+    //Fetch user data by ID
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3030/user/${company.company_created_by_user_id}`);
+        setUser(response.data[0]);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+    if (company.company_created_by_user_id) {
+      fetchUser();
+    }
+  }, [company.company_created_by_user_id]);
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCompany((prevCompany) => ({ ...prevCompany, [name]: value }));
   };
 
-  const handleUpdate = async () => {
+  const handleUpdateCompany = async () => {
     try {
-      await axios.put(`http://localhost:3030/company/${id}`, company);
+      await axios.put(`http://localhost:3030/company/update/${id}`, company);
       setError('Company updated successfully');
+      setTimeout(() => {
+        navigate('/company');
+      }, 3000); // Navigate to companies page after 3 seconds
     } catch (error) {
       console.error('Error updating company:', error);
       setError('Error updating company');
@@ -60,7 +84,7 @@ const UpdateCompany = () => {
 
   return (
     <Box m={2}>
-      <Header title="Update Company" subTitle={`${company.company_name}`} />
+      <Header title="Update Company" subTitle={`Update details for ${company.company_name}`} />
       <Box
         display="flex"
         flexDirection="column"
@@ -197,8 +221,8 @@ const UpdateCompany = () => {
           />
           <TextField
             placeholder="Company Description"
-            name="company_description"
-            value={company.company_description}
+            name="company_desc"
+            value={company.company_desc}
             onChange={handleChange}
             multiline
             rows={4}
@@ -222,27 +246,41 @@ const UpdateCompany = () => {
               border: `1px solid ${colors.grey[800]}`,
             }}
           />
-          <FormControl fullWidth sx={{ margin: '10px 0' }}>
-            <Select
-              name="company_status_id"
-              value={company.company_status_id}
-              onChange={handleChange}
-              sx={{
-                border: `1px solid ${colors.grey[800]}`,
-                borderRadius: '2px',
-                backgroundColor: colors.grey[900],
-                color: colors.grey[100],
-                marginTop: '10px',
-              }}
-            >
-              <MenuItem value="1">Active</MenuItem>
-              <MenuItem value="2">Inactive</MenuItem>
-            </Select>
-          </FormControl>
+          <InputBase
+            placeholder="Created By User ID"
+            name="company_created_by_user_id"
+            value={user.user_name}
+            disabled
+            onChange={handleChange}
+            sx={{
+              width: '100%',
+              margin: '10px 0',
+              padding: '10px',
+              border: `1px solid ${colors.grey[800]}`,
+              borderRadius: '2px',
+              backgroundColor: colors.grey[900],
+              color: colors.grey[100],
+            }}
+          />
+          <InputBase
+            placeholder="Updated By User ID"
+            name="company_updated_by_user_id"
+            value={company.company_updated_by_user_id}
+            onChange={handleChange}
+            sx={{
+              width: '100%',
+              margin: '10px 0',
+              padding: '10px',
+              border: `1px solid ${colors.grey[800]}`,
+              borderRadius: '2px',
+              backgroundColor: colors.grey[900],
+              color: colors.grey[100],
+            }}
+          />
           <Button
             variant="contained"
             fullWidth
-            onClick={handleUpdate}
+            onClick={handleUpdateCompany}
             sx={{ mt: 2, backgroundColor: colors.blueAccent[200] }}
           >
             Update Company
