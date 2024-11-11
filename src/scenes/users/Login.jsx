@@ -22,10 +22,11 @@ const Login = () => {
       justifyContent="center"
       height="100vh"
       sx={{
-        backgroundImage: 'url(https://files.123freevectors.com/wp-content/original/164191-abstract-blue-texture-background-illustration.jpg?q=100)', // Replace with your texture image
+        // backgroundImage: 'url(https://files.123freevectors.com/wp-content/original/164191-abstract-blue-texture-background-illustration.jpg?q=100)', // Replace with your texture image
         // backgroundImage: 'url(http://localhost:3030/uploads/1730744289370-goofy.jpg)', // Replace with your texture image URL
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        bgcolor: colors.blueAccent[300],
       }}
     >
       <Box
@@ -35,8 +36,9 @@ const Login = () => {
         justifyContent="center"
         p={4}
         bgcolor={colors.grey[900]}
-        borderRadius="8px"
+        borderRadius="2px"
         boxShadow={5}
+        width="20%"
       >
         <Typography variant="h4" color={colors.grey[100]} mb={2}>
           Login
@@ -72,10 +74,9 @@ const Login = () => {
         />
         <Button
           variant="contained"
-          color="primary"
           fullWidth
           onClick={handleLogin}
-          sx={{ mt: 2 }}
+          sx={{ mt: 2, color: colors.grey[900], backgroundColor: colors.primary[400] }}
         >
           Login
         </Button>
