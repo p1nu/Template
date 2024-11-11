@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, InputBase, Typography, useTheme, MenuItem, Select, FormControl, TextField } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { tokens } from '../../theme';
 import Header from '../../components/Header';
@@ -9,6 +9,7 @@ const UpdateService = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { id } = useParams();
+  const navigate = useNavigate();
   const [service, setService] = useState({
     service_name: '',
     service_desc: '',
@@ -78,6 +79,9 @@ const UpdateService = () => {
     try {
       await axios.put(`http://localhost:3030/service/update/${id}`, service);
       setError('Service updated successfully');
+      setTimeout(() => {
+        navigate('/services');
+      }, 3000); // Navigate to services page after 3 seconds
     } catch (error) {
       console.error('Error updating service:', error);
       setError('Error updating service');

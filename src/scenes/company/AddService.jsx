@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, InputBase, Typography, useTheme, MenuItem, Select, FormControl, TextField } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { tokens } from '../../theme';
 import Header from '../../components/Header';
@@ -7,6 +8,7 @@ import Header from '../../components/Header';
 const AddService = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const navigate = useNavigate();
   const [service, setService] = useState({
     service_name: '',
     service_desc: '',
@@ -38,6 +40,9 @@ const AddService = () => {
         service_status_id: '',
         service_created_by_user_id: '',
       }); // Reset form
+      setTimeout(() => {
+        navigate('/services');
+      }, 3000); // Navigate to services page after 3 seconds
     } catch (error) {
       console.error('Error adding service:', error);
       setError('Error adding service');
@@ -74,8 +79,8 @@ const AddService = () => {
           p={4}
           bgcolor={colors.grey[900]}
           borderRadius="2px"
-          width="50%"
           boxShadow={3}
+          width= "50%"
         >
           <Typography variant="h4" color={colors.grey[100]} mb={2}>
             Add Service
