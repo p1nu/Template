@@ -31,7 +31,7 @@ import NewspaperOutlinedIcon from "@mui/icons-material/NewspaperOutlined";
 import RecyclingOutlinedIcon from "@mui/icons-material/RecyclingOutlined";
 import CategoryOutlinedIcon from "@mui/icons-material/CategoryOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
+import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -213,12 +213,12 @@ const Sidenav = () => {
             </SubMenu>
             <SubMenu
               title={"Jobs"}
-              icon={<PermContactCalendarOutlinedIcon />}
+              icon={<AssignmentIndOutlinedIcon />}
             >
               <Item
                 title="All Jobs"
                 to="/jobs"
-                icon={<PermContactCalendarOutlinedIcon />}
+                icon={<AssignmentIndOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}
               />

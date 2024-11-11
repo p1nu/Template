@@ -9,9 +9,13 @@ const AddService = () => {
   const colors = tokens(theme.palette.mode);
   const [service, setService] = useState({
     service_name: '',
-    service_code: '',
+    service_desc: '',
+    service_value: '',
+    service_vision: '',
+    service_mission: '',
+    service_company_id: '',
     service_status_id: '',
-    service_description: '',
+    service_created_by_user_id: '',
   });
   const [error, setError] = useState('');
 
@@ -22,13 +26,17 @@ const AddService = () => {
 
   const handleAddService = async () => {
     try {
-      await axios.post('http://localhost:3030/service', service);
+      await axios.post('http://localhost:3030/service/new', service);
       setError('Service added successfully');
       setService({
         service_name: '',
-        service_code: '',
+        service_desc: '',
+        service_value: '',
+        service_vision: '',
+        service_mission: '',
+        service_company_id: '',
         service_status_id: '',
-        service_description: '',
+        service_created_by_user_id: '',
       }); // Reset form
     } catch (error) {
       console.error('Error adding service:', error);
@@ -54,7 +62,7 @@ const AddService = () => {
         flexDirection="column"
         alignItems="center"
         justifyContent="center"
-        height="77vh"
+        height="100%"
         padding={2}
         bgcolor={colors.grey[800]}
       >
@@ -66,7 +74,7 @@ const AddService = () => {
           p={4}
           bgcolor={colors.grey[900]}
           borderRadius="2px"
-          width="50%" 
+          width="50%"
           boxShadow={3}
         >
           <Typography variant="h4" color={colors.grey[100]} mb={2}>
@@ -87,25 +95,10 @@ const AddService = () => {
               color: colors.grey[100],
             }}
           />
-          <InputBase
-            placeholder="Service Code"
-            name="service_code"
-            value={service.service_code}
-            onChange={handleChange}
-            sx={{
-              width: '100%',
-              margin: '10px 0',
-              padding: '10px',
-              border: `1px solid ${colors.grey[800]}`,
-              borderRadius: '2px',
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
-            }}
-          />
           <TextField
             placeholder="Service Description"
-            name="service_description"
-            value={service.service_description}
+            name="service_desc"
+            value={service.service_desc}
             onChange={handleChange}
             multiline
             rows={4}
@@ -129,6 +122,102 @@ const AddService = () => {
               border: `1px solid ${colors.grey[800]}`,
             }}
           />
+          <TextField
+            placeholder="Service Value"
+            name="service_value"
+            value={service.service_value}
+            onChange={handleChange}
+            multiline
+            rows={4}
+            variant="outlined"
+            InputProps={{
+              style: {
+                color: colors.grey[100],
+                backgroundColor: colors.grey[900],
+                borderRadius: '2px',
+                padding: '10px',
+              },
+            }}
+            InputLabelProps={{
+              style: {
+                color: colors.grey[100],
+              },
+            }}
+            sx={{
+              width: '100%',
+              margin: '10px 0',
+              border: `1px solid ${colors.grey[800]}`,
+            }}
+          />
+          <TextField
+            placeholder="Service Vision"
+            name="service_vision"
+            value={service.service_vision}
+            onChange={handleChange}
+            multiline
+            rows={4}
+            variant="outlined"
+            InputProps={{
+              style: {
+                color: colors.grey[100],
+                backgroundColor: colors.grey[900],
+                borderRadius: '2px',
+                padding: '10px',
+              },
+            }}
+            InputLabelProps={{
+              style: {
+                color: colors.grey[100],
+              },
+            }}
+            sx={{
+              width: '100%',
+              margin: '10px 0',
+              border: `1px solid ${colors.grey[800]}`,
+            }}
+          />
+          <TextField
+            placeholder="Service Mission"
+            name="service_mission"
+            value={service.service_mission}
+            onChange={handleChange}
+            multiline
+            rows={4}
+            variant="outlined"
+            InputProps={{
+              style: {
+                color: colors.grey[100],
+                backgroundColor: colors.grey[900],
+                borderRadius: '2px',
+                padding: '10px',
+              },
+            }}
+            InputLabelProps={{
+              style: {
+                color: colors.grey[100],
+              },
+            }}
+            sx={{
+              width: '100%',
+              margin: '10px 0',
+              border: `1px solid ${colors.grey[800]}`,
+            }}
+          />
+          <InputBase
+            placeholder="Company ID"
+            name="service_company_id"
+            value={service.service_company_id}
+            onChange={handleChange}
+            sx={{
+              width: '100%',
+              margin: '10px 0',
+              padding: '10px',
+              border: `1px solid ${colors.grey[800]}`,
+              borderRadius: '2px',
+              backgroundColor: colors.grey[900],
+              color: colors.grey[100],
+            }}
+          />
           <FormControl fullWidth sx={{ margin: '10px 0' }}>
             <Select
               name="service_status_id"
@@ -146,6 +235,21 @@ const AddService = () => {
               <MenuItem value="2">Inactive</MenuItem>
             </Select>
           </FormControl>
+          <InputBase
+            placeholder="Created By User ID"
+            name="service_created_by_user_id"
+            value={service.service_created_by_user_id}
+            onChange={handleChange}
+            sx={{
+              width: '100%',
+              margin: '10px 0',
+              padding: '10px',
+              border: `1px solid ${colors.grey[800]}`,
+              borderRadius: '2px',
+              backgroundColor: colors.grey[900],
+              color: colors.grey[100],
+            }}
+          />
           <Button
             variant="contained"
             fullWidth

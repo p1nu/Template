@@ -31,6 +31,7 @@ const Services = () => {
         const response = await axios.get("http://localhost:3030/service/all");
         setServices(response.data);
         setFilteredServices(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error('Error fetching data from database:', error);
         // Use mock data if there's an error
@@ -52,7 +53,7 @@ const Services = () => {
   }, [search, services]);
 
   const columns = [
-    { name: "ID", selector: (row) => row.service_id, sortable: true },
+    { name: "ID", selector: (row) => row.service_id, sortable: true, width: "60px" },
     { name: "Name", selector: (row) => row.service_name, sortable: true },
     { name: "Description", selector: (row) => row.service_desc, sortable: true },
     { name: "Value", selector: (row) => row.service_value, sortable: true },
