@@ -23,6 +23,8 @@ import AddNews from "./scenes/news/AddNews.jsx";
 import CSR from "./scenes/csr/CSR.jsx";
 import AddCSR from "./scenes/csr/AddCSR.jsx";
 import Jobs from "./scenes/jobs/Jobs.jsx";
+import AddJob from "./scenes/jobs/AddJob.jsx";
+import UpdateJob from "./scenes/jobs/UpdateJob.jsx";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -59,6 +61,8 @@ function App() {
               <Route path="/csr" element={<CSR />} />
               <Route path="/add-csr" element={<AddCSR />} />
               <Route path="/jobs" element={<Jobs />} />
+              <Route path="/add-job" element={<AddJob />} />
+              <Route path="/job/:id" element={<UpdateJob />} />
             </Routes>
           </main>
         </div>
