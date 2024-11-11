@@ -80,6 +80,12 @@ const UpdateCompany = () => {
         height="100%"
         padding={2}
         bgcolor={colors.grey[800]}
+        sx={{
+          "& .ql-container.ql-snow": {
+            width: "100% !important",
+            height: "84% !important",
+          },
+        }}
       >
         <Box
           display="flex"
@@ -89,126 +95,100 @@ const UpdateCompany = () => {
           p={4}
           bgcolor={colors.grey[900]}
           borderRadius="2px"
-          width="50%"
+          width="100%"
           boxShadow={3}
         >
-          <Typography variant="h4" color={colors.grey[100]} mb={2}>
-            Update Company
-          </Typography>
-          <InputBase
-            placeholder="Company Name"
-            name="company_name"
-            value={company.company_name}
-            onChange={handleChange}
-            sx={{
-              width: '100%',
-              margin: '10px 0',
-              padding: '10px',
-              border: `1px solid ${colors.grey[800]}`,
-              borderRadius: '2px',
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
+          <Box display="flex" justifyContent={"space-between"} width="100%" gap={"20px"}>
+            <InputBase
+              placeholder="Company Name"
+              name="company_name"
+              value={company.company_name}
+              onChange={handleChange}
+              sx={{
+                width: "100%",
+                margin: "10px 0",
+                padding: "10px",
+                border: `1px solid #000`,
+                borderRadius: "2px",
+                backgroundColor: colors.grey[900],
+                color: colors.grey[100],
+              }}
+            />
+            <InputBase
+              placeholder="Company Acronym"
+              name="company_acronym"
+              value={company.company_acronym}
+              onChange={handleChange}
+              sx={{
+                width: "100%",
+                margin: "10px 0",
+                padding: "10px",
+                border: `1px solid #000`,
+                borderRadius: "2px",
+                backgroundColor: colors.grey[900],
+                color: colors.grey[100],
+              }}
+            />
+          </Box>
+          <ReactQuill
+            value={company.company_value}
+            onChange={(value) => handleQuillChange("company_value", value)}
+            theme="snow"
+            placeholder="Enter company value..."
+            style={{
+              height: "250px",
+              width: "100%",
+              margin: "10px 0",
+              border: `1px solid #000`,
             }}
           />
-          <InputBase
-            placeholder="Company Acronym"
-            name="company_acronym"
-            value={company.company_acronym}
-            onChange={handleChange}
-            sx={{
-              width: '100%',
-              margin: '10px 0',
-              padding: '10px',
-              border: `1px solid ${colors.grey[800]}`,
-              borderRadius: '2px',
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
+          <ReactQuill
+            value={company.company_vision}
+            onChange={(value) => handleQuillChange("company_vision", value)}
+            theme="snow"
+            placeholder="Enter company vision..."
+            style={{
+              height: "250px",
+              width: "100%",
+              margin: "10px 0",
+              border: `1px solid #000`,
             }}
           />
-          <Box
-            sx={{
-              width: '100%',
-              margin: '10px 0',
-              padding: '10px',
-              border: `1px solid ${colors.grey[800]}`,
-              borderRadius: '2px',
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
+          <ReactQuill
+            value={company.company_mission}
+            onChange={(value) => handleQuillChange("company_mission", value)}
+            theme="snow"
+            placeholder="Enter company mission..."
+            style={{
+              height: "250px",
+              width: "100%",
+              margin: "10px 0",
+              border: `1px solid #000`,
             }}
-          >
-            <ReactQuill
-              value={company.company_value}
-              onChange={(value) => handleQuillChange('company_value', value)}
-              theme="snow"
-              placeholder="Enter company value..."
-            />
-          </Box>
-          <Box
-            sx={{
-              width: '100%',
-              margin: '10px 0',
-              padding: '10px',
-              border: `1px solid ${colors.grey[800]}`,
-              borderRadius: '2px',
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
+          />
+          <ReactQuill
+            value={company.company_desc}
+            onChange={(value) => handleQuillChange("company_desc", value)}
+            theme="snow"
+            placeholder="Enter company description..."
+            style={{
+              height: "250px",
+              width: "100%",
+              margin: "10px 0",
+              border: `1px solid #000`,
             }}
-          >
-            <ReactQuill
-              value={company.company_vision}
-              onChange={(value) => handleQuillChange('company_vision', value)}
-              theme="snow"
-              placeholder="Enter company vision..."
-            />
-          </Box>
-          <Box
-            sx={{
-              width: '100%',
-              margin: '10px 0',
-              padding: '10px',
-              border: `1px solid ${colors.grey[800]}`,
-              borderRadius: '2px',
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
-            }}
-          >
-            <ReactQuill
-              value={company.company_mission}
-              onChange={(value) => handleQuillChange('company_mission', value)}
-              theme="snow"
-              placeholder="Enter company mission..."
-            />
-          </Box>
-          <Box
-            sx={{
-              width: '100%',
-              margin: '10px 0',
-              padding: '10px',
-              border: `1px solid ${colors.grey[800]}`,
-              borderRadius: '2px',
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
-            }}
-          >
-            <ReactQuill
-              value={company.company_desc}
-              onChange={(value) => handleQuillChange('company_desc', value)}
-              theme="snow"
-              placeholder="Enter company description..."
-            />
-          </Box>
+          />
           <InputBase
             placeholder="Created By User ID"
             name="company_created_by_user_id"
             value={company.company_created_by_user_id}
-            disabled
             onChange={handleChange}
             sx={{
-              width: '100%',
-              margin: '10px 0',
-              padding: '10px',
-              border: `1px solid ${colors.grey[800]}`,
-              borderRadius: '2px',
+              width: "100%",
+              margin: "10px 0",
+              padding: "10px",
+              border: `1px solid #000`,
+              borderRadius: "2px",
               backgroundColor: colors.grey[900],
               color: colors.grey[100],
             }}
@@ -219,11 +199,11 @@ const UpdateCompany = () => {
             value={company.company_updated_by_user_id}
             onChange={handleChange}
             sx={{
-              width: '100%',
-              margin: '10px 0',
-              padding: '10px',
-              border: `1px solid ${colors.grey[800]}`,
-              borderRadius: '2px',
+              width: "100%",
+              margin: "10px 0",
+              padding: "10px",
+              border: `1px solid #000`,
+              borderRadius: "2px",
               backgroundColor: colors.grey[900],
               color: colors.grey[100],
             }}
@@ -237,7 +217,11 @@ const UpdateCompany = () => {
             Update Company
           </Button>
           {error && (
-            <Typography variant="body1" color={error.includes('successfully') ? 'green' : 'red'} mt={2}>
+            <Typography
+              variant="body1"
+              color={error.includes("successfully") ? "green" : "red"}
+              mt={2}
+            >
               {error}
             </Typography>
           )}
