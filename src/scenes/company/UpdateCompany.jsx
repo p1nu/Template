@@ -2,19 +2,20 @@ import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
-  FormControl,
-  InputBase,
-  MenuItem,
-  Select,
   Typography,
   useTheme,
+  InputBase,
+  InputLabel,
+  FormControl,
+  Select,
+  MenuItem,
 } from "@mui/material";
-import { useParams, useNavigate } from "react-router-dom";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 import axios from "axios";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
-import ReactQuill from "react-quill-new";
-import "react-quill-new/dist/quill.snow.css";
+import { useNavigate, useParams } from "react-router-dom";
 
 const UpdateCompany = () => {
   const theme = useTheme();
@@ -93,18 +94,14 @@ const UpdateCompany = () => {
     if (error) {
       const timer = setTimeout(() => {
         setError("");
-      }, 3000); // Clear error after 3 seconds
-
-      return () => clearTimeout(timer); // Cleanup the timer on component unmount
+      }, 3000);
+      return () => clearTimeout(timer);
     }
   }, [error]);
 
   return (
     <Box m={2}>
-      <Header
-        title="Update Company"
-        subTitle={`Update details for ${company.company_name}`}
-      />
+      <Header title="Update Company" subTitle={`Update details for ${company.company_name}`} />
       <Box
         display="flex"
         flexDirection="column"
@@ -117,6 +114,10 @@ const UpdateCompany = () => {
           "& .ql-container.ql-snow": {
             width: "100% !important",
             height: "84% !important",
+            border: "1px solid #000",
+          },
+          "& .ql-toolbar": {
+            border: "1px solid #000",
           },
         }}
       >
@@ -131,35 +132,220 @@ const UpdateCompany = () => {
           width="100%"
           boxShadow={3}
         >
+          {/* Company Name and Acronym */}
           <Box
             display="flex"
-            justifyContent={"space-between"}
+            justifyContent="space-between"
+            gap="20px"
             width="100%"
-            gap={"20px"}
+            alignItems="center"
           >
-            <InputBase
-              placeholder="Company Name"
-              name="company_name"
-              value={company.company_name}
-              onChange={handleChange}
-              sx={{
-                width: "100%",
-                margin: "10px 0",
-                padding: "10px",
-                border: `1px solid #000`,
-                borderRadius: "2px",
+            <Box display="flex" flexDirection="column" width="100%">
+              <InputLabel
+                htmlFor="company_name"
+                sx={{ color: colors.grey[100], mb: "5px" }}
+              >
+                Company Name
+              </InputLabel>
+              <InputBase
+                id="company_name"
+                placeholder="Company Name"
+                name="company_name"
+                value={company.company_name}
+                onChange={handleChange}
+                sx={{
+                  padding: "10px",
+                  border: `1px solid #000`,
+                  borderRadius: "2px",
+                  backgroundColor: colors.grey[900],
+                  color: colors.grey[100],
+                }}
+              />
+            </Box>
+            <Box display="flex" flexDirection="column" width="100%">
+              <InputLabel
+                htmlFor="company_acronym"
+                sx={{ color: colors.grey[100], mb: "5px" }}
+              >
+                Company Acronym
+              </InputLabel>
+              <InputBase
+                id="company_acronym"
+                placeholder="Company Acronym"
+                name="company_acronym"
+                value={company.company_acronym}
+                onChange={handleChange}
+                sx={{
+                  padding: "10px",
+                  border: `1px solid #000`,
+                  borderRadius: "2px",
+                  backgroundColor: colors.grey[900],
+                  color: colors.grey[100],
+                }}
+              />
+            </Box>
+          </Box>
+
+          {/* Company Value */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="company_value"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Company Value
+            </InputLabel>
+            <ReactQuill
+              theme="snow"
+              placeholder="Enter company value..."
+              value={company.company_value}
+              onChange={(value) => handleQuillChange("company_value", value)}
+              style={{
+                height: "150px",
                 backgroundColor: colors.grey[900],
                 color: colors.grey[100],
               }}
             />
+          </Box>
+
+          {/* Company Vision */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="company_vision"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Company Vision
+            </InputLabel>
+            <ReactQuill
+              theme="snow"
+              placeholder="Enter company vision..."
+              value={company.company_vision}
+              onChange={(value) => handleQuillChange("company_vision", value)}
+              style={{
+                height: "150px",
+                backgroundColor: colors.grey[900],
+                color: colors.grey[100],
+              }}
+            />
+          </Box>
+
+          {/* Company Mission */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="company_mission"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Company Mission
+            </InputLabel>
+            <ReactQuill
+              theme="snow"
+              placeholder="Enter company mission..."
+              value={company.company_mission}
+              onChange={(value) => handleQuillChange("company_mission", value)}
+              style={{
+                height: "150px",
+                backgroundColor: colors.grey[900],
+                color: colors.grey[100],
+              }}
+            />
+          </Box>
+
+          {/* Company Description */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="company_desc"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Company Description
+            </InputLabel>
+            <ReactQuill
+              theme="snow"
+              placeholder="Enter company description..."
+              value={company.company_desc}
+              onChange={(value) => handleQuillChange("company_desc", value)}
+              style={{
+                height: "200px",
+                backgroundColor: colors.grey[900],
+                color: colors.grey[100],
+              }}
+            />
+          </Box>
+
+          {/* Company Status */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="company_status_id"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Company Status
+            </InputLabel>
+            <FormControl fullWidth>
+              <Select
+                id="company_status_id"
+                name="company_status_id"
+                value={company.company_status_id}
+                onChange={handleChange}
+                displayEmpty
+                sx={{
+                  border: `1px solid #000`,
+                  borderRadius: "2px",
+                  backgroundColor: colors.grey[900],
+                  color: colors.grey[100],
+                }}
+              >
+                <MenuItem value="" disabled>
+                  Select Status
+                </MenuItem>
+                <MenuItem value="1">Active</MenuItem>
+                <MenuItem value="2">Inactive</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
+          {/* Created By User ID */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="company_created_by_user_id"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Created By User ID
+            </InputLabel>
             <InputBase
-              placeholder="Company Acronym"
-              name="company_acronym"
-              value={company.company_acronym}
+              id="company_created_by_user_id"
+              placeholder="Created By User ID"
+              name="company_created_by_user_id"
+              value={company.company_created_by_user_id}
               onChange={handleChange}
               sx={{
-                width: "100%",
-                margin: "10px 0",
                 padding: "10px",
                 border: `1px solid #000`,
                 borderRadius: "2px",
@@ -168,102 +354,37 @@ const UpdateCompany = () => {
               }}
             />
           </Box>
-          <FormControl fullWidth >
-            <Select
-              name="company_status_id"
-              value={company.company_status_id}
+
+          {/* Updated By User ID */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="company_updated_by_user_id"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Updated By User ID
+            </InputLabel>
+            <InputBase
+              id="company_updated_by_user_id"
+              placeholder="Updated By User ID"
+              name="company_updated_by_user_id"
+              value={company.company_updated_by_user_id}
               onChange={handleChange}
               sx={{
+                padding: "10px",
                 border: `1px solid #000`,
                 borderRadius: "2px",
                 backgroundColor: colors.grey[900],
                 color: colors.grey[100],
               }}
-            >
-              <MenuItem value={1}>Active</MenuItem>
-              <MenuItem value={2}>Inactive</MenuItem>
-            </Select>
-          </FormControl>
+            />
+          </Box>
 
-          <ReactQuill
-            value={company.company_value}
-            onChange={(value) => handleQuillChange("company_value", value)}
-            theme="snow"
-            placeholder="Enter company value..."
-            style={{
-              height: "250px",
-              width: "100%",
-              margin: "10px 0",
-              border: `1px solid #000`,
-            }}
-          />
-          <ReactQuill
-            value={company.company_vision}
-            onChange={(value) => handleQuillChange("company_vision", value)}
-            theme="snow"
-            placeholder="Enter company vision..."
-            style={{
-              height: "250px",
-              width: "100%",
-              margin: "10px 0",
-              border: `1px solid #000`,
-            }}
-          />
-          <ReactQuill
-            value={company.company_mission}
-            onChange={(value) => handleQuillChange("company_mission", value)}
-            theme="snow"
-            placeholder="Enter company mission..."
-            style={{
-              height: "250px",
-              width: "100%",
-              margin: "10px 0",
-              border: `1px solid #000`,
-            }}
-          />
-          <ReactQuill
-            value={company.company_desc}
-            onChange={(value) => handleQuillChange("company_desc", value)}
-            theme="snow"
-            placeholder="Enter company description..."
-            style={{
-              height: "250px",
-              width: "100%",
-              margin: "10px 0",
-              border: `1px solid #000`,
-            }}
-          />
-          <InputBase
-            placeholder="Created By User ID"
-            name="company_created_by_user_id"
-            value={user.user_name}
-            disabled
-            onChange={handleChange}
-            sx={{
-              width: "100%",
-              margin: "10px 0",
-              padding: "10px",
-              border: `1px solid #000`,
-              borderRadius: "2px",
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
-            }}
-          />
-          <InputBase
-            placeholder="Updated By User ID"
-            name="company_updated_by_user_id"
-            value={company.company_updated_by_user_id}
-            onChange={handleChange}
-            sx={{
-              width: "100%",
-              margin: "10px 0",
-              padding: "10px",
-              border: `1px solid #000`,
-              borderRadius: "2px",
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
-            }}
-          />
+          {/* Update Button */}
           <Button
             variant="contained"
             fullWidth
@@ -272,6 +393,8 @@ const UpdateCompany = () => {
           >
             Update Company
           </Button>
+
+          {/* Error/Success Message */}
           {error && (
             <Typography
               variant="body1"
