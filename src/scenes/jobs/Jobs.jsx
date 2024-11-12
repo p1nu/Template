@@ -32,6 +32,7 @@ const Jobs = () => {
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [search, setSearch] = useState("");
 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -70,7 +71,34 @@ const Jobs = () => {
       sortable: true,
       width: "20%",
     },
-    { name: "Company", selector: (row) => row.job_company_id, sortable: true },
+    { name: "Company", selector: (row) => row.job_company_id, sortable: true,
+      cell: (row) => {
+        const [company, setCompany] = useState({
+          company_name: "",
+        });
+        useEffect(() => {
+          // Fetch company name
+          const fetchCompany = async () => {
+            try {
+              const response = await axios.get(
+                `http://localhost:3030/company/${row.job_company_id}`
+              );
+              const company = response.data[0];
+              setCompany(company);
+            } catch (error) {
+              console.error("Error fetching company:", error);
+            }
+          }
+          if (row.job_company_id) {
+            fetchCompany();
+          }
+        }, [row.job_company_id]);
+
+        return (
+          <Typography color={colors.grey[100]}>{company.company_name}</Typography>
+        );
+      }
+     },
     { name: "Salary", selector: (row) => `$${row.job_salary}`, sortable: true },
     { name: "Schedule", selector: (row) => row.job_schedule, sortable: true },
     {
