@@ -16,13 +16,13 @@ import styled from "styled-components";
 import Header from "../../components/Header";
 
 // Styled-component for alignment and spacing
-const StyledBox = styled.div`
-  display: flex;
-  justify-content: ${({ $align }) => $align || "flex-start"};
-  align-items: center;
-  text-align: center;
-  width: 100%;
-`;
+// const StyledBox = styled.div`
+//   display: flex;
+//   justify-content: ${({ $align }) => $align || "flex-start"};
+//   align-items: center;
+//   text-align: center;
+//   width: 100%;
+// `;
 
 const Jobs = () => {
   const theme = useTheme();
@@ -70,7 +70,7 @@ const Jobs = () => {
       sortable: true,
       width: "20%",
     },
-    { name: "Company", selector: (row) => row.company_name, sortable: true },
+    { name: "Company", selector: (row) => row.job_company_id, sortable: true },
     { name: "Salary", selector: (row) => `$${row.job_salary}`, sortable: true },
     { name: "Schedule", selector: (row) => row.job_schedule, sortable: true },
     {
@@ -88,7 +88,7 @@ const Jobs = () => {
         }
 
         return (
-          <StyledBox $align="space-between">
+          <Box display="flex" justifyContent="space-between" alignItems="center" textAlign="center" width="100%">
             <Typography color={colors.grey[100]}>{status}</Typography>
             <Link to={`/job/${row.job_id}`} style={{ marginLeft: "auto" }}>
               <Button variant="outlined" color="primary">
@@ -108,7 +108,7 @@ const Jobs = () => {
             >
               Delete
             </Button>
-          </StyledBox>
+          </Box>
         );
       },
     },
