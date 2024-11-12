@@ -1,11 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Button, InputBase, Typography, useTheme } from '@mui/material';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { tokens } from '../../theme';
-import Header from '../../components/Header';
-import ReactQuill from 'react-quill-new';
-import 'react-quill-new/dist/quill.snow.css';
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Button,
+  FormControl,
+  InputBase,
+  MenuItem,
+  Select,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { tokens } from "../../theme";
+import Header from "../../components/Header";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 
 const UpdateCompany = () => {
   const theme = useTheme();
@@ -13,16 +22,20 @@ const UpdateCompany = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [company, setCompany] = useState({
-    company_name: '',
-    company_acronym: '',
-    company_value: '',
-    company_vision: '',
-    company_mission: '',
-    company_desc: '',
-    company_created_by_user_id: '',
-    company_updated_by_user_id: '',
+    company_name: "",
+    company_acronym: "",
+    company_value: "",
+    company_vision: "",
+    company_mission: "",
+    company_desc: "",
+    company_status_id: "",
+    company_created_by_user_id: "",
+    company_updated_by_user_id: "",
   });
-  const [error, setError] = useState('');
+  const [user, setUser] = useState({
+    user_name: "",
+  });
+  const [error, setError] = useState("");
 
   useEffect(() => {
     // Fetch company data by ID
@@ -31,11 +44,28 @@ const UpdateCompany = () => {
         const response = await axios.get(`http://localhost:3030/company/${id}`);
         setCompany(response.data[0]);
       } catch (error) {
-        console.error('Error fetching company data:', error);
+        console.error("Error fetching company data:", error);
       }
     };
     fetchCompany();
   }, [id]);
+
+  useEffect(() => {
+    // Fetch user data
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3030/user/${company.company_created_by_user_id}`
+        );
+        setUser(response.data[0]);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+    if (company.company_created_by_user_id) {
+      fetchUser();
+    }
+  }, [company.company_created_by_user_id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,20 +79,20 @@ const UpdateCompany = () => {
   const handleUpdateCompany = async () => {
     try {
       await axios.put(`http://localhost:3030/company/update/${id}`, company);
-      setError('Company updated successfully');
+      setError("Company updated successfully");
       setTimeout(() => {
-        navigate('/company');
+        navigate("/company");
       }, 3000); // Navigate to companies page after 3 seconds
     } catch (error) {
-      console.error('Error updating company:', error);
-      setError('Error updating company');
+      console.error("Error updating company:", error);
+      setError("Error updating company");
     }
   };
 
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => {
-        setError('');
+        setError("");
       }, 3000); // Clear error after 3 seconds
 
       return () => clearTimeout(timer); // Cleanup the timer on component unmount
@@ -71,7 +101,10 @@ const UpdateCompany = () => {
 
   return (
     <Box m={2}>
-      <Header title="Update Company" subTitle={`Update details for ${company.company_name}`} />
+      <Header
+        title="Update Company"
+        subTitle={`Update details for ${company.company_name}`}
+      />
       <Box
         display="flex"
         flexDirection="column"
@@ -98,7 +131,12 @@ const UpdateCompany = () => {
           width="100%"
           boxShadow={3}
         >
-          <Box display="flex" justifyContent={"space-between"} width="100%" gap={"20px"}>
+          <Box
+            display="flex"
+            justifyContent={"space-between"}
+            width="100%"
+            gap={"20px"}
+          >
             <InputBase
               placeholder="Company Name"
               name="company_name"
@@ -130,6 +168,23 @@ const UpdateCompany = () => {
               }}
             />
           </Box>
+          <FormControl fullWidth >
+            <Select
+              name="company_status_id"
+              value={company.company_status_id}
+              onChange={handleChange}
+              sx={{
+                border: `1px solid #000`,
+                borderRadius: "2px",
+                backgroundColor: colors.grey[900],
+                color: colors.grey[100],
+              }}
+            >
+              <MenuItem value={1}>Active</MenuItem>
+              <MenuItem value={2}>Inactive</MenuItem>
+            </Select>
+          </FormControl>
+
           <ReactQuill
             value={company.company_value}
             onChange={(value) => handleQuillChange("company_value", value)}
@@ -181,7 +236,8 @@ const UpdateCompany = () => {
           <InputBase
             placeholder="Created By User ID"
             name="company_created_by_user_id"
-            value={company.company_created_by_user_id}
+            value={user.user_name}
+            disabled
             onChange={handleChange}
             sx={{
               width: "100%",
