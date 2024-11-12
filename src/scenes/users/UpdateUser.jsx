@@ -8,33 +8,33 @@ import {
   MenuItem,
   Select,
   FormControl,
+  InputLabel,
 } from "@mui/material";
-import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
+import { useNavigate, useParams } from "react-router-dom";
 
 const UpdateUser = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const { id } = useParams();
-  const navigate = useNavigate();
   const [user, setUser] = useState({
     user_name: "",
     user_password: "",
     user_role_id: "",
   });
   const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  const { id } = useParams(); // Assuming you're using React Router v6
 
   useEffect(() => {
-    // Fetch user data by ID
     const fetchUser = async () => {
       try {
         const response = await axios.get(`http://localhost:3030/user/${id}`);
-        setUser(response.data[0]);
+        setUser(response.data);
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error fetching user details:", error);
+        setError("Error fetching user details");
       }
     };
     fetchUser();
@@ -70,18 +70,15 @@ const UpdateUser = () => {
 
   return (
     <Box m={2}>
-      <Header
-        title="Update User"
-        subTitle={`Update details for ${user.user_name}`}
-      />
+      <Header title="Update User" subTitle={`Update details for ${user.user_name}`} />
       <Box
         display="flex"
         flexDirection="column"
         alignItems="center"
         justifyContent="center"
         height="77vh"
-        padding={2}
         bgcolor={colors.grey[800]}
+        padding={2}
       >
         <Box
           display="flex"
@@ -91,61 +88,90 @@ const UpdateUser = () => {
           p={4}
           bgcolor={colors.grey[900]}
           borderRadius="2px"
-          width="50%"
           boxShadow={3}
+          width="50%"
         >
-          <InputBase
-            placeholder="Username"
-            name="user_name"
-            value={user.user_name}
-            onChange={handleChange}
-            sx={{
-              width: "100%",
-              margin: "10px 0",
-              padding: "10px",
-              border: `1px solid #000`,
-              borderRadius: "2px",
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
-            }}
-          />
-          {showPassword && (
+          {/* User Name */}
+          <Box display="flex" flexDirection="column" width="100%" mb={2}>
+            <InputLabel
+              htmlFor="user_name"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              User Name
+            </InputLabel>
             <InputBase
-              placeholder="Password"
-              name="user_password"
-              type="password"
-              value={user.user_password}
+              id="user_name"
+              placeholder="Enter User Name"
+              name="user_name"
+              value={user.user_name}
               onChange={handleChange}
               sx={{
-                width: "100%",
-                margin: "10px 0",
                 padding: "10px",
+                border: `1px solid #000`,
                 borderRadius: "2px",
-                border: `1px solid ${colors.grey[800]}`,
                 backgroundColor: colors.grey[900],
                 color: colors.grey[100],
               }}
             />
-          )}
-          <FormControl fullWidth sx={{ margin: "10px 0", borderRadius: "2px", }}>
-            <Select
-              name="user_role_id"
-              value={user.user_role_id}
+          </Box>
+
+          {/* User Password */}
+          <Box display="flex" flexDirection="column" width="100%" mb={2}>
+            <InputLabel
+              htmlFor="user_password"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              User Password
+            </InputLabel>
+            <InputBase
+              id="user_password"
+              type="password"
+              placeholder="Enter User Password"
+              name="user_password"
+              value={user.user_password}
               onChange={handleChange}
-              displayEmpty
               sx={{
+                padding: "10px",
                 border: `1px solid #000`,
                 borderRadius: "2px",
                 backgroundColor: colors.grey[900],
-                color: "#000",
-                marginTop: "10px",
+                color: colors.grey[100],
               }}
-            > 
-              <MenuItem value="" disabled>User Role</MenuItem>
-              <MenuItem value="1">Admin</MenuItem>
-              <MenuItem value="2">User</MenuItem>
-            </Select>
-          </FormControl>
+            />
+          </Box>
+
+          {/* User Role */}
+          <Box display="flex" flexDirection="column" width="100%" mb={2}>
+            <InputLabel
+              htmlFor="user_role_id"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              User Role
+            </InputLabel>
+            <FormControl fullWidth>
+              <Select
+                id="user_role_id"
+                name="user_role_id"
+                value={user.user_role_id}
+                onChange={handleChange}
+                displayEmpty
+                sx={{
+                  border: `1px solid #000`,
+                  borderRadius: "2px",
+                  backgroundColor: colors.grey[900],
+                  color: colors.grey[100],
+                }}
+              >
+                <MenuItem value="" disabled>
+                  Select User Role
+                </MenuItem>
+                <MenuItem value="1">Admin</MenuItem>
+                <MenuItem value="2">User</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
+          {/* Update Button */}
           <Button
             variant="contained"
             fullWidth
@@ -154,6 +180,8 @@ const UpdateUser = () => {
           >
             Update User
           </Button>
+
+          {/* Error/Success Message */}
           {error && (
             <Typography
               variant="body1"
