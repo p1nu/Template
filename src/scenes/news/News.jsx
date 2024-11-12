@@ -1,20 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, useTheme, Button, InputBase } from "@mui/material";
+import { Box, Typography, useTheme, Button, InputBase, InputLabel } from "@mui/material";
 import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
+import axios from 'axios';
 import styled from "styled-components";
 import Header from "../../components/Header";
-import mockNews from '../data/mockNews'; // Import the mock data for news
 import { tokens } from '../../theme';
-
-// Example styled-component using transient props
-const StyledBox = styled.div`
-  display: flex;
-  justify-content: ${({ $align }) => $align || "flex-start"};
-  align-items: center;
-  text-align: center;
-  width: 100%;
-`;
+import { format } from 'date-fns'; // Imported format from date-fns
 
 const News = () => {
   const theme = useTheme();
@@ -23,51 +15,128 @@ const News = () => {
   const [news, setNews] = useState([]);
   const [filteredNews, setFilteredNews] = useState([]);
   const [search, setSearch] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    // Use mock data for news
-    setNews(mockNews);
-    setFilteredNews(mockNews);
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:3030/news/all");
+        setNews(response.data);
+        setFilteredNews(response.data);
+      } catch (error) {
+        console.error("Error fetching news:", error);
+      }
+    };
+    fetchData();
   }, []);
 
   useEffect(() => {
-    const result = news.filter((article) => {
-      return (
-        article.news_title &&
-        article.news_title.toLowerCase().includes(search.toLowerCase())
-      );
-    });
-    setFilteredNews(result);
+    const results = news.filter((article) =>
+      (article.news_title || "").toLowerCase().includes(search.toLowerCase())
+    );
+    setFilteredNews(results);
   }, [search, news]);
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.put(`http://localhost:3030/news/delete/${id}`);
+      const response = await axios.get("http://localhost:3030/news/all");
+      setNews(response.data);
+      setFilteredNews(response.data);
+    } catch (error) {
+      console.error("Error deleting news:", error);
+    }
+  };
 
   const columns = [
     { name: "ID", selector: (row) => row.news_id, sortable: true },
     { name: "Title", selector: (row) => row.news_title, sortable: true },
-    { name: "Date", selector: (row) => row.news_date, sortable: true },
+    { 
+      name: "Date", 
+      selector: (row) => format(new Date(row.news_date), 'MM/dd/yyyy'), 
+      sortable: true 
+    },
     {
       name: "Actions",
       cell: (row) => (
-        <StyledBox $align="space-between">
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          textAlign="center"
+          width="100%"
+        >
           <Link to={`/news/${row.news_id}`} style={{ marginLeft: "auto" }}>
             <Button variant="outlined" color="primary">
               View
             </Button>
           </Link>
-          <Button variant="outlined" color="error" sx={{ m: 1 }}>
+          <Button
+            variant="outlined"
+            color="error"
+            sx={{ m: 1 }}
+            onClick={() => handleDelete(row.news_id)}
+          >
             Delete
           </Button>
-        </StyledBox>
+        </Box>
       ),
+      sortable: false,
+      width: "50%",
     },
   ];
 
   const customStyles = {
+    header: {
+      style: {
+        backgroundColor: colors.grey[900],
+        color: colors.grey[100],
+      },
+    },
     headCells: {
       style: {
-        borderTop: `1px solid ${colors.grey[800]}`,
+        color: colors.grey[100],
+        fontWeight: "bold",
+        borderTop: `1px solid #000`, // Consistent top border
+        borderBottom: `1px solid #000`, // Consistent bottom border
+      },
+    },
+    cells: {
+      style: {
+        borderBottom: "1px solid #000", // Consistent cell border
       },
     },
   };
+
+  // Subheader Component - Search Bar and Add News Button
+  const SubHeaderComponent = (
+    <Box display="flex" alignItems="center">
+      <InputBase
+        placeholder="Search Title"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        sx={{
+          ml: 2,
+          border: "1px solid",
+          borderColor: colors.grey[700],
+          borderRadius: "4px",
+          width: "200px",
+          height: "35px",
+          padding: "10px",
+          color: colors.grey[100],
+          bgcolor: colors.grey[900],
+        }}
+      />
+      <Link
+        to="/add-news"
+        style={{ textDecoration: "none", marginLeft: "10px" }}
+      >
+        <Button variant="contained" sx={{ bgcolor: colors.blueAccent[200] }}>
+          Add News
+        </Button>
+      </Link>
+    </Box>
+  );
 
   return (
     <Box m="20px">
@@ -75,7 +144,8 @@ const News = () => {
       <Box
         m="10px 0 0 0"
         height="auto"
-        border={`1px solid ${colors.grey[700]}`}
+        bgcolor={colors.grey[800]}
+        padding="10px"
       >
         <DataTable
           columns={columns}
@@ -83,33 +153,8 @@ const News = () => {
           pagination
           highlightOnHover
           responsive
-          striped
           subHeader
-          subHeaderComponent={
-            <Box display="flex" alignItems="center">
-              <InputBase
-                placeholder="Search Title"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                sx={{
-                  ml: 2,
-                  border: "1px solid",
-                  borderColor: colors.grey[700],
-                  borderRadius: "4px",
-                  width: "150px",
-                  height: "35px",
-                  padding: "10px",
-                  color: colors.grey[100],
-                  bgcolor: colors.grey[900],
-                }}
-              />
-              <Link to="/add-news" style={{ textDecoration: 'none', marginLeft: '10px' }}>
-                <Button variant="contained" sx={{ bgcolor: colors.blueAccent[200] }}>
-                  Add News
-                </Button>
-              </Link>
-            </Box>
-          }
+          subHeaderComponent={SubHeaderComponent}
           customStyles={customStyles}
         />
       </Box>
