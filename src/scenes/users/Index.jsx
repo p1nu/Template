@@ -1,25 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, useTheme, Button, TextField, InputBase } from "@mui/material";
-import DataTable from "react-data-table-component";
+import {
+  Box,
+  Typography,
+  useTheme,
+  Button,
+  InputBase,
+} from '@mui/material';
+import DataTable from 'react-data-table-component';
 import axios from 'axios';
 import { tokens } from '../../theme';
-import mockUsers from '../data/mockData'; // Import the mock data
-import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
-import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
-import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
-import Header from "../../components/Header";
-import { Link } from "react-router-dom";
-import styled from "styled-components";
-import SearchIcon from "@mui/icons-material/Search";
-
-// Example styled-component using transient props
-const StyledBox = styled.div`
-  display: flex;
-  justify-content: ${({ $align }) => $align || "flex-start"};
-  align-items: center;
-  text-align: center;
-  width: 100%;
-`;
+import { Link } from 'react-router-dom';
+import Header from '../../components/Header';
+import mockUsers from '../data/mockData'; // Import the mock data for users
 
 const Users = () => {
   const theme = useTheme();
@@ -27,12 +19,12 @@ const Users = () => {
 
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3030/user/all");
+        const response = await axios.get('http://localhost:3030/user/all');
         setUsers(response.data);
         setFilteredUsers(response.data);
       } catch (error) {
@@ -55,56 +47,103 @@ const Users = () => {
     setFilteredUsers(result);
   }, [search, users]);
 
+  const handleDelete = async (id) => {
+    try {
+      await axios.put(`http://localhost:3030/user/delete/${id}`);
+      const response = await axios.get('http://localhost:3030/user/all');
+      setUsers(response.data);
+      setFilteredUsers(response.data);
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
+  };
+
   const columns = [
-    { name: "ID", selector: (row) => row.user_id, sortable: true, width: "60px" },
-    { name: "Name", selector: (row) => row.user_name, sortable: true },
+    { name: 'ID', selector: (row) => row.user_id, sortable: true, width: '60px' },
+    { name: 'Name', selector: (row) => row.user_name, sortable: true },
     {
-      name: "Access Level",
+      name: 'Access Level',
       selector: (row) => row.user_role_id,
       sortable: true,
-      width: "60%",
+      width: '50%',
       cell: (row) => {
-        let accessLevel;
+        let role;
 
         if (row.user_role_id === 1) {
-          accessLevel = "Admin";
+          role = 'Admin';
         } else if (row.user_role_id === 2) {
-          accessLevel = "User";
-        } else {
-          accessLevel = "Guest";
+          role = 'User';
         }
 
         return (
-          <StyledBox $align="space-between">
-            <Typography color={colors.grey[100]}>{accessLevel}</Typography>
-            <Link to={`/user/${row.user_id}`} style={{ marginLeft: "auto" }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" textAlign="center" width="100%">
+            <Typography color={colors.grey[100]}>{role}</Typography>
+            <Link to={`/user/${row.user_id}`} style={{ marginLeft: 'auto' }}>
               <Button variant="outlined" color="primary">
                 Edit
               </Button>
             </Link>
-            <Button variant="outlined" color="error" sx={{m: 1}}>
+            <Button
+              variant="outlined"
+              color="error"
+              sx={{ m: 1 }}
+              onClick={() => handleDelete(row.user_id)}
+            >
               Delete
             </Button>
-          </StyledBox>
+          </Box>
         );
       },
     },
   ];
 
   const customStyles = {
-    headCells: {
+    header: {
       style: {
-        // backgroundColor: colors.grey[700], // Set your desired background color here
-        // color: colors.grey[100], // Set your desired text color here
-        borderTop: `1px solid ${colors.grey[800]}`,
+        backgroundColor: colors.grey[900],
+        color: colors.grey[100],
       },
     },
-    // subHeader: {
-    //   style: {
-    //     backgroundColor: colors.grey[700], // Set your desired background color here
-    //   },
-    // },
+    headCells: {
+      style: {
+        color: colors.grey[100],
+        fontWeight: 'bold',
+        borderTop: `1px solid #000`,
+        borderBottom: `1px solid #000`,
+      },
+    },
+    cells: {
+      style: {
+        borderBottom: '1px solid #000',
+      },
+    },
   };
+
+  const SubHeaderComponent = (
+    <Box display="flex" alignItems="center">
+      <InputBase
+        placeholder="Search Name"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        sx={{
+          ml: 2,
+          border: '1px solid',
+          borderColor: colors.grey[700],
+          borderRadius: '4px',
+          width: '150px',
+          height: '35px',
+          padding: '10px',
+          color: colors.grey[100],
+          bgcolor: colors.grey[900],
+        }}
+      />
+      <Link to="/add-user" style={{ textDecoration: 'none', marginLeft: '10px' }}>
+        <Button variant="contained" sx={{ bgcolor: colors.blueAccent[200] }}>
+          Add User
+        </Button>
+      </Link>
+    </Box>
+  );
 
   return (
     <Box m="20px">
@@ -112,7 +151,8 @@ const Users = () => {
       <Box
         m="10px 0 0 0"
         height="auto"
-        border={`1px solid ${colors.grey[700]}`}
+        bgcolor={colors.grey[800]}
+        padding="10px"
       >
         <DataTable
           columns={columns}
@@ -120,33 +160,8 @@ const Users = () => {
           pagination
           highlightOnHover
           responsive
-          striped
           subHeader
-          subHeaderComponent={
-            <Box display="flex" alignItems="center">
-              <InputBase
-                placeholder="Search Name"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                sx={{
-                  ml: 2,
-                  border: "1px solid",
-                  borderColor: colors.grey[700],
-                  borderRadius: "4px",
-                  width: "150px",
-                  height: "35px",
-                  padding: "10px",
-                  color: colors.grey[100],
-                  bgcolor: colors.grey[900],
-                }}
-              />
-              <Link to="/add-user" style={{ textDecoration: 'none', marginLeft: '10px' }}>
-                <Button variant="contained" sx={{bgcolor: colors.blueAccent[200]}}>
-                  Add User
-                </Button>
-              </Link>
-            </Box>
-          }
+          subHeaderComponent={SubHeaderComponent}
           customStyles={customStyles}
         />
       </Box>
