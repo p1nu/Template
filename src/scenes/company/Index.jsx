@@ -1,21 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, useTheme, Button, InputBase } from "@mui/material";
-import DataTable from "react-data-table-component";
+import {
+  Box,
+  Typography,
+  useTheme,
+  Button,
+  InputBase,
+} from '@mui/material';
+import DataTable from 'react-data-table-component';
 import axios from 'axios';
 import { tokens } from '../../theme';
+import { Link } from 'react-router-dom';
+import Header from '../../components/Header';
 import mockCompanies from '../data/mockDataCompany'; // Import the mock data for companies
-import { Link } from "react-router-dom";
-import styled from "styled-components";
-import Header from "../../components/Header";
-
-// Example styled-component using transient props
-const StyledBox = styled.div`
-  display: flex;
-  justify-content: ${({ $align }) => $align || "flex-start"};
-  align-items: center;
-  text-align: center;
-  width: 100%;
-`;
 
 const Companies = () => {
   const theme = useTheme();
@@ -23,12 +19,12 @@ const Companies = () => {
 
   const [companies, setCompanies] = useState([]);
   const [filteredCompanies, setFilteredCompanies] = useState([]);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3030/company/all");
+        const response = await axios.get('http://localhost:3030/company/all');
         setCompanies(response.data);
         setFilteredCompanies(response.data);
       } catch (error) {
@@ -54,7 +50,7 @@ const Companies = () => {
   const handleDelete = async (id) => {
     try {
       await axios.put(`http://localhost:3030/company/delete/${id}`);
-      const response = await axios.get("http://localhost:3030/company/all");
+      const response = await axios.get('http://localhost:3030/company/all');
       setCompanies(response.data);
       setFilteredCompanies(response.data);
     } catch (error) {
@@ -63,27 +59,27 @@ const Companies = () => {
   };
 
   const columns = [
-    { name: "ID", selector: (row) => row.company_id, sortable: true, width: "60px" },
-    { name: "Name", selector: (row) => row.company_name, sortable: true },
-    { name: "Acronym", selector: (row) => row.company_acronym, sortable: true },
+    { name: 'ID', selector: (row) => row.company_id, sortable: true, width: '60px' },
+    { name: 'Name', selector: (row) => row.company_name, sortable: true },
+    { name: 'Acronym', selector: (row) => row.company_acronym, sortable: true },
     {
-      name: "Status",
+      name: 'Status',
       selector: (row) => row.company_status_id,
       sortable: true,
-      width: "60%",
+      width: '50%',
       cell: (row) => {
         let status;
 
         if (row.company_status_id === 1) {
-          status = "Active";
+          status = 'Active';
         } else if (row.company_status_id === 2) {
-          status = "Inactive";
+          status = 'Inactive';
         }
 
         return (
-          <StyledBox $align="space-between">
+          <Box display="flex" justifyContent="space-between" alignItems="center" textAlign="center" width="100%">
             <Typography color={colors.grey[100]}>{status}</Typography>
-            <Link to={`/company/${row.company_id}`} style={{ marginLeft: "auto" }}>
+            <Link to={`/company/${row.company_id}`} style={{ marginLeft: 'auto' }}>
               <Button variant="outlined" color="primary">
                 Edit
               </Button>
@@ -93,22 +89,67 @@ const Companies = () => {
                 Services
               </Button>
             </Link>
-            <Button variant="outlined" color="error" sx={{ m: 1 }} onClick={() => handleDelete(row.company_id)}>
+            <Button
+              variant="outlined"
+              color="error"
+              sx={{ m: 1 }}
+              onClick={() => handleDelete(row.company_id)}
+            >
               Delete
             </Button>
-          </StyledBox>
+          </Box>
         );
       },
     },
   ];
 
   const customStyles = {
+    header: {
+      style: {
+        backgroundColor: colors.grey[900],
+        color: colors.grey[100],
+      },
+    },
     headCells: {
       style: {
-        borderTop: `1px solid ${colors.grey[800]}`,
+        color: colors.grey[100],
+        fontWeight: 'bold',
+        borderTop: `1px solid #000`,
+        borderBottom: `1px solid #000`,
+      },
+    },
+    cells: {
+      style: {
+        borderBottom: '1px solid #000',
       },
     },
   };
+
+  const SubHeaderComponent = (
+    <Box display="flex" alignItems="center">
+      <InputBase
+        placeholder="Search Name"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        sx={{
+          ml: 2,
+          border: '1px solid',
+          borderColor: colors.grey[700],
+          borderRadius: '4px',
+          width: '150px',
+          height: '35px',
+          padding: '10px',
+          color: colors.grey[100],
+          bgcolor: colors.grey[900],
+        }}
+      />
+      <Link to="/add-company" style={{ textDecoration: 'none', marginLeft: '10px' }}>
+        <Button variant="contained" sx={{ bgcolor: colors.blueAccent[200] }}>
+          Add Company
+        </Button>
+      </Link>
+    </Box>
+  );
 
   return (
     <Box m="20px">
@@ -116,7 +157,8 @@ const Companies = () => {
       <Box
         m="10px 0 0 0"
         height="auto"
-        border={`1px solid ${colors.grey[700]}`}
+        bgcolor={colors.grey[800]}
+        padding="10px"
       >
         <DataTable
           columns={columns}
@@ -124,33 +166,8 @@ const Companies = () => {
           pagination
           highlightOnHover
           responsive
-          striped
           subHeader
-          subHeaderComponent={
-            <Box display="flex" alignItems="center">
-              <InputBase
-                placeholder="Search Name"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                sx={{
-                  ml: 2,
-                  border: "1px solid",
-                  borderColor: colors.grey[700],
-                  borderRadius: "4px",
-                  width: "150px",
-                  height: "35px",
-                  padding: "10px",
-                  color: colors.grey[100],
-                  bgcolor: colors.grey[900],
-                }}
-              />
-              <Link to="/add-company" style={{ textDecoration: 'none', marginLeft: '10px' }}>
-                <Button variant="contained" sx={{ bgcolor: colors.blueAccent[200] }}>
-                  Add Company
-                </Button>
-              </Link>
-            </Box>
-          }
+          subHeaderComponent={SubHeaderComponent}
           customStyles={customStyles}
         />
       </Box>
