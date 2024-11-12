@@ -8,6 +8,7 @@ import {
   FormControl,
   Select,
   MenuItem,
+  InputLabel,
 } from "@mui/material";
 import axios from "axios";
 import { tokens } from "../../theme";
@@ -103,6 +104,10 @@ const AddService = () => {
           "& .ql-container.ql-snow": {
             width: "100% !important",
             height: "84% !important",
+            border: "1px solid #000",
+          },
+          "& .ql-toolbar": {
+            border: "1px solid #000",
           },
         }}
       >
@@ -117,32 +122,195 @@ const AddService = () => {
           width="100%"
           boxShadow={3}
         >
+          {/* Service Name and Select Company */}
           <Box
             display="flex"
-            justifyContent={"space-between"}
+            justifyContent="space-between"
+            gap="20px"
             width="100%"
-            gap={"20px"}
-            alignContent={"center"}
-            height="100%"
+            alignItems="center"
           >
-            <InputBase
-              placeholder="Service Name"
-              name="service_name"
-              value={service.service_name}
-              onChange={handleChange}
-              sx={{
-                width: "100%",
-                padding: "10px",
-                border: `1px solid #000`,
-                borderRadius: "2px",
+            {/* Service Name */}
+            <Box display="flex" flexDirection="column" width="100%">
+              <InputLabel
+                htmlFor="service_name"
+                sx={{ color: colors.grey[100], mb: "5px" }}
+              >
+                Service Name
+              </InputLabel>
+              <InputBase
+                id="service_name"
+                placeholder="Company Name"
+                name="service_name"
+                value={service.service_name}
+                onChange={handleChange}
+                sx={{
+                  padding: "10px",
+                  border: `1px solid #000`,
+                  borderRadius: "2px",
+                  backgroundColor: colors.grey[900],
+                  color: colors.grey[100],
+                }}
+              />
+            </Box>
+            {/* Select Company */}
+            <Box display="flex" flexDirection="column" width="100%">
+              <InputLabel
+                htmlFor="service_company_id"
+                sx={{ color: colors.grey[100], mb: "5px" }}
+              >
+                Select Company
+              </InputLabel>
+              <FormControl fullWidth>
+                <Select
+                  name="service_company_id"
+                  value={service.service_company_id}
+                  onChange={handleChange}
+                  displayEmpty
+                  sx={{
+                    border: `1px solid #000`,
+                    borderRadius: "2px",
+                    backgroundColor: colors.grey[900],
+                    color: colors.grey[100],
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Company
+                  </MenuItem>
+                  {companies.map((company) => (
+                    <MenuItem
+                      key={company.company_id}
+                      value={company.company_id}
+                    >
+                      {company.company_name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+          </Box>
+
+          {/* Service Description */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="service_desc"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Service Description
+            </InputLabel>
+            <ReactQuill
+              theme="snow"
+              placeholder="Enter service description..."
+              value={service.service_desc}
+              onChange={(value) => handleQuillChange("service_desc", value)}
+              style={{
+                height: "150px",
                 backgroundColor: colors.grey[900],
                 color: colors.grey[100],
               }}
             />
-            <FormControl fullWidth >
+          </Box>
+
+          {/* Service Value */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="service_value"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Service Value
+            </InputLabel>
+            <ReactQuill
+              value={service.service_value}
+              onChange={(value) => handleQuillChange("service_value", value)}
+              theme="snow"
+              placeholder="Enter service value..."
+              style={{
+                height: "150px",
+                backgroundColor: colors.grey[900],
+                color: colors.grey[100],
+              }}
+            />
+          </Box>
+
+          {/* Service Vision */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="service_vision"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Service Vision
+            </InputLabel>
+            <ReactQuill
+              value={service.service_vision}
+              onChange={(value) => handleQuillChange("service_vision", value)}
+              theme="snow"
+              placeholder="Enter service vision..."
+              style={{
+                height: "150px",
+                backgroundColor: colors.grey[900],
+                color: colors.grey[100],
+              }}
+            />
+          </Box>
+
+          {/* Service Mission */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="service_mission"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Service Mission
+            </InputLabel>
+            <ReactQuill
+              value={service.service_mission}
+              onChange={(value) => handleQuillChange("service_mission", value)}
+              theme="snow"
+              placeholder="Enter service mission..."
+              style={{
+                height: "150px",
+                backgroundColor: colors.grey[900],
+                color: colors.grey[100],
+              }}
+            />
+          </Box>
+
+          {/* Service Status ID */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="service_status_id"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Service Status ID
+            </InputLabel>
+            <FormControl fullWidth>
               <Select
-                name="service_company_id"
-                value={service.service_company_id}
+                name="service_status_id"
+                value={service.service_status_id}
                 onChange={handleChange}
                 displayEmpty
                 sx={{
@@ -153,79 +321,43 @@ const AddService = () => {
                 }}
               >
                 <MenuItem value="" disabled>
-                  Select Company
+                  Select Service Status
                 </MenuItem>
-                {companies.map((company) => (
-                  <MenuItem key={company.company_id} value={company.company_id}>
-                    {company.company_name}
-                  </MenuItem>
-                ))}
+                <MenuItem value="1">Active</MenuItem>
+                <MenuItem value="2">Inactive</MenuItem>
               </Select>
             </FormControl>
           </Box>
-          <ReactQuill
-            value={service.service_desc}
-            onChange={(value) => handleQuillChange("service_desc", value)}
-            theme="snow"
-            placeholder="Enter service description..."
-            style={{
-              height: "250px",
-              width: "100%",
-              margin: "10px 0",
-              border: `1px solid #000`,
-            }}
-          />
-          <ReactQuill
-            value={service.service_value}
-            onChange={(value) => handleQuillChange("service_value", value)}
-            theme="snow"
-            placeholder="Enter service value..."
-            style={{
-              height: "250px",
-              width: "100%",
-              margin: "10px 0",
-              border: `1px solid #000`,
-            }}
-          />
-          <ReactQuill
-            value={service.service_vision}
-            onChange={(value) => handleQuillChange("service_vision", value)}
-            theme="snow"
-            placeholder="Enter service vision..."
-            style={{
-              height: "250px",
-              width: "100%",
-              margin: "10px 0",
-              border: `1px solid #000`,
-            }}
-          />
-          <ReactQuill
-            value={service.service_mission}
-            onChange={(value) => handleQuillChange("service_mission", value)}
-            theme="snow"
-            placeholder="Enter service mission..."
-            style={{
-              height: "250px",
-              width: "100%",
-              margin: "10px 0",
-              border: `1px solid #000`,
-            }}
-          />
-          <InputBase
-            placeholder="Created By User ID"
-            name="service_created_by_user_id"
-            value={service.service_created_by_user_id}
-            onChange={handleChange}
-            sx={{
-              width: "100%",
-              margin: "10px 0",
-              padding: "10px",
-              border: `1px solid #000`,
-              borderRadius: "2px",
-              backgroundColor: colors.grey[900],
-              // color: colors.grey[100],
-            }}
-          />
+
+          {/* Created By User ID */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="service_created_by_user_id"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Created By User ID
+            </InputLabel>
+            <InputBase
+              placeholder="Created By User ID"
+              name="service_created_by_user_id"
+              value={service.service_created_by_user_id}
+              onChange={handleChange}
+              sx={{
+                padding: "10px",
+                border: `1px solid #000`,
+                borderRadius: "2px",
+                backgroundColor: colors.grey[900],
+                color: colors.grey[100],
+              }}
+            />
+          </Box>
+
+          {/* Add Service Button */}
           <Button
             variant="contained"
             fullWidth

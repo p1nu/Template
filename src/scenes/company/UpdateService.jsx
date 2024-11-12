@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, InputBase, Typography, useTheme, FormControl, Select, MenuItem } from '@mui/material';
+import { Box, Button, InputBase, Typography, useTheme, FormControl, Select, MenuItem, InputLabel } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { tokens } from '../../theme';
@@ -120,92 +120,161 @@ const UpdateService = () => {
             alignContent={"center"}
             height="100%"
           >
-            <InputBase
-              placeholder="Service Name"
-              name="service_name"
-              value={service.service_name}
-              onChange={handleChange}
-              sx={{
-                width: "100%",
-                padding: "10px",
-                border: `1px solid #000`,
-                borderRadius: "2px",
-                backgroundColor: colors.grey[900],
-                color: colors.grey[100],
-              }}
-            />
-            <FormControl fullWidth>
-              <Select
-                name="service_company_id"
-                value={service.service_company_id}
+            <Box display="flex" flexDirection="column" width="100%">
+              <InputLabel
+                htmlFor="service_name"
+                sx={{ color: colors.grey[100], mb: "5px" }}
+              >
+                Service Name
+              </InputLabel>
+              <InputBase
+                id="service_name"
+                placeholder="Service Name"
+                name="service_name"
+                value={service.service_name}
                 onChange={handleChange}
-                displayEmpty
                 sx={{
+                  width: "100%",
+                  padding: "10px",
                   border: `1px solid #000`,
                   borderRadius: "2px",
                   backgroundColor: colors.grey[900],
                   color: colors.grey[100],
                 }}
+              />
+            </Box>
+            <Box display="flex" flexDirection="column" width="100%">
+              <InputLabel
+                htmlFor="service_company_id"
+                sx={{ color: colors.grey[100], mb: "5px" }}
               >
-                <MenuItem value="" disabled>
-                  Select Company
-                </MenuItem>
-                {companies.map((company) => (
-                  <MenuItem key={company.company_id} value={company.company_id}>
-                    {company.company_name}
+                Select Company
+              </InputLabel>
+              <FormControl fullWidth>
+                <Select
+                  name="service_company_id"
+                  value={service.service_company_id}
+                  onChange={handleChange}
+                  displayEmpty
+                  sx={{
+                    border: `1px solid #000`,
+                    borderRadius: "2px",
+                    backgroundColor: colors.grey[900],
+                    color: colors.grey[100],
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Company
                   </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                  {companies.map((company) => (
+                    <MenuItem key={company.company_id} value={company.company_id}>
+                      {company.company_name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
           </Box>
-          <ReactQuill
-            value={service.service_desc}
-            onChange={(value) => handleQuillChange("service_desc", value)}
-            theme="snow"
-            placeholder="Enter service description..."
-            style={{
-              height: "250px",
-              width: "100%",
-              margin: "10px 0",
-              border: `1px solid #000`,
-            }}
-          />
-          <ReactQuill
-            value={service.service_value}
-            onChange={(value) => handleQuillChange("service_value", value)}
-            theme="snow"
-            placeholder="Enter service value..."
-            style={{
-              height: "250px",
-              width: "100%",
-              margin: "10px 0",
-              border: `1px solid #000`,
-            }}
-          />
-          <ReactQuill
-            value={service.service_vision}
-            onChange={(value) => handleQuillChange("service_vision", value)}
-            theme="snow"
-            placeholder="Enter service vision..."
-            style={{
-              height: "250px",
-              width: "100%",
-              margin: "10px 0",
-              border: `1px solid #000`,
-            }}
-          />
-          <ReactQuill
-            value={service.service_mission}
-            onChange={(value) => handleQuillChange("service_mission", value)}
-            theme="snow"
-            placeholder="Enter service mission..."
-            style={{
-              height: "250px",
-              width: "100%",
-              margin: "10px 0",
-              border: `1px solid #000`,
-            }}
-          />
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="service_desc"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Service Description
+            </InputLabel>
+            <ReactQuill
+              value={service.service_desc}
+              onChange={(value) => handleQuillChange("service_desc", value)}
+              theme="snow"
+              placeholder="Enter service description..."
+              style={{
+                height: "250px",
+                width: "100%",
+                margin: "10px 0",
+                border: `1px solid #000`,
+              }}
+            />
+          </Box>
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="service_value"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Service Value
+            </InputLabel>
+            <ReactQuill
+              value={service.service_value}
+              onChange={(value) => handleQuillChange("service_value", value)}
+              theme="snow"
+              placeholder="Enter service value..."
+              style={{
+                height: "250px",
+                width: "100%",
+                margin: "10px 0",
+                border: `1px solid #000`,
+              }}
+            />
+          </Box>
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="service_vision"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Service Vision
+            </InputLabel>
+            <ReactQuill
+              value={service.service_vision}
+              onChange={(value) => handleQuillChange("service_vision", value)}
+              theme="snow"
+              placeholder="Enter service vision..."
+              style={{
+                height: "250px",
+                width: "100%",
+                margin: "10px 0",
+                border: `1px solid #000`,
+              }}
+            />
+          </Box>
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="service_mission"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Service Mission
+            </InputLabel>
+            <ReactQuill
+              value={service.service_mission}
+              onChange={(value) => handleQuillChange("service_mission", value)}
+              theme="snow"
+              placeholder="Enter service mission..."
+              style={{
+                height: "250px",
+                width: "100%",
+                margin: "10px 0",
+                border: `1px solid #000`,
+              }}
+            />
+          </Box>
           <InputBase
             placeholder="Updated By User ID"
             name="service_updated_by_user_id"

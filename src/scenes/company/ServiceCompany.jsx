@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, useTheme, Button, InputBase } from "@mui/material";
+import { Box, Typography, useTheme, Button, InputBase, InputLabel, FormControl, Select, MenuItem } from "@mui/material";
 import DataTable from "react-data-table-component";
 import axios from 'axios';
 import { tokens } from '../../theme';
-import mockServices from '../data/mockServices'; // Import the mock data for services
 import { Link, useParams } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../../components/Header";
 
-// Example styled-component using transient props
+// Styled-component for alignment and spacing
 const StyledBox = styled.div`
   display: flex;
   justify-content: ${({ $align }) => $align || "flex-start"};
@@ -26,84 +25,202 @@ const ServiceCompany = () => {
   const [filteredServices, setFilteredServices] = useState([]);
   const [search, setSearch] = useState("");
   const [company, setCompany] = useState({});
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    // fetch services by company ID
-    const fetchData = async () => {
+    // Fetch company details
+    const fetchCompany = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3030/company/${id}`);
+        setCompany(response.data);
+      } catch (error) {
+        console.error('Error fetching company details:', error);
+        setError('Error fetching company details');
+      }
+    };
+
+    // Fetch services by company ID
+    const fetchServices = async () => {
       try {
         const response = await axios.get(`http://localhost:3030/service/company/${id}`);
         setServices(response.data);
         setFilteredServices(response.data);
       } catch (error) {
-        console.error('Error fetching data from database:', error);
+        console.error('Error fetching services:', error);
         // Use mock data if there's an error
         setServices(mockServices);
         setFilteredServices(mockServices);
       }
     };
-    fetchData();
 
-    // fetch company by ID
-    const fetchCompany = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3030/company/${id}`);
-        setCompany(response.data[0]);
-      } catch (error) {
-        console.error('Error fetching data from database:', error);
-      }
-    };
     fetchCompany();
+    fetchServices();
   }, [id]);
 
   useEffect(() => {
-    const result = services.filter((service) => {
-      return (
-        service.service_name &&
-        service.service_name.toLowerCase().includes(search.toLowerCase())
-      );
-    });
-    setFilteredServices(result);
+    const results = services.filter((service) =>
+      (service.service_name || "").toLowerCase().includes(search.toLowerCase())
+    );
+    setFilteredServices(results);
   }, [search, services]);
 
+  const handleDelete = async (id) => {
+    try {
+      await axios.put(`http://localhost:3030/service/delete/${id}`);
+      const response = await axios.get(`http://localhost:3030/service/company/${id}`);
+      setServices(response.data);
+      setFilteredServices(response.data);
+    } catch (error) {
+      console.error("Error deleting service:", error);
+      setError("Error deleting service");
+    }
+  };
+
   const columns = [
-    { name: "ID", selector: (row) => row.service_id, sortable: true, width: "60px" },
-    { name: "Name", selector: (row) => row.service_name, sortable: true },
-    { name: "Description", selector: (row) => row.service_desc, sortable: true },
-    { name: "Value", selector: (row) => row.service_value, sortable: true },
-    { name: "Vision", selector: (row) => row.service_vision, sortable: true },
-    { name: "Mission", selector: (row) => row.service_mission, sortable: true },
     {
-      name: "Actions",
-      cell: (row) => (
-        <StyledBox $align="space-between">
-          <Link to={`/service/${row.service_id}`} style={{ marginLeft: "auto" }}>
-            <Button variant="outlined" color="primary">
-              Edit
+      name: "Service Name",
+      selector: (row) => row.service_name,
+      sortable: true,
+      width: "25%",
+    },
+    {
+      name: "Associated Job",
+      selector: (row) => row.service_job_id,
+      sortable: true,
+      cell: (row) => {
+        const [job, setJob] = useState({
+          job_name: "",
+        });
+
+        useEffect(() => {
+          const fetchJob = async () => {
+            try {
+              const response = await axios.get(
+                `http://localhost:3030/job/${row.service_job_id}`
+              );
+              const jobData = response.data[0];
+              setJob(jobData);
+            } catch (error) {
+              console.error("Error fetching job:", error);
+            }
+          };
+          if (row.service_job_id) {
+            fetchJob();
+          }
+        }, [row.service_job_id]);
+
+        return (
+          <Typography color={colors.grey[100]}>{job.job_name}</Typography>
+        );
+      },
+    },
+    {
+      name: "Description",
+      selector: (row) => row.service_desc,
+      sortable: true,
+      width: "30%",
+    },
+    {
+      name: "Status",
+      selector: (row) => row.service_status_id,
+      sortable: true,
+      width: "15%",
+      cell: (row) => {
+        let status;
+
+        if (row.service_status_id === 1) {
+          status = "Active";
+        } else if (row.service_status_id === 2) {
+          status = "Inactive";
+        }
+
+        return (
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            textAlign="center"
+            width="100%"
+          >
+            <Typography color={colors.grey[100]}>{status}</Typography>
+            <Link to={`/service/${row.service_id}`} style={{ marginLeft: "auto" }}>
+              <Button variant="outlined" color="primary">
+                Edit
+              </Button>
+            </Link>
+            <Button
+              variant="outlined"
+              color="error"
+              sx={{ m: 1 }}
+              onClick={() => handleDelete(row.service_id)}
+            >
+              Delete
             </Button>
-          </Link>
-          <Button variant="outlined" color="error" sx={{ m: 1 }}>
-            Delete
-          </Button>
-        </StyledBox>
-      ),
+          </Box>
+        );
+      },
     },
   ];
 
   const customStyles = {
+    header: {
+      style: {
+        backgroundColor: colors.grey[900],
+        color: colors.grey[100],
+      },
+    },
     headCells: {
       style: {
-        borderTop: `1px solid ${colors.grey[800]}`,
+        color: colors.grey[100],
+        fontWeight: "bold",
+        borderTop: `1px solid #000`,
+        borderBottom: `1px solid #000`,
+      },
+    },
+    cells: {
+      style: {
+        borderBottom: "1px solid #000",
       },
     },
   };
 
+  const SubHeaderComponent = (
+    <Box display="flex" alignItems="center">
+      <InputBase
+        placeholder="Search Service Name"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        sx={{
+          ml: 2,
+          border: "1px solid",
+          borderColor: colors.grey[700],
+          borderRadius: "4px",
+          width: "200px",
+          height: "35px",
+          padding: "10px",
+          color: colors.grey[100],
+          bgcolor: colors.grey[900],
+        }}
+      />
+      <Link
+        to={`/add-service/${id}`}
+        style={{ textDecoration: "none", marginLeft: "10px" }}
+      >
+        <Button variant="contained" sx={{ bgcolor: colors.blueAccent[200] }}>
+          Add Service
+        </Button>
+      </Link>
+    </Box>
+  );
+
   return (
     <Box m="20px">
-      <Header title="Services by Company" subTitle={`Manage services for : ${company.company_name}`} />
+      <Header title={`Services for ${company.company_name}`} subTitle="Manage services" />
       <Box
         m="10px 0 0 0"
         height="auto"
-        border={`1px solid ${colors.grey[700]}`}
+        bgcolor={colors.grey[800]}
+        padding="10px"
       >
         <DataTable
           columns={columns}
@@ -111,36 +228,22 @@ const ServiceCompany = () => {
           pagination
           highlightOnHover
           responsive
-          striped
           subHeader
-          subHeaderComponent={
-            <Box display="flex" alignItems="center">
-              <InputBase
-                placeholder="Search Name"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                sx={{
-                  ml: 2,
-                  border: "1px solid",
-                  borderColor: colors.grey[700],
-                  borderRadius: "4px",
-                  width: "150px",
-                  height: "35px",
-                  padding: "10px",
-                  color: colors.grey[100],
-                  bgcolor: colors.grey[900],
-                }}
-              />
-              <Link to={`/add-service/${id}`} style={{ textDecoration: 'none', marginLeft: '10px' }}>
-                <Button variant="contained" sx={{ bgcolor: colors.blueAccent[200] }}>
-                  Add Service
-                </Button>
-              </Link>
-            </Box>
-          }
+          subHeaderComponent={SubHeaderComponent}
           customStyles={customStyles}
         />
       </Box>
+      {/* Error Message */}
+      {error && (
+        <Typography
+          variant="body1"
+          color="red"
+          mt={2}
+          textAlign="center"
+        >
+          {error}
+        </Typography>
+      )}
     </Box>
   );
 };
