@@ -36,7 +36,11 @@ const UpdateUser = () => {
             Authorization: `Bearer ${token}`, // Include the token in headers
           },
         });
-        setUser(response.data[0]);
+        setUser({
+          user_name: response.data[0].user_name,
+          user_password: "",
+          user_role_id: response.data[0].user_role_id,
+        });
       } catch (error) {
         console.error("Error fetching user details:", error);
         setError("Error fetching user details");
@@ -52,11 +56,26 @@ const UpdateUser = () => {
 
   const handleUpdateUser = async () => {
     try {
-      await axios.put(`http://localhost:3030/user/update/${id}`, user, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Include the token in headers
+      // Prepare the data to be updated
+      const updateData = {
+        user_name: user.user_name,
+        user_role_id: user.user_role_id,
+      };
+
+      // Include password only if it's been changed
+      if (user.user_password.trim() !== "") {
+        updateData.user_password = user.user_password;
+      }
+
+      await axios.put(
+        `http://localhost:3030/user/update/${id}`,
+        updateData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in headers
+          },
         }
-      });
+      );
       setError("User updated successfully");
       setTimeout(() => {
         navigate("/users");
