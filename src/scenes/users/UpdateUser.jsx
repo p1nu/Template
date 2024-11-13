@@ -26,12 +26,17 @@ const UpdateUser = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { id } = useParams(); // Assuming you're using React Router v6
+  const token = localStorage.getItem("token"); // Retrieve the token
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`http://localhost:3030/user/${id}`);
-        setUser(response.data);
+        const response = await axios.get(`http://localhost:3030/user/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in headers
+          },
+        });
+        setUser(response.data[0]);
       } catch (error) {
         console.error("Error fetching user details:", error);
         setError("Error fetching user details");
@@ -47,7 +52,11 @@ const UpdateUser = () => {
 
   const handleUpdateUser = async () => {
     try {
-      await axios.put(`http://localhost:3030/user/update/${id}`, user);
+      await axios.put(`http://localhost:3030/user/update/${id}`, user, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in headers
+        }
+      });
       setError("User updated successfully");
       setTimeout(() => {
         navigate("/users");

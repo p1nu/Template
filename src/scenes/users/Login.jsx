@@ -1,17 +1,31 @@
 import React, { useState } from 'react';
 import { Box, Button, InputBase, Typography, useTheme } from '@mui/material';
 import { tokens } from '../../theme';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [user_name, setUser_name] = useState('');
+  const [user_password, setUser_password] = useState('');
+  const navigate = useNavigate();
 
-  const handleLogin = () => {
-    // Handle login logic here
-    console.log('Username:', username);
-    console.log('Password:', password);
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post('http://localhost:3030/auth/login', {
+        user_name,
+        user_password,
+      });
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        navigate('/');
+      }
+    }
+    catch (error) {
+      console.error('Error logging in:',
+        error.response ? error.response.data : error.message);
+    }
   };
 
   return (
@@ -45,8 +59,8 @@ const Login = () => {
         </Typography>
         <InputBase
           placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={user_name}
+          onChange={(e) => setUser_name(e.target.value)}
           sx={{
             width: '100%',
             margin: '10px 0',
@@ -60,8 +74,8 @@ const Login = () => {
         <InputBase
           placeholder="Password"
           type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={user_password}
+          onChange={(e) => setUser_password(e.target.value)}
           sx={{
             width: '100%',
             margin: '10px 0',

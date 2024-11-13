@@ -20,7 +20,7 @@ import {
   useTheme,
   Button,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { tokens } from "../../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
@@ -60,12 +60,18 @@ const Sidenav = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [openUser, setOpenUser] = useState(false);
   const [openCompany, setOpenCompany] = useState(false);
-
   const [selected, setSelected] = useState("Dashboard");
+
+  const navigate = useNavigate();
 
   const handleMenuClick = () => {
     setIsCollapsed(!isCollapsed);
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  }
 
   return (
     <Box
@@ -244,13 +250,14 @@ const Sidenav = () => {
             />
           </Menu>
         </SidebarContent>
-        <Link to="/login">
           <SidebarFooter>
             <Box
               display="flex"
               alignItems="center"
               justifyContent="space-between"
               p={1}
+              cursor='pointer'
+              onClick={handleLogout}
             >
               <IconButton>
                 <LogoutOutlinedIcon sx={{ color: colors.primary[900] }} />
@@ -270,7 +277,6 @@ const Sidenav = () => {
               )}
             </Box>
           </SidebarFooter>
-        </Link>
       </ProSidebar>
     </Box>
   );

@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Typography,
-  useTheme,
-  Button,
-  InputBase,
-} from '@mui/material';
-import DataTable from 'react-data-table-component';
+import { Box, Typography, useTheme, Button, InputBase, InputLabel } from "@mui/material";
+import DataTable from "react-data-table-component";
+import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
+import styled from "styled-components";
+import Header from "../../components/Header";
 import { tokens } from '../../theme';
-import { Link } from 'react-router-dom';
-import Header from '../../components/Header';
+import { format } from 'date-fns'; // Imported format from date-fns
 import mockUsers from '../data/mockData'; // Import the mock data for users
 
 const Users = () => {
@@ -20,22 +16,35 @@ const Users = () => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [search, setSearch] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3030/user/all');
+        const token = localStorage.getItem('token'); // Retrieve the token
+        const response = await axios.get('http://localhost:3030/user/all', {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in headers
+          },
+        });
         setUsers(response.data);
         setFilteredUsers(response.data);
       } catch (error) {
         console.error('Error fetching data from database:', error);
+        setError("Error fetching user data");
+        // Optionally handle unauthorized access
+        if (error.response && error.response.status === 401) {
+          // Redirect to login or show a message
+          navigate('/login');
+        }
         // Use mock data if there's an error
         setUsers(mockUsers);
         setFilteredUsers(mockUsers);
       }
     };
     fetchData();
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     const result = users.filter((user) => {
@@ -164,6 +173,16 @@ const Users = () => {
           subHeaderComponent={SubHeaderComponent}
           customStyles={customStyles}
         />
+        {/* Error/Success Message */}
+        {error && (
+          <Typography
+            variant="body1"
+            color={error.includes('successfully') ? 'green' : 'red'}
+            mt={2}
+          >
+            {error}
+          </Typography>
+        )}
       </Box>
     </Box>
   );
