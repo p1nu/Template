@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 const AddUser = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const token = localStorage.getItem("token"); // Retrieve the token
   const [user, setUser] = useState({
     user_name: "",
     user_password: "",
@@ -34,7 +35,15 @@ const AddUser = () => {
 
   const handleAddUser = async () => {
     try {
-      await axios.post("http://localhost:3030/user/new", user);
+      if (!user.user_name || !user.user_password || !user.user_role_id) {
+        setError("Please fill all fields");
+        return;
+      }
+      await axios.post("http://localhost:3030/user/new", user, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in headers
+        },
+      });
       setError("User added successfully");
       setUser({ user_name: "", user_password: "", user_role_id: "" }); // Reset form
       setTimeout(() => {
@@ -83,7 +92,7 @@ const AddUser = () => {
               htmlFor="user_name"
               sx={{ color: colors.grey[100], mb: "5px" }}
             >
-              Company Name
+              Username
             </InputLabel>
             <InputBase
               id="user_name"
@@ -106,12 +115,13 @@ const AddUser = () => {
               htmlFor="user_password"
               sx={{ color: colors.grey[100], mb: "5px" }}
             >
-              Company Name
+              Password
             </InputLabel>
             <InputBase
               id="user_password"
               placeholder="Enter User Password"
               name="user_password"
+              type="password"
               value={user.user_password}
               onChange={handleChange}
               sx={{
@@ -129,7 +139,7 @@ const AddUser = () => {
               htmlFor="user_role_id"
               sx={{ color: colors.grey[100], mb: "5px" }}
             >
-              Company
+              Role
             </InputLabel>
             <FormControl fullWidth>
               <Select
