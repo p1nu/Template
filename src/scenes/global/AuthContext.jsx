@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }) => {
           setIsAuthenticated(true);
           setUser({
             user_name: decodedToken.user_name || decodedToken.userName || 'User',
-            uesr_role_id: decodedToken.user_role_id || 2, // Adjust based on your token's payload
+            user_role_id: decodedToken.user_role_id || 2, // Adjust based on your token's payload
             // Add other relevant user information here
           });
         }

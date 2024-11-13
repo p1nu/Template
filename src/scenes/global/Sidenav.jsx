@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   ProSidebar,
   Menu,
@@ -23,6 +23,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { tokens } from "../../theme";
 import { jwtDecode } from 'jwt-decode';
+import { AuthContext } from "./AuthContext";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
@@ -33,7 +34,6 @@ import RecyclingOutlinedIcon from "@mui/icons-material/RecyclingOutlined";
 import CategoryOutlinedIcon from "@mui/icons-material/CategoryOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import AssignmentIndOutlinedIcon from "@mui/icons-material/AssignmentIndOutlined";
-import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import AddIcon from "@mui/icons-material/Add";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
@@ -61,30 +61,10 @@ const Sidenav = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
-
-  if(!token) {
-    navigate("/login");
-  }
-
-  let userRole = 2;
-  if (token) {
-    try {
-      const decodedToken = jwtDecode(token);
-      userRole = decodedToken.user_role_id || 2;
-    } catch (error) {
-      console.error("Invalid token:", error);
-      navigate("/login");
-    }
-  }
+  const { user } = useContext(AuthContext);
 
   const handleMenuClick = () => {
     setIsCollapsed(!isCollapsed);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
   };
 
   return (
@@ -149,7 +129,7 @@ const Sidenav = () => {
             {!isCollapsed && (
               <Box flexGrow={1} display="flex" justifyContent="center">
                 <Typography variant="h3" color={colors.grey[900]}>
-                  ADMIN
+                  {user?.user_name || "Admin"} 
                 </Typography>
               </Box>
             )}
@@ -164,7 +144,7 @@ const Sidenav = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            {userRole === 1 && (
+            {user?.user_role_id === 1 && (
               <SubMenu title={"Users"} icon={<PeopleOutlinedIcon />}>
                 <Item
                   title="All Users"
