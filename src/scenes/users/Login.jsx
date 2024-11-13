@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Box, Button, InputBase, Typography, useTheme } from '@mui/material';
 import { tokens } from '../../theme';
+import { AuthContext } from '../global/AuthContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,6 +12,8 @@ const Login = () => {
   const [user_password, setUser_password] = useState('');
   const navigate = useNavigate();
 
+  const { login } = useContext(AuthContext); // Removed 'user' as it's not needed here
+
   const handleLogin = async () => {
     try {
       const response = await axios.post('http://localhost:3030/auth/login', {
@@ -18,13 +21,14 @@ const Login = () => {
         user_password,
       });
       if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        navigate('/');
+        login(response.data.token); // Use AuthContext's login function
       }
-    }
-    catch (error) {
-      console.error('Error logging in:',
-        error.response ? error.response.data : error.message);
+    } catch (error) {
+      console.error(
+        'Error logging in:',
+        error.response ? error.response.data : error.message
+      );
+      // You can set error state here to display error messages to the user
     }
   };
 
