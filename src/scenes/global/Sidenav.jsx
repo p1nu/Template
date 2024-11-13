@@ -22,16 +22,17 @@ import {
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { tokens } from "../../theme";
+import { jwtDecode } from 'jwt-decode';
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
 import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
-import CorporateFareOutlinedIcon from '@mui/icons-material/CorporateFareOutlined';
+import CorporateFareOutlinedIcon from "@mui/icons-material/CorporateFareOutlined";
 import NewspaperOutlinedIcon from "@mui/icons-material/NewspaperOutlined";
 import RecyclingOutlinedIcon from "@mui/icons-material/RecyclingOutlined";
 import CategoryOutlinedIcon from "@mui/icons-material/CategoryOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
+import AssignmentIndOutlinedIcon from "@mui/icons-material/AssignmentIndOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import AddIcon from "@mui/icons-material/Add";
 
@@ -58,11 +59,24 @@ const Sidenav = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [openUser, setOpenUser] = useState(false);
-  const [openCompany, setOpenCompany] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
-
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  if(!token) {
+    navigate("/login");
+  }
+
+  let userRole = 2;
+  if (token) {
+    try {
+      const decodedToken = jwtDecode(token);
+      userRole = decodedToken.user_role_id || 2;
+    } catch (error) {
+      console.error("Invalid token:", error);
+      navigate("/login");
+    }
+  }
 
   const handleMenuClick = () => {
     setIsCollapsed(!isCollapsed);
@@ -71,7 +85,7 @@ const Sidenav = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
-  }
+  };
 
   return (
     <Box
@@ -150,23 +164,25 @@ const Sidenav = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            <SubMenu title={"Users"} icon={<PeopleOutlinedIcon />}>
-              <Item
-                title="All Users"
-                to="/users"
-                icon={<PeopleOutlinedIcon />}
-                selected={selected}
-                setSelected={setSelected}
-              />
-              <Item
-                title="Add User"
-                to="/add-user"
-                icon={<AddIcon />}
-                selected={selected}
-                setSelected={setSelected}
-              />
-            </SubMenu>
-            <SubMenu title={"Companies"} icon={<CorporateFareOutlinedIcon/>}>
+            {userRole === 1 && (
+              <SubMenu title={"Users"} icon={<PeopleOutlinedIcon />}>
+                <Item
+                  title="All Users"
+                  to="/users"
+                  icon={<PeopleOutlinedIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Add User"
+                  to="/add-user"
+                  icon={<AddIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              </SubMenu>
+            )}
+            <SubMenu title={"Companies"} icon={<CorporateFareOutlinedIcon />}>
               <Item
                 title="All Companies"
                 to="/company"
@@ -196,10 +212,7 @@ const Sidenav = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            <SubMenu
-              title={"Contacts"}
-              icon={<ContactsOutlinedIcon />}
-            >
+            <SubMenu title={"Contacts"} icon={<ContactsOutlinedIcon />}>
               <Item
                 title="All Contacts"
                 to="/contact"
@@ -215,10 +228,7 @@ const Sidenav = () => {
                 setSelected={setSelected}
               />
             </SubMenu>
-            <SubMenu
-              title={"Jobs"}
-              icon={<AssignmentIndOutlinedIcon />}
-            >
+            <SubMenu title={"Jobs"} icon={<AssignmentIndOutlinedIcon />}>
               <Item
                 title="All Jobs"
                 to="/jobs"
@@ -250,33 +260,33 @@ const Sidenav = () => {
             />
           </Menu>
         </SidebarContent>
-          <SidebarFooter>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              p={1}
-              cursor='pointer'
-              onClick={handleLogout}
-            >
-              <IconButton>
-                <LogoutOutlinedIcon sx={{ color: colors.primary[900] }} />
-              </IconButton>
-              {!isCollapsed && (
-                <Box flexGrow={1} display="flex" justifyContent="center">
-                  <Typography
-                    variant="h3"
-                    color={colors.grey[900]}
-                    sx={{
-                      textDecoration: "none",
-                    }}
-                  >
-                    LOG OUT
-                  </Typography>
-                </Box>
-              )}
-            </Box>
-          </SidebarFooter>
+        <SidebarFooter>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            p={1}
+            cursor="pointer"
+            onClick={handleLogout}
+          >
+            <IconButton>
+              <LogoutOutlinedIcon sx={{ color: colors.primary[900] }} />
+            </IconButton>
+            {!isCollapsed && (
+              <Box flexGrow={1} display="flex" justifyContent="center">
+                <Typography
+                  variant="h3"
+                  color={colors.grey[900]}
+                  sx={{
+                    textDecoration: "none",
+                  }}
+                >
+                  LOG OUT
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        </SidebarFooter>
       </ProSidebar>
     </Box>
   );
