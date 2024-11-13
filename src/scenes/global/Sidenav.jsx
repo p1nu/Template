@@ -260,33 +260,6 @@ const Sidenav = () => {
             />
           </Menu>
         </SidebarContent>
-        <SidebarFooter>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            p={1}
-            cursor="pointer"
-            onClick={handleLogout}
-          >
-            <IconButton>
-              <LogoutOutlinedIcon sx={{ color: colors.primary[900] }} />
-            </IconButton>
-            {!isCollapsed && (
-              <Box flexGrow={1} display="flex" justifyContent="center">
-                <Typography
-                  variant="h3"
-                  color={colors.grey[900]}
-                  sx={{
-                    textDecoration: "none",
-                  }}
-                >
-                  LOG OUT
-                </Typography>
-              </Box>
-            )}
-          </Box>
-        </SidebarFooter>
       </ProSidebar>
     </Box>
   );
