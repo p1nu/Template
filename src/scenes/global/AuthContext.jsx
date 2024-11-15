@@ -30,9 +30,9 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       setUser({
         user_token: token,
-        user_name: decodedToken.uesr_name || decodedToken.userName || 'User',
+        user_name: decodedToken.user_name || decodedToken.userName || 'User', // Fixed typo
         user_role_id: decodedToken.user_role_id || 2, // Adjust based on your token's payload
-        user_id: decodedToken.user_id || '',// Add other relevant user information here
+        user_id: decodedToken.user_id || '', // Add other relevant user information here
       });
 
       // Optionally, navigate to a protected route after login
@@ -77,9 +77,9 @@ export const AuthProvider = ({ children }) => {
           setIsAuthenticated(true);
           setUser({
             user_token: token,
-            user_name: decodedToken.user_name || decodedToken.userName || 'User',
+            user_name: decodedToken.user_name || decodedToken.userName || 'User', // Fixed typo
             user_role_id: decodedToken.user_role_id || 2, // Adjust based on your token's payload
-            user_id: decodedToken.user_id || ''// Add other relevant user information here
+            user_id: decodedToken.user_id || '', // Add other relevant user information here
           });
         }
       } catch (error) {
