@@ -40,6 +40,7 @@ const UpdateCompany = () => {
   });
   const [error, setError] = useState("");
   const token = localStorage.getItem("token");
+  const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
     // Fetch company data by ID
@@ -59,10 +60,11 @@ const UpdateCompany = () => {
     const fetchUser = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3030/user/${company.company_created_by_user_id}`, {
+          `http://localhost:3030/user/${company.company_created_by_user_id}`,
+          {
             headers: {
               Authorization: `Bearer ${token}`,
-            }
+            },
           }
         );
         setUsername(response.data);
@@ -117,7 +119,10 @@ const UpdateCompany = () => {
 
   return (
     <Box m={2}>
-      <Header title="Update Company" subTitle={`Update details for ${company.company_name}`} />
+      <Header
+        title="Update Company"
+        subTitle={`Update details for ${company.company_name}`}
+      />
       <Box
         display="flex"
         flexDirection="column"
@@ -353,12 +358,13 @@ const UpdateCompany = () => {
               htmlFor="company_created_by_user_id"
               sx={{ color: colors.grey[100], mb: "5px" }}
             >
-              Created By User ID
+              Created By User
             </InputLabel>
             <InputBase
               id="company_created_by_user_id"
               placeholder="Created By User ID"
               name="company_created_by_user_id"
+              disabled
               value={username.user_name || ""}
               onChange={handleChange}
               sx={{
@@ -372,33 +378,35 @@ const UpdateCompany = () => {
           </Box>
 
           {/* Updated By User ID */}
-          <Box
-            display="flex"
-            flexDirection="column"
-            margin="10px 0"
-            width="100%"
-          >
-            <InputLabel
-              htmlFor="company_updated_by_user_id"
-              sx={{ color: colors.grey[100], mb: "5px" }}
+          {isHidden && (
+            <Box
+              display="flex"
+              flexDirection="column"
+              margin="10px 0"
+              width="100%"
             >
-              Updated By User ID
-            </InputLabel>
-            <InputBase
-              id="company_updated_by_user_id"
-              placeholder="Updated By User ID"
-              name="company_updated_by_user_id"
-              value={user?.user_id || ""}
-              onChange={handleChange}
-              sx={{
-                padding: "10px",
-                border: `1px solid #000`,
-                borderRadius: "2px",
-                backgroundColor: colors.grey[900],
-                color: colors.grey[100],
-              }}
-            />
-          </Box>
+              <InputLabel
+                htmlFor="company_updated_by_user_id"
+                sx={{ color: colors.grey[100], mb: "5px" }}
+              >
+                Updated By User ID
+              </InputLabel>
+              <InputBase
+                id="company_updated_by_user_id"
+                placeholder="Updated By User ID"
+                name="company_updated_by_user_id"
+                value={user?.user_id || ""}
+                onChange={handleChange}
+                sx={{
+                  padding: "10px",
+                  border: `1px solid #000`,
+                  borderRadius: "2px",
+                  backgroundColor: colors.grey[900],
+                  color: colors.grey[100],
+                }}
+              />
+            </Box>
+          )}
 
           {/* Update Button */}
           <Button
