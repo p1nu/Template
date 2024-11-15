@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Box, Typography, useTheme, Button, InputBase, InputLabel } from "@mui/material";
 import DataTable from "react-data-table-component";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,11 +8,12 @@ import Header from "../../components/Header";
 import { tokens } from '../../theme';
 import { format } from 'date-fns'; // Imported format from date-fns
 import mockUsers from '../data/mockData'; // Import the mock data for users
+// import { AuthContext } from '../global/AuthContext';
 
 const Users = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-
+  // const { user } = useContext(AuthContext);
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [search, setSearch] = useState('');
@@ -31,6 +32,7 @@ const Users = () => {
         setUsers(response.data);
         setFilteredUsers(response.data);
       } catch (error) {
+        // console.log(token);
         console.error('Error fetching data from database:', error);
         setError("Error fetching user data");
         // Optionally handle unauthorized access

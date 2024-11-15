@@ -37,9 +37,9 @@ const UpdateUser = () => {
           },
         });
         setUser({
-          user_name: response.data[0].user_name,
+          user_name: response.data.user_name,
           user_password: "",
-          user_role_id: response.data[0].user_role_id,
+          user_role_id: response.data.user_role_id,
         });
       } catch (error) {
         console.error("Error fetching user details:", error);

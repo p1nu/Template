@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Box,
   Button,
@@ -16,8 +16,10 @@ import axios from "axios";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useNavigate, useParams } from "react-router-dom";
+import { AuthContext } from "../global/AuthContext";
 
 const UpdateCompany = () => {
+  const { user } = useContext(AuthContext);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { id } = useParams();
@@ -33,10 +35,11 @@ const UpdateCompany = () => {
     company_created_by_user_id: "",
     company_updated_by_user_id: "",
   });
-  const [user, setUser] = useState({
+  const [username, setUsername] = useState({
     user_name: "",
   });
   const [error, setError] = useState("");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     // Fetch company data by ID
@@ -56,9 +59,13 @@ const UpdateCompany = () => {
     const fetchUser = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3030/user/${company.company_created_by_user_id}`
+          `http://localhost:3030/user/${company.company_created_by_user_id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          }
         );
-        setUser(response.data[0]);
+        setUsername(response.data);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -79,7 +86,16 @@ const UpdateCompany = () => {
 
   const handleUpdateCompany = async () => {
     try {
-      await axios.put(`http://localhost:3030/company/update/${id}`, company);
+      await axios.put(`http://localhost:3030/company/update/${id}`, {
+        company_name: company.company_name,
+        company_acronym: company.company_acronym,
+        company_value: company.company_value,
+        company_vision: company.company_vision,
+        company_mission: company.company_mission,
+        company_desc: company.company_desc,
+        company_status_id: company.company_status_id,
+        company_updated_by_user_id: user?.user_id,
+      });
       setError("Company updated successfully");
       setTimeout(() => {
         navigate("/company");
@@ -343,7 +359,7 @@ const UpdateCompany = () => {
               id="company_created_by_user_id"
               placeholder="Created By User ID"
               name="company_created_by_user_id"
-              value={company.company_created_by_user_id}
+              value={username.user_name || ""}
               onChange={handleChange}
               sx={{
                 padding: "10px",
@@ -372,7 +388,7 @@ const UpdateCompany = () => {
               id="company_updated_by_user_id"
               placeholder="Updated By User ID"
               name="company_updated_by_user_id"
-              value={company.company_updated_by_user_id}
+              value={user?.user_id || ""}
               onChange={handleChange}
               sx={{
                 padding: "10px",

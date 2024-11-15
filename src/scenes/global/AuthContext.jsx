@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }) => {
       // Update state
       setIsAuthenticated(true);
       setUser({
+        user_token: token,
         user_name: decodedToken.uesr_name || decodedToken.userName || 'User',
         user_role_id: decodedToken.user_role_id || 2, // Adjust based on your token's payload
         user_id: decodedToken.user_id || '',// Add other relevant user information here
@@ -75,6 +76,7 @@ export const AuthProvider = ({ children }) => {
           // Token is valid
           setIsAuthenticated(true);
           setUser({
+            user_token: token,
             user_name: decodedToken.user_name || decodedToken.userName || 'User',
             user_role_id: decodedToken.user_role_id || 2, // Adjust based on your token's payload
             user_id: decodedToken.user_id || ''// Add other relevant user information here
