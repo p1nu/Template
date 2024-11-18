@@ -87,7 +87,7 @@ const a11yProps = (index) => {
   };
 };
 
-const MediaLibrary = ({onSelectImage}) => {
+const MediaLibrary = ({ onSelectImage }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { open, handleClose, value, handleChange } = useMediaGallery();
@@ -172,20 +172,23 @@ const MediaLibrary = ({onSelectImage}) => {
       handleClose(); // Close the modal after selection
     }
   };
-  
+
   const displayImages = () => {
     if (images.length > 0) {
       return (
         <>
           <ImageList sx={{ width: "100%", height: "inherit" }} cols={3}>
             {images.toReversed().map((item) => (
-              <ImageListItem key={item.il_id} sx={{
-                cursor: "pointer",
-                border: `2px solid ${colors.grey[800]}`,
-                "&:hover": {
-                  border: `2px solid ${colors.primary[500]}`,
-                }
-              }}>
+              <ImageListItem
+                key={item.il_id}
+                sx={{
+                  cursor: "pointer",
+                  border: `2px solid ${colors.grey[800]}`,
+                  "&:hover": {
+                    border: `2px solid ${colors.primary[500]}`,
+                  },
+                }}
+              >
                 <img
                   src={`http://localhost:3030/uploads/${item.il_path}`}
                   alt={item.il_name}
@@ -265,108 +268,6 @@ const MediaLibrary = ({onSelectImage}) => {
     }
   };
 
-  const addLogo = () => {
-    if (images.length > 0) {
-      return (
-        <>
-          <ImageList sx={{ width: "100%", height: "inherit" }} cols={3}>
-            {images.toReversed().map((item) => (
-              <ImageListItem key={item.il_id} sx={{
-                cursor: "pointer",
-                border: `2px solid ${colors.grey[800]}`,
-                "&:hover": {
-                  border: `2px solid ${colors.primary[500]}`,
-                }
-              }}>
-                <img
-                  src={`http://localhost:3030/uploads/${item.il_path}`}
-                  alt={item.il_name}
-                  loading="lazy"
-                  onClick={async () => {
-                    try {
-                      await axios.put(
-                        `http://localhost:3030/company/update/${companyId}`
-                      );
-                      setMessage("Logo added successfully");
-                    } catch (error) {
-                      setMessage("An error occurred");
-                      console.error(error);
-                    }
-                  }}
-                />
-                <ImageListItemBar
-                  title={item.il_name}
-                  subtitle={item.il_desc}
-                  actionIcon={
-                    <IconButton
-                      sx={{ color: "rgba(255, 255, 255, 0.54)" }}
-                      aria-label={`info about ${item.il_name}`}
-                      onClick={async () => {
-                        try {
-                          await axios.delete(
-                            `http://localhost:3030/image/delete/${item.il_id}`
-                          );
-                          setMessage("Image deleted successfully");
-                          setImages(
-                            images.filter((img) => img.il_id !== item.il_id)
-                          );
-                        } catch (error) {
-                          setMessage("An error occurred");
-                          console.error(error);
-                        }
-                      }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  }
-                />
-              </ImageListItem>
-            ))}
-          </ImageList>
-          {message === "Image uploaded successfully" ? (
-            <Typography
-              sx={{
-                color: colors.greenAccent[600],
-                fontSize: "1.5rem",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              {message}
-              <CheckIcon
-                sx={{
-                  color: colors.greenAccent[600],
-                  fontSize: "2rem",
-                  marginLeft: "10px",
-                }}
-              />
-            </Typography>
-          ) : (
-            <Typography
-              sx={{
-                color: colors.redAccent[500],
-                fontSize: "1.5rem",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              {message}
-              {message && (
-                <DeleteIcon
-                  sx={{
-                    color: colors.redAccent[500],
-                    fontSize: "2rem",
-                    marginLeft: "10px",
-                  }}
-                />
-              )}
-            </Typography>
-          )}
-        </>
-      );
-    }
-  }
-
   return (
     <>
       <Box>
@@ -384,20 +285,20 @@ const MediaLibrary = ({onSelectImage}) => {
                   onChange={handleChange}
                   aria-label="basic tabs example"
                 >
-                    <Tab
-                      label="Gallery"
-                      {...a11yProps(0)}
-                      sx={{
-                        bgcolor:
-                          value === 0 ? colors.grey[700] : colors.grey[700],
-                        borderRadius: "10px 10px 0 0",
-                        color: colors.primary[500],
-                        "&.Mui-selected": {
-                          bgcolor: colors.primary[500],
-                          color: colors.grey[900],
-                        },
-                      }}
-                    />
+                  <Tab
+                    label="Gallery"
+                    {...a11yProps(0)}
+                    sx={{
+                      bgcolor:
+                        value === 0 ? colors.grey[700] : colors.grey[700],
+                      borderRadius: "10px 10px 0 0",
+                      color: colors.primary[500],
+                      "&.Mui-selected": {
+                        bgcolor: colors.primary[500],
+                        color: colors.grey[900],
+                      },
+                    }}
+                  />
                   <Tab
                     label="Upload"
                     {...a11yProps(1)}
@@ -415,7 +316,7 @@ const MediaLibrary = ({onSelectImage}) => {
                 </Tabs>
               </Box>
 
-                <CustomTabPanel value={value} index={0}>
+              <CustomTabPanel value={value} index={0}>
                 <Box mt={2} height={"50vh"}>
                   {displayImages()}
                 </Box>
@@ -486,12 +387,129 @@ const MediaLibrary = ({onSelectImage}) => {
 };
 
 const MediaGallery = () => {
-  
+  const onSelectImage = (image) => {
+    console.log("Selected image: ", image);
+  };
+
+  const [images, setImages] = useState([]);
+  const [message, setMessage] = useState("");
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+
+  const fetchImages = async () => {
+    try {
+      const response = await axios.get("http://localhost:3030/image/all");
+      const { data } = response;
+      setImages(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchImages();
+  }, []);
+
   return (
     <Box m={"20px"}>
       <Header title="Media Gallery" />
       {OpenMediaButton()}
-      {MediaLibrary()}
+      {MediaLibrary(onSelectImage)}
+      <>
+        <Box height="70vh">
+          <ImageList sx={{ width: "100%", height: "inherit" }} cols={3}>
+            {images.toReversed().map((item) => (
+              <ImageListItem
+                key={item.il_id}
+                sx={{
+                  cursor: "pointer",
+                  border: `2px solid ${colors.grey[800]}`,
+                  "&:hover": {
+                    border: `2px solid ${colors.primary[500]}`,
+                  },
+                }}
+              >
+                <img
+                  src={`http://localhost:3030/uploads/${item.il_path}`}
+                  alt={item.il_name}
+                  loading="lazy"
+                  onClick={() =>
+                    window.open(
+                      `http://localhost:3030/uploads/${item.il_path}`,
+                      "_blank"
+                    )
+                  }
+                />
+                <ImageListItemBar
+                  title={item.il_name}
+                  subtitle={item.il_desc}
+                  actionIcon={
+                    <IconButton
+                      sx={{ color: "rgba(255, 255, 255, 0.54)" }}
+                      aria-label={`info about ${item.il_name}`}
+                      onClick={async () => {
+                        try {
+                          await axios.delete(
+                            `http://localhost:3030/image/delete/${item.il_id}`
+                          );
+                          setMessage("Image deleted successfully");
+                          setImages(
+                            images.filter((img) => img.il_id !== item.il_id)
+                          );
+                        } catch (error) {
+                          setMessage("An error occurred");
+                          console.error(error);
+                        }
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  }
+                />
+              </ImageListItem>
+            ))}
+          </ImageList>
+          {message === "Image uploaded successfully" ? (
+            <Typography
+              sx={{
+                color: colors.greenAccent[600],
+                fontSize: "1.5rem",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              {message}
+              <CheckIcon
+                sx={{
+                  color: colors.greenAccent[600],
+                  fontSize: "2rem",
+                  marginLeft: "10px",
+                }}
+              />
+            </Typography>
+          ) : (
+            <Typography
+              sx={{
+                color: colors.redAccent[500],
+                fontSize: "1.5rem",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              {message}
+              {message && (
+                <DeleteIcon
+                  sx={{
+                    color: colors.redAccent[500],
+                    fontSize: "2rem",
+                    marginLeft: "10px",
+                  }}
+                />
+              )}
+            </Typography>
+          )}
+        </Box>
+      </>
     </Box>
   );
 };

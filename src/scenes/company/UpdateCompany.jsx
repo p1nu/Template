@@ -410,6 +410,8 @@ const UpdateCompany = () => {
             </Box>
           )}
 
+          
+
           {/* Update Button */}
           <Button
             variant="contained"
