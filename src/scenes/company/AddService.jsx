@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Box,
   Button,
@@ -19,11 +19,13 @@ import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { MediaLibrary } from "../gallery/Index";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
+import { AuthContext } from "../global/AuthContext";
 
 const AddService = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
   const [service, setService] = useState({
     service_name: "",
     service_desc: "",
@@ -32,11 +34,12 @@ const AddService = () => {
     service_mission: "",
     service_logo: "",
     service_company_id: "",
-    service_status_id: "",
-    service_created_by_user_id: "",
+    service_status_id: 1,
+    service_created_by_user_id: user?.user_id,
   });
   const [companies, setCompanies] = useState([]);
   const [error, setError] = useState("");
+  const [isHidden, setIsHidden] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -98,9 +101,9 @@ const AddService = () => {
 
   const handleSelectImage = (imagePath) => {
     setService((prevService) => ({ ...prevService, service_logo: imagePath }));
-    setError('Logo selected successfully');
+    setError("Logo selected successfully");
     // Optionally, add a timeout to clear the message
-    setTimeout(() => setError(''), 3000);
+    setTimeout(() => setError(""), 3000);
   };
 
   return (
@@ -322,72 +325,76 @@ const AddService = () => {
               Add Logo
             </Button>
             <Modal open={open} onClose={handleClose}>
-              <MediaLibrary onSelectImage={handleSelectImage}/>
+              <MediaLibrary onSelectImage={handleSelectImage} />
             </Modal>
           </Box>
 
           {/* Service Status ID */}
-          <Box
-            display="flex"
-            flexDirection="column"
-            margin="10px 0"
-            width="100%"
-          >
-            <InputLabel
-              htmlFor="service_status_id"
-              sx={{ color: colors.grey[100], mb: "5px" }}
+          {isHidden && (
+            <Box
+              display="flex"
+              flexDirection="column"
+              margin="10px 0"
+              width="100%"
             >
-              Service Status ID
-            </InputLabel>
-            <FormControl fullWidth>
-              <Select
-                name="service_status_id"
-                value={service.service_status_id}
+              <InputLabel
+                htmlFor="service_status_id"
+                sx={{ color: colors.grey[100], mb: "5px" }}
+              >
+                Service Status ID
+              </InputLabel>
+              <FormControl fullWidth>
+                <Select
+                  name="service_status_id"
+                  value={service.service_status_id}
+                  onChange={handleChange}
+                  displayEmpty
+                  sx={{
+                    border: `1px solid #000`,
+                    borderRadius: "2px",
+                    backgroundColor: colors.grey[900],
+                    color: colors.grey[100],
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Service Status
+                  </MenuItem>
+                  <MenuItem value="1">Active</MenuItem>
+                  <MenuItem value="2">Inactive</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+          )}
+
+          {/* Created By User ID */}
+          {isHidden && (
+            <Box
+              display="flex"
+              flexDirection="column"
+              margin="10px 0"
+              width="100%"
+            >
+              <InputLabel
+                htmlFor="service_created_by_user_id"
+                sx={{ color: colors.grey[100], mb: "5px" }}
+              >
+                Created By User ID
+              </InputLabel>
+              <InputBase
+                placeholder="Created By User ID"
+                name="service_created_by_user_id"
+                value={service.service_created_by_user_id}
                 onChange={handleChange}
-                displayEmpty
                 sx={{
+                  padding: "10px",
                   border: `1px solid #000`,
                   borderRadius: "2px",
                   backgroundColor: colors.grey[900],
                   color: colors.grey[100],
                 }}
-              >
-                <MenuItem value="" disabled>
-                  Select Service Status
-                </MenuItem>
-                <MenuItem value="1">Active</MenuItem>
-                <MenuItem value="2">Inactive</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-
-          {/* Created By User ID */}
-          <Box
-            display="flex"
-            flexDirection="column"
-            margin="10px 0"
-            width="100%"
-          >
-            <InputLabel
-              htmlFor="service_created_by_user_id"
-              sx={{ color: colors.grey[100], mb: "5px" }}
-            >
-              Created By User ID
-            </InputLabel>
-            <InputBase
-              placeholder="Created By User ID"
-              name="service_created_by_user_id"
-              value={service.service_created_by_user_id}
-              onChange={handleChange}
-              sx={{
-                padding: "10px",
-                border: `1px solid #000`,
-                borderRadius: "2px",
-                backgroundColor: colors.grey[900],
-                color: colors.grey[100],
-              }}
-            />
-          </Box>
+              />
+            </Box>
+          )}
 
           {/* Add Service Button */}
           <Button
