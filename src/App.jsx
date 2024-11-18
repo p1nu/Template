@@ -31,6 +31,7 @@ import UpdateJob from "./scenes/jobs/UpdateJob.jsx";
 function App() {
   const [theme, colorMode] = useMode();
   const location = useLocation();
+  const isHidden = false;
 
   const isLoginPage = location.pathname === "/login";
 

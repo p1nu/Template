@@ -7,6 +7,7 @@ import {
   InputBase,
   InputLabel,
   FormControl,
+  Modal,
 } from "@mui/material";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
@@ -15,18 +16,22 @@ import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../global/AuthContext";
+import { OpenMediaButton, MediaLibrary } from "../gallery/Index";
+import { useMediaGallery } from "../gallery/MediaGalleryContext";
 
 const AddCompany = () => {
   const { user } = useContext(AuthContext);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [company, setCompany] = useState({
+    company_id: "",
     company_name: "",
     company_acronym: "",
     company_value: "",
     company_vision: "",
     company_mission: "",
     company_desc: "",
+    company_logo: "",
     company_created_by_user_id: "",
   });
   const [error, setError] = useState("");
@@ -75,6 +80,16 @@ const AddCompany = () => {
       return () => clearTimeout(timer);
     }
   }, [error]);
+
+  const { open, handleClose, value, handleOpen } = useMediaGallery();
+
+  const handleSelectImage = (imagePath) => {
+    setCompany((prevCompany) => ({ ...prevCompany, company_logo: imagePath }));
+    setError('Logo selected successfully');
+    // Optionally, add a timeout to clear the message
+    setTimeout(() => setError(''), 3000);
+  };
+
 
   return (
     <Box m={2}>
@@ -300,6 +315,24 @@ const AddCompany = () => {
               />
             </Box>
           )}
+
+          {/* Add Company Logo */}
+          <Box>
+            <Button
+              variant="contained"
+              title="Add Logo"
+              onClick={handleOpen}
+              sx={{
+                mt: 2,
+                backgroundColor: colors.blueAccent[200],
+              }}
+            >
+              Add Logo
+            </Button>
+            <Modal open={open} onClose={handleClose}>
+              <MediaLibrary onSelectImage={handleSelectImage}/>
+            </Modal>
+          </Box>
 
           {/* Submit Button */}
           <Button
