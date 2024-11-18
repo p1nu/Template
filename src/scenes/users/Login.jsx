@@ -91,6 +91,7 @@ const Login = () => {
           placeholder="Password"
           type="password"
           value={user_password}
+          onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
           onChange={(e) => setUser_password(e.target.value)}
           sx={{
             width: '100%',

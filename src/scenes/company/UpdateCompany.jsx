@@ -17,6 +17,8 @@ import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../global/AuthContext";
+import { MediaGallery, OpenMediaButton } from "../gallery/Index";
+import { useMediaGallery } from "../gallery/MediaGalleryContext";
 
 const UpdateCompany = () => {
   const { user } = useContext(AuthContext);
