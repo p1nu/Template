@@ -9,6 +9,7 @@ import {
   Select,
   MenuItem,
   InputLabel,
+  Modal,
 } from "@mui/material";
 import axios from "axios";
 import { tokens } from "../../theme";
@@ -16,6 +17,8 @@ import Header from "../../components/Header";
 import { useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
+import { MediaLibrary } from "../gallery/Index";
+import { useMediaGallery } from "../gallery/MediaGalleryContext";
 
 const AddService = () => {
   const theme = useTheme();
@@ -27,6 +30,7 @@ const AddService = () => {
     service_value: "",
     service_vision: "",
     service_mission: "",
+    service_logo: "",
     service_company_id: "",
     service_status_id: "",
     service_created_by_user_id: "",
@@ -53,6 +57,7 @@ const AddService = () => {
         service_value: "",
         service_vision: "",
         service_mission: "",
+        service_logo: "",
         service_company_id: "",
         service_status_id: "",
         service_created_by_user_id: "",
@@ -88,6 +93,15 @@ const AddService = () => {
       return () => clearTimeout(timer); // Cleanup the timer on component unmount
     }
   }, [error]);
+
+  const { open, handleClose, value, handleOpen } = useMediaGallery();
+
+  const handleSelectImage = (imagePath) => {
+    setService((prevService) => ({ ...prevService, service_logo: imagePath }));
+    setError('Logo selected successfully');
+    // Optionally, add a timeout to clear the message
+    setTimeout(() => setError(''), 3000);
+  };
 
   return (
     <Box m={2}>
@@ -292,6 +306,24 @@ const AddService = () => {
                 color: colors.grey[100],
               }}
             />
+          </Box>
+
+          {/* Add Service Logo */}
+          <Box>
+            <Button
+              variant="contained"
+              title="Add Logo"
+              onClick={handleOpen}
+              sx={{
+                mt: 2,
+                backgroundColor: colors.blueAccent[200],
+              }}
+            >
+              Add Logo
+            </Button>
+            <Modal open={open} onClose={handleClose}>
+              <MediaLibrary onSelectImage={handleSelectImage}/>
+            </Modal>
           </Box>
 
           {/* Service Status ID */}
