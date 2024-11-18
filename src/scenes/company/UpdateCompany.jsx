@@ -9,6 +9,7 @@ import {
   FormControl,
   Select,
   MenuItem,
+  Modal,
 } from "@mui/material";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
@@ -17,7 +18,7 @@ import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../global/AuthContext";
-import { MediaGallery, OpenMediaButton } from "../gallery/Index";
+import { MediaGallery, OpenMediaButton, MediaLibrary } from "../gallery/Index";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 
 const UpdateCompany = () => {
@@ -33,6 +34,7 @@ const UpdateCompany = () => {
     company_vision: "",
     company_mission: "",
     company_desc: "",
+    company_logo: "",
     company_status_id: "",
     company_created_by_user_id: "",
     company_updated_by_user_id: "",
@@ -97,6 +99,7 @@ const UpdateCompany = () => {
         company_vision: company.company_vision,
         company_mission: company.company_mission,
         company_desc: company.company_desc,
+        company_logo: company.company_logo,
         company_status_id: company.company_status_id,
         company_updated_by_user_id: user?.user_id,
       });
@@ -118,6 +121,15 @@ const UpdateCompany = () => {
       return () => clearTimeout(timer);
     }
   }, [error]);
+
+  const { open, handleClose, value, handleOpen } = useMediaGallery();
+
+  const handleSelectImage = (imagePath) => {
+    setCompany((prevCompany) => ({ ...prevCompany, company_logo: imagePath }));
+    setError("Logo selected successfully");
+    // Optionally, add a timeout to clear the message
+    setTimeout(() => setError(""), 3000);
+  };
 
   return (
     <Box m={2}>
@@ -410,7 +422,36 @@ const UpdateCompany = () => {
             </Box>
           )}
 
-          
+          {/* Update Company Logo */}
+          <Box width="100%">
+            <Button
+              variant="contained"
+              title="Add Logo"
+              onClick={handleOpen}
+              sx={{
+                mt: 2,
+                backgroundColor: colors.blueAccent[200],
+              }}
+            >
+              Add Logo
+            </Button>
+            <Modal open={open} onClose={handleClose}>
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height="100vh"
+                bgcolor="rgba(0, 0, 0, 0.5)"
+              >
+                <MediaLibrary
+                  valueName="Add Logo"
+                  companyId={company.company_id}
+                  onSelectImage={handleSelectImage} // Pass the callback
+                  handleClose={handleClose} // Pass the handleClose function
+                />
+              </Box>
+            </Modal>
+          </Box>
 
           {/* Update Button */}
           <Button
