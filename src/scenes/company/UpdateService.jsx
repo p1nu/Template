@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Button, InputBase, Typography, useTheme, FormControl, Select, MenuItem, InputLabel } from '@mui/material';
+import React, { useState, useEffect, useContext } from 'react';
+import { Box, Button, InputBase, Modal, Typography, useTheme, FormControl, Select, MenuItem, InputLabel } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { tokens } from '../../theme';
 import Header from '../../components/Header';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+import { MediaLibrary } from "../gallery/Index";
+import { useMediaGallery } from "../gallery/MediaGalleryContext";
+import { AuthContext } from "../global/AuthContext";
 
 const UpdateService = () => {
+  const { user } = useContext(AuthContext);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { id } = useParams();
@@ -20,7 +24,7 @@ const UpdateService = () => {
     service_mission: '',
     service_company_id: '',
     service_status_id: '',
-    service_updated_by_user_id: '',
+    service_updated_by_user_id: user?.user_id,
   });
   const [companies, setCompanies] = useState([]);
   const [error, setError] = useState('');
@@ -62,7 +66,9 @@ const UpdateService = () => {
 
   const handleUpdateService = async () => {
     try {
-      await axios.put(`http://localhost:3030/service/update/${id}`, service);
+      await axios.put(`http://localhost:3030/service/update/${id}`, {
+        ...service, service_updated_by_user_id: user?.user_id,
+      });
       setError('Service updated successfully');
       setTimeout(() => {
         navigate('/services');
@@ -82,6 +88,17 @@ const UpdateService = () => {
       return () => clearTimeout(timer); // Cleanup the timer on component unmount
     }
   }, [error]);
+
+  const { open, handleClose, value, handleOpen } = useMediaGallery();
+
+  const handleSelectImage = (imagePath) => {
+    setService((prevService) => ({ ...prevService, service_logo: imagePath }));
+    setError('Logo selected successfully');
+    // Optionally, add a timeout to clear the message
+    setTimeout(() => setError(''), 3000);
+  };
+
+  const [isHidden, setIsHidden] = useState(false);
 
   return (
     <Box m={2}>
@@ -112,6 +129,8 @@ const UpdateService = () => {
           width="100%"
           boxShadow={3}
         >
+
+          {/* Service Name and Select Company */}
           <Box
             display="flex"
             justifyContent={"space-between"}
@@ -120,6 +139,8 @@ const UpdateService = () => {
             alignContent={"center"}
             height="100%"
           >
+
+            {/* Service Name */}
             <Box display="flex" flexDirection="column" width="100%">
               <InputLabel
                 htmlFor="service_name"
@@ -143,6 +164,8 @@ const UpdateService = () => {
                 }}
               />
             </Box>
+
+            {/* Select Company */}
             <Box display="flex" flexDirection="column" width="100%">
               <InputLabel
                 htmlFor="service_company_id"
@@ -175,6 +198,8 @@ const UpdateService = () => {
               </FormControl>
             </Box>
           </Box>
+
+          {/* Service Description */}
           <Box
             display="flex"
             flexDirection="column"
@@ -200,6 +225,8 @@ const UpdateService = () => {
               }}
             />
           </Box>
+
+          {/* Service Value */}
           <Box
             display="flex"
             flexDirection="column"
@@ -225,6 +252,8 @@ const UpdateService = () => {
               }}
             />
           </Box>
+
+          {/* Service Vision */}
           <Box
             display="flex"
             flexDirection="column"
@@ -250,6 +279,8 @@ const UpdateService = () => {
               }}
             />
           </Box>
+
+          {/* Service Mission */}
           <Box
             display="flex"
             flexDirection="column"
@@ -275,6 +306,64 @@ const UpdateService = () => {
               }}
             />
           </Box>
+
+          {/* Service Status ID */}
+          
+            <Box
+              display="flex"
+              flexDirection="column"
+              margin="10px 0"
+              width="100%"
+            >
+              <InputLabel
+                htmlFor="service_status_id"
+                sx={{ color: colors.grey[100], mb: "5px" }}
+              >
+                Service Status ID
+              </InputLabel>
+              <FormControl fullWidth>
+                <Select
+                  name="service_status_id"
+                  value={service.service_status_id}
+                  onChange={handleChange}
+                  displayEmpty
+                  sx={{
+                    border: `1px solid #000`,
+                    borderRadius: "2px",
+                    backgroundColor: colors.grey[900],
+                    color: colors.grey[100],
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Service Status
+                  </MenuItem>
+                  <MenuItem value="1">Active</MenuItem>
+                  <MenuItem value="2">Inactive</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+          
+
+          {/* Add Logo or Update Logo */}
+          <Box>
+            <Button
+              variant="contained"
+              title="Add Logo"
+              onClick={handleOpen}
+              sx={{
+                mt: 2,
+                backgroundColor: colors.blueAccent[200],
+              }}
+            >
+              Update Logo
+            </Button>
+            <Modal open={open} onClose={handleClose}>
+              <MediaLibrary onSelectImage={handleSelectImage}/>
+            </Modal>
+          </Box>
+
+          {/* Updated by user id */}
+          {/* {isHidden && (
           <InputBase
             placeholder="Updated By User ID"
             name="service_updated_by_user_id"
@@ -290,6 +379,9 @@ const UpdateService = () => {
               color: colors.grey[100],
             }}
           />
+          )} */}
+
+          {/* Update Service Button */}
           <Button
             variant="contained"
             fullWidth
