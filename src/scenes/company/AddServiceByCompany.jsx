@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Box,
   Button,
@@ -9,6 +9,7 @@ import {
   FormControl,
   Select,
   MenuItem,
+  Modal,
 } from "@mui/material";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
@@ -16,8 +17,12 @@ import axios from "axios";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useNavigate, useParams } from "react-router-dom";
+import { MediaLibrary } from "../gallery/Index";
+import { AuthContext } from "../global/AuthContext";
+import { useMediaGallery } from "../gallery/MediaGalleryContext";
 
 const AddServiceByCompany = () => {
+  const { user } = useContext(AuthContext);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate();
@@ -28,9 +33,10 @@ const AddServiceByCompany = () => {
     service_value: "",
     service_vision: "",
     service_mission: "",
+    service_logo: "",
     service_company_id: id,
-    service_status_id: "",
-    service_created_by_user_id: "",
+    service_status_id: 1,
+    service_created_by_user_id: user?.user_id,
   });
   const [company, setCompany] = useState({
     company_name: "",
@@ -97,9 +103,10 @@ const AddServiceByCompany = () => {
         service_value: "",
         service_vision: "",
         service_mission: "",
+        service_logo: "",
         service_company_id: id,
-        service_status_id: "",
-        service_created_by_user_id: "",
+        service_status_id: 1,
+        service_created_by_user_id: user?.user_id,
       });
       setTimeout(() => {
         navigate("/services");
@@ -119,6 +126,17 @@ const AddServiceByCompany = () => {
       return () => clearTimeout(timer);
     }
   }, [error]);
+
+  const { open, handleClose, value, handleOpen } = useMediaGallery();
+
+  const handleSelectImage = (imagePath) => {
+    setCompany((prevService) => ({ ...prevService, service_logo: imagePath }));
+    setError('Logo selected successfully');
+    // Optionally, add a timeout to clear the message
+    setTimeout(() => setError(''), 3000);
+  };
+
+  const [isHidden, setIsHidden] = useState(false);
 
   return (
     <Box m={2}>
@@ -321,7 +339,26 @@ const AddServiceByCompany = () => {
             />
           </Box>
 
+          {/* Add Service Logo */}
+          <Box>
+            <Button
+              variant="contained"
+              title="Add Logo"
+              onClick={handleOpen}
+              sx={{
+                mt: 2,
+                backgroundColor: colors.blueAccent[200],
+              }}
+            >
+              Add Logo
+            </Button>
+            <Modal open={open} onClose={handleClose}>
+              <MediaLibrary onSelectImage={handleSelectImage}/>
+            </Modal>
+          </Box>
+
           {/* Service Status */}
+          {isHidden && (
           <Box
             display="flex"
             flexDirection="column"
@@ -355,8 +392,10 @@ const AddServiceByCompany = () => {
               </Select>
             </FormControl>
           </Box>
+          )}
 
           {/* Created By User ID */}
+          {isHidden && (
           <Box
             display="flex"
             flexDirection="column"
@@ -383,6 +422,7 @@ const AddServiceByCompany = () => {
               }}
             />
           </Box>
+          )}
 
           {/* Add Service Button */}
           <Button

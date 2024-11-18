@@ -62,8 +62,8 @@ const AddService = () => {
         service_mission: "",
         service_logo: "",
         service_company_id: "",
-        service_status_id: "",
-        service_created_by_user_id: "",
+        service_status_id: 1,
+        service_created_by_user_id: user?.user_id,
       }); // Reset form
       setTimeout(() => {
         navigate("/services");
