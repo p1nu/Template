@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useContext } from "react";
 import {
   Box,
   Button,
@@ -22,6 +22,7 @@ import DangerousIcon from "@mui/icons-material/Dangerous";
 import { useDropzone } from "react-dropzone";
 import Header from "../../components/Header.jsx";
 import { MediaGalleryProvider, useMediaGallery } from "./MediaGalleryContext";
+import { AuthContext } from "../global/AuthContext";
 
 const Dropzone = ({ onDrop }) => {
   const theme = useTheme();
@@ -91,6 +92,7 @@ const MediaLibrary = ({ onSelectImage }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { open, handleClose, value, handleChange } = useMediaGallery();
+  const { user } = useContext(AuthContext);
 
   const style = {
     position: "absolute",
@@ -118,6 +120,7 @@ const MediaLibrary = ({ onSelectImage }) => {
     const formData = new FormData();
     acceptedFiles.forEach((file) => {
       formData.append("images", file);
+      formData.append("il_created_by_user_id", user?.user_id);
     });
 
     try {
@@ -127,6 +130,7 @@ const MediaLibrary = ({ onSelectImage }) => {
         },
       });
       setMessage("Image uploaded successfully");
+      console.log(user.user_id);
       fetchImages();
     } catch (error) {
       setMessage("An error occurred");
