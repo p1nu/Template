@@ -171,7 +171,7 @@ const MediaLibrary = ({ onSelectImage }) => {
 
   const handleSelectImage = (image) => {
     if (onSelectImage) {
-      onSelectImage(image.il_path); // Pass the image path back to the parent
+      onSelectImage(image); // Pass the image path and id back to the parent
       handleClose(); // Close the modal after selection
     }
   };
@@ -275,7 +275,7 @@ const MediaLibrary = ({ onSelectImage }) => {
     <>
       <Box>
         <Modal
-          open={{open, open1, open2}}
+          open={open}
           onClose={handleClose}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
