@@ -359,7 +359,7 @@ const AddCompany = () => {
               </Modal>
             </Box>
 
-            {/* Add Company Banner */}
+            {/* Add Company Banner
             <Box width={"100%"}>
               <Button
                 variant="contained"
@@ -376,7 +376,7 @@ const AddCompany = () => {
               <Modal open={open1} onClose={handleClose1}>
                 <MediaLibrary onSelectImage={handleSelectBanner} />
               </Modal>
-            </Box>
+            </Box> */}
           </Box>
 
           {/* Submit Button */}
