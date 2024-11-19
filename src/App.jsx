@@ -7,6 +7,7 @@ import Users from "./scenes/users/Index.jsx";
 import AddUser from "./scenes/users/AddUser";
 import UpdateUser from "./scenes/users/UpdateUser";
 import Company from "./scenes/company/Index.jsx";
+import Banner from "./scenes/company/Banner.jsx";
 import AddCompany from "./scenes/company/AddCompany";
 import UpdateCompany from "./scenes/company/UpdateCompany";
 import Services from "./scenes/company/Services.jsx";
@@ -31,7 +32,6 @@ import UpdateJob from "./scenes/jobs/UpdateJob.jsx";
 function App() {
   const [theme, colorMode] = useMode();
   const location = useLocation();
-  const isHidden = false;
 
   const isLoginPage = location.pathname === "/login";
 
@@ -50,6 +50,7 @@ function App() {
               <Route path="/add-user" element={<AddUser />} />
               <Route path="/user/:id" element={<UpdateUser />} />
               <Route path="/company" element={<Company />} />
+              <Route path="/company/banner" element={<Banner />} />
               <Route path="/add-company" element={<AddCompany />} />
               <Route path="/company/:id" element={<UpdateCompany />} />
               <Route path="/services" element={<Services />} />
