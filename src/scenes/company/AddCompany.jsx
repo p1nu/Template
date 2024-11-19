@@ -84,30 +84,25 @@ const AddCompany = () => {
     }
   }, [error]);
 
-  const { open, open1, handleOpen, handleOpen1, handleClose, handleClose1 } = useMediaGallery();
-
-  const [openLogoModal, setOpenLogoModal] = useState(false);
-  const [openBannerModal, setOpenBannerModal] = useState(false);
-
+  const { open, open1, handleOpen, handleOpen1, handleClose, handleClose1 } =
+    useMediaGallery();
 
   const handleSelectLogo = (imagePath) => {
     setCompany((prevCompany) => ({
       ...prevCompany,
       company_logo: imagePath,
     }));
-    setError('Logo selected successfully');
+    setError("Logo selected successfully");
   };
-
 
   const handleSelectBanner = (imagePath) => {
     setCompany((prevCompany) => ({
       ...prevCompany,
       company_banner: imagePath,
     }));
-    setError('Banner selected successfully');
+    setError("Banner selected successfully");
     handleClose1();
   };
-
 
   return (
     <Box m={2}>
@@ -334,40 +329,54 @@ const AddCompany = () => {
             </Box>
           )}
 
-          {/* Add Company Logo */}
-          <Box>
-            <Button
-              variant="contained"
-              title="Add Logo"
-              onClick={handleOpen}
-              sx={{
-                mt: 2,
-                backgroundColor: colors.blueAccent[200],
-              }}
-            >
-              Add Logo
-            </Button>
-            <Modal open={open} onClose={handleClose}>
-              <MediaLibrary onSelectImage={handleSelectLogo}/>
-            </Modal>
-          </Box>
+          {/* Add Company Logo and Banner */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              gap: "20px",
+              width: "100%",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {/* Add Company Logo */}
+            <Box width={"100%"}>
+              <Button
+                variant="contained"
+                title="Add Logo"
+                onClick={handleOpen}
+                fullWidth
+                sx={{
+                  mt: 2,
+                  backgroundColor: colors.blueAccent[200],
+                }}
+              >
+                Add Logo
+              </Button>
+              <Modal open={open} onClose={handleClose}>
+                <MediaLibrary onSelectImage={handleSelectLogo} />
+              </Modal>
+            </Box>
 
-          {/* Add Company Banner */}
-          <Box>
-            <Button
-              variant="contained"
-              title="Add Banner"
-              onClick={handleOpen1}
-              sx={{
-                mt: 2,
-                backgroundColor: colors.blueAccent[200],
-              }}
-            >
-              Add Banner
-            </Button>
-            <Modal open={open1} onClose={handleClose1}>
-              <MediaLibrary onSelectImage={handleSelectBanner}/>
-            </Modal>
+            {/* Add Company Banner */}
+            <Box width={"100%"}>
+              <Button
+                variant="contained"
+                title="Add Banner"
+                onClick={handleOpen1}
+                fullWidth
+                sx={{
+                  mt: 2,
+                  backgroundColor: colors.blueAccent[200],
+                }}
+              >
+                Add Banner
+              </Button>
+              <Modal open={open1} onClose={handleClose1}>
+                <MediaLibrary onSelectImage={handleSelectBanner} />
+              </Modal>
+            </Box>
           </Box>
 
           {/* Submit Button */}
