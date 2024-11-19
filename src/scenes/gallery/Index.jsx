@@ -91,7 +91,7 @@ const a11yProps = (index) => {
 const MediaLibrary = ({ onSelectImage }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const { open, handleClose, value, handleChange } = useMediaGallery();
+  const { open, open1, open2, handleClose, value, handleChange } = useMediaGallery();
   const { user } = useContext(AuthContext);
 
   const style = {
@@ -275,7 +275,7 @@ const MediaLibrary = ({ onSelectImage }) => {
     <>
       <Box>
         <Modal
-          open={open}
+          open={{open, open1, open2}}
           onClose={handleClose}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"

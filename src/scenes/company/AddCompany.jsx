@@ -32,7 +32,8 @@ const AddCompany = () => {
     company_mission: "",
     company_desc: "",
     company_logo: "",
-    company_created_by_user_id: "",
+    company_banner: "",
+    company_created_by_user_id: user?.user_id,
   });
   const [error, setError] = useState("");
   const [isHidden, setIsHidden] = useState(false);
@@ -61,6 +62,8 @@ const AddCompany = () => {
         company_vision: "",
         company_mission: "",
         company_desc: "",
+        company_logo: "",
+        company_banner: "",
         company_created_by_user_id: "",
       });
       setTimeout(() => {
@@ -81,13 +84,28 @@ const AddCompany = () => {
     }
   }, [error]);
 
-  const { open, handleClose, value, handleOpen } = useMediaGallery();
+  const { open, open1, handleOpen, handleOpen1, handleClose, handleClose1 } = useMediaGallery();
 
-  const handleSelectImage = (imagePath) => {
-    setCompany((prevCompany) => ({ ...prevCompany, company_logo: imagePath }));
+  const [openLogoModal, setOpenLogoModal] = useState(false);
+  const [openBannerModal, setOpenBannerModal] = useState(false);
+
+
+  const handleSelectLogo = (imagePath) => {
+    setCompany((prevCompany) => ({
+      ...prevCompany,
+      company_logo: imagePath,
+    }));
     setError('Logo selected successfully');
-    // Optionally, add a timeout to clear the message
-    setTimeout(() => setError(''), 3000);
+  };
+
+
+  const handleSelectBanner = (imagePath) => {
+    setCompany((prevCompany) => ({
+      ...prevCompany,
+      company_banner: imagePath,
+    }));
+    setError('Banner selected successfully');
+    handleClose1();
   };
 
 
@@ -330,7 +348,25 @@ const AddCompany = () => {
               Add Logo
             </Button>
             <Modal open={open} onClose={handleClose}>
-              <MediaLibrary onSelectImage={handleSelectImage}/>
+              <MediaLibrary onSelectImage={handleSelectLogo}/>
+            </Modal>
+          </Box>
+
+          {/* Add Company Banner */}
+          <Box>
+            <Button
+              variant="contained"
+              title="Add Banner"
+              onClick={handleOpen1}
+              sx={{
+                mt: 2,
+                backgroundColor: colors.blueAccent[200],
+              }}
+            >
+              Add Banner
+            </Button>
+            <Modal open={open1} onClose={handleClose1}>
+              <MediaLibrary onSelectImage={handleSelectBanner}/>
             </Modal>
           </Box>
 
