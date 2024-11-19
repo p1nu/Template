@@ -130,7 +130,6 @@ const MediaLibrary = ({ onSelectImage }) => {
         },
       });
       setMessage("Image uploaded successfully");
-      console.log(user.user_id);
       fetchImages();
     } catch (error) {
       setMessage("An error occurred");
@@ -390,7 +389,7 @@ const MediaLibrary = ({ onSelectImage }) => {
   );
 };
 
-const MediaGallery = () => {
+function MediaGallery() {
   const onSelectImage = (image) => {
     console.log("Selected image: ", image);
   };
