@@ -20,6 +20,8 @@ import "react-quill-new/dist/quill.snow.css";
 import { MediaLibrary } from "../gallery/Index";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { AuthContext } from "../global/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddService = () => {
   const theme = useTheme();
@@ -38,7 +40,6 @@ const AddService = () => {
     service_created_by_user_id: user?.user_id,
   });
   const [companies, setCompanies] = useState([]);
-  const [error, setError] = useState("");
   const [isHidden, setIsHidden] = useState(false);
 
   const handleChange = (e) => {
@@ -53,7 +54,7 @@ const AddService = () => {
   const handleAddService = async () => {
     try {
       await axios.post("http://localhost:3030/service/new", service);
-      setError("Service added successfully");
+      toast.success("Service added successfully");
       setService({
         service_name: "",
         service_desc: "",
@@ -70,7 +71,7 @@ const AddService = () => {
       }, 3000); // Navigate to services page after 3 seconds
     } catch (error) {
       console.error("Error adding service:", error);
-      setError("Error adding service");
+      toast.error("Error adding service");
     }
   };
 
@@ -82,28 +83,18 @@ const AddService = () => {
         setCompanies(response.data);
       } catch (error) {
         console.error("Error fetching company data:", error);
+        toast.error("Failed to fetch company data");
       }
     };
     fetchCompany();
   }, []);
 
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError("");
-      }, 3000); // Clear error after 3 seconds
-
-      return () => clearTimeout(timer); // Cleanup the timer on component unmount
-    }
-  }, [error]);
 
   const { open, handleClose, value, handleOpen } = useMediaGallery();
 
   const handleSelectImage = (imagePath) => {
     setService((prevService) => ({ ...prevService, service_logo: imagePath }));
-    setError("Logo selected successfully");
-    // Optionally, add a timeout to clear the message
-    setTimeout(() => setError(""), 3000);
+    toast.success("Logo selected successfully");
   };
 
   return (
@@ -405,17 +396,9 @@ const AddService = () => {
           >
             Add Service
           </Button>
-          {error && (
-            <Typography
-              variant="body1"
-              color={error.includes("successfully") ? "green" : "red"}
-              mt={2}
-            >
-              {error}
-            </Typography>
-          )}
         </Box>
       </Box>
+      <ToastContainer theme="colored" autoClose={2000} />
     </Box>
   );
 };
