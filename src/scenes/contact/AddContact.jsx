@@ -1,28 +1,117 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Button, InputBase, Typography, useTheme, MenuItem, Select, FormControl } from '@mui/material';
+import React, { useState, useEffect, useContext } from 'react';
+import {
+  Box,
+  Button,
+  Typography,
+  useTheme,
+  InputBase,
+  InputLabel,
+  FormControl,
+  Select,
+  MenuItem,
+} from '@mui/material';
 import axios from 'axios';
 import { tokens } from '../../theme';
 import Header from '../../components/Header';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../global/AuthContext';
 
 const AddContact = () => {
+  const { user } = useContext(AuthContext);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [contact, setContact] = useState({ contact_name: '', contact_email: '', contact_type: '' });
-  const [error, setError] = useState('');
 
+  // Contact state
+  const [contact, setContact] = useState({
+    contact_phonenumber: '',
+    contact_address: '',
+    contact_email: '',
+    contact_telegram: '',
+    contact_website: '',
+    contact_company_id: '',
+    contact_service_id: '',
+    contact_created_by_user_id: user?.user_id,
+  });
+
+  const [error, setError] = useState('');
+  const [companies, setCompanies] = useState([]);
+  const [services, setServices] = useState([]); // Services for the selected company
+  const navigate = useNavigate();
+
+  // Fetch companies on component mount
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const response = await axios.get('http://localhost:3030/company/all');
+        setCompanies(response.data);
+      } catch (error) {
+        console.error('Error fetching companies:', error);
+      }
+    };
+
+    fetchCompanies();
+  }, []);
+
+  // Fetch services when the selected company changes
+  useEffect(() => {
+    const fetchServices = async () => {
+      if (contact.contact_company_id) {
+        try {
+          const response = await axios.get(
+            `http://localhost:3030/service/company/${contact.contact_company_id}`
+          );
+          setServices(response.data);
+        } catch (error) {
+          console.error('Error fetching services:', error);
+          setServices([]); // Reset services if fetch fails
+        }
+      } else {
+        setServices([]); // Reset services when no company is selected
+      }
+    };
+
+    fetchServices();
+  }, [contact.contact_company_id]);
+
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setContact((prevContact) => ({ ...prevContact, [name]: value }));
+    setContact((prevContact) => {
+      // Reset service_id when company changes
+      if (name === 'contact_company_id') {
+        return { ...prevContact, contact_service_id: '', [name]: value };
+      }
+      return { ...prevContact, [name]: value };
+    });
   };
 
+  // Handle form submission
   const handleAddContact = async () => {
     try {
-      await axios.post('http://localhost:3030/contact', contact);
+      await axios.post('http://localhost:3030/contact/new', {
+        ...contact,
+        contact_created_by_user_id: user?.user_id,
+      });
       setError('Contact added successfully');
-      setContact({ contact_name: '', contact_email: '', contact_type: '' }); // Reset form
+
+      // Reset form
+      setContact({
+        contact_phonenumber: '',
+        contact_address: '',
+        contact_email: '',
+        contact_telegram: '',
+        contact_website: '',
+        contact_company_id: '',
+        contact_service_id: '',
+        contact_created_by_user_id: user?.user_id,
+      });
+
+      setTimeout(() => {
+        navigate('/contact');
+      }, 3000);
     } catch (error) {
       console.error('Error adding contact:', error);
-      setError('Error adding contact');
+      setError('Failed to add contact');
     }
   };
 
@@ -30,9 +119,8 @@ const AddContact = () => {
     if (error) {
       const timer = setTimeout(() => {
         setError('');
-      }, 3000); // Clear error after 3 seconds
-
-      return () => clearTimeout(timer); // Cleanup the timer on component unmount
+      }, 3000);
+      return () => clearTimeout(timer);
     }
   }, [error]);
 
@@ -44,7 +132,8 @@ const AddContact = () => {
         flexDirection="column"
         alignItems="center"
         justifyContent="center"
-        height="77vh"
+        height="100%"
+        padding={2}
         bgcolor={colors.grey[800]}
       >
         <Box
@@ -55,60 +144,233 @@ const AddContact = () => {
           p={4}
           bgcolor={colors.grey[900]}
           borderRadius="2px"
-          width="50%" 
+          width="100%"
           boxShadow={3}
         >
-          <Typography variant="h4" color={colors.grey[100]} mb={2}>
-            Add Contact
-          </Typography>
-          <InputBase
-            placeholder="Name"
-            name="contact_name"
-            value={contact.contact_name}
-            onChange={handleChange}
-            sx={{
-              width: '100%',
-              margin: '10px 0',
-              padding: '10px',
-              border: `1px solid ${colors.grey[800]}`,
-              borderRadius: '2px',
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
-            }}
-          />
-          <InputBase
-            placeholder="Email"
-            name="contact_email"
-            type="email"
-            value={contact.contact_email}
-            onChange={handleChange}
-            sx={{
-              width: '100%',
-              margin: '10px 0',
-              padding: '10px',
-              border: `1px solid ${colors.grey[800]}`,
-              borderRadius: '2px',
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
-            }}
-          />
-          <FormControl fullWidth sx={{ margin: '10px 0' }}>
-            <Select
-              name="contact_type"
-              value={contact.contact_type}
+          {/* Phone Number and Email */}
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            gap="20px"
+            width="100%"
+            alignItems="center"
+          >
+            {/* Phone Number */}
+            <Box display="flex" flexDirection="column" width="100%">
+              <InputLabel
+                htmlFor="contact_phonenumber"
+                sx={{ color: colors.grey[100], mb: '5px' }}
+              >
+                Phone Number
+              </InputLabel>
+              <InputBase
+                id="contact_phonenumber"
+                placeholder="Enter phone number"
+                name="contact_phonenumber"
+                value={contact.contact_phonenumber}
+                onChange={handleChange}
+                sx={{
+                  padding: '10px',
+                  border: `1px solid #000`,
+                  borderRadius: '2px',
+                  backgroundColor: colors.grey[900],
+                  color: colors.grey[100],
+                }}
+              />
+            </Box>
+            {/* Email */}
+            <Box display="flex" flexDirection="column" width="100%">
+              <InputLabel
+                htmlFor="contact_email"
+                sx={{ color: colors.grey[100], mb: '5px' }}
+              >
+                Email
+              </InputLabel>
+              <InputBase
+                id="contact_email"
+                placeholder="Enter email"
+                name="contact_email"
+                value={contact.contact_email}
+                onChange={handleChange}
+                sx={{
+                  padding: '10px',
+                  border: `1px solid #000`,
+                  borderRadius: '2px',
+                  backgroundColor: colors.grey[900],
+                  color: colors.grey[100],
+                }}
+              />
+            </Box>
+          </Box>
+
+          {/* Address */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="contact_address"
+              sx={{ color: colors.grey[100], mb: '5px' }}
+            >
+              Address
+            </InputLabel>
+            <InputBase
+              id="contact_address"
+              placeholder="Enter address"
+              name="contact_address"
+              value={contact.contact_address}
               onChange={handleChange}
               sx={{
-                border: `1px solid ${colors.grey[800]}`,
+                padding: '10px',
+                border: `1px solid #000`,
                 borderRadius: '2px',
                 backgroundColor: colors.grey[900],
                 color: colors.grey[100],
-                marginTop: '10px',
               }}
+            />
+          </Box>
+
+          {/* Telegram and Website */}
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            gap="20px"
+            width="100%"
+            alignItems="center"
+            marginBottom="10px"
+          >
+            {/* Telegram */}
+            <Box display="flex" flexDirection="column" width="100%">
+              <InputLabel
+                htmlFor="contact_telegram"
+                sx={{ color: colors.grey[100], mb: '5px' }}
+              >
+                Telegram
+              </InputLabel>
+              <InputBase
+                id="contact_telegram"
+                placeholder="Enter Telegram username"
+                name="contact_telegram"
+                value={contact.contact_telegram}
+                onChange={handleChange}
+                sx={{
+                  padding: '10px',
+                  border: `1px solid #000`,
+                  borderRadius: '2px',
+                  backgroundColor: colors.grey[900],
+                  color: colors.grey[100],
+                }}
+              />
+            </Box>
+            {/* Website */}
+            <Box display="flex" flexDirection="column" width="100%">
+              <InputLabel
+                htmlFor="contact_website"
+                sx={{ color: colors.grey[100], mb: '5px' }}
+              >
+                Website
+              </InputLabel>
+              <InputBase
+                id="contact_website"
+                placeholder="Enter website URL"
+                name="contact_website"
+                value={contact.contact_website}
+                onChange={handleChange}
+                sx={{
+                  padding: '10px',
+                  border: `1px solid #000`,
+                  borderRadius: '2px',
+                  backgroundColor: colors.grey[900],
+                  color: colors.grey[100],
+                }}
+              />
+            </Box>
+          </Box>
+
+          {/* Company Selection */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            width="100%"
+            marginBottom="10px"
+          >
+            <InputLabel
+              htmlFor="contact_company_id"
+              sx={{ color: colors.grey[100], mb: '5px' }}
             >
-              <MenuItem value="1">Personal</MenuItem>
-              <MenuItem value="2">Business</MenuItem>
-            </Select>
-          </FormControl>
+              Company
+            </InputLabel>
+            <FormControl fullWidth>
+              <Select
+                name="contact_company_id"
+                value={contact.contact_company_id}
+                onChange={handleChange}
+                sx={{
+                  backgroundColor: colors.grey[900],
+                  color: colors.grey[100],
+                }}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {companies.map((company) => (
+                  <MenuItem key={company.company_id} value={company.company_id}>
+                    {company.company_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          {/* Conditionally Render Service Selection */}
+          {contact.contact_company_id && (
+            <Box
+              display="flex"
+              flexDirection="column"
+              width="100%"
+              marginBottom="10px"
+            >
+              <InputLabel
+                htmlFor="contact_service_id"
+                sx={{ color: colors.grey[100], mb: '5px' }}
+              >
+                Service
+              </InputLabel>
+              <FormControl fullWidth>
+                <Select
+                  name="contact_service_id"
+                  value={contact.contact_service_id}
+                  onChange={handleChange}
+                  sx={{
+                    backgroundColor: colors.grey[900],
+                    color: colors.grey[100],
+                  }}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {services.length > 0 ? (
+                    services.map((service) => (
+                      <MenuItem
+                        key={service.service_id}
+                        value={service.service_id}
+                      >
+                        {service.service_name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem value="">
+                      <em>No Services Available</em>
+                    </MenuItem>
+                  )}
+                </Select>
+              </FormControl>
+            </Box>
+          )}
+
+          {/* Submit Button */}
           <Button
             variant="contained"
             fullWidth
@@ -117,8 +379,14 @@ const AddContact = () => {
           >
             Add Contact
           </Button>
+
+          {/* Error/Success Message */}
           {error && (
-            <Typography variant="body1" color={error.includes('successfully') ? 'green' : 'red'} mt={2}>
+            <Typography
+              variant="body1"
+              color={error.includes('successfully') ? 'green' : 'red'}
+              mt={2}
+            >
               {error}
             </Typography>
           )}
