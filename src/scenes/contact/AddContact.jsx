@@ -15,6 +15,8 @@ import { tokens } from '../../theme';
 import Header from '../../components/Header';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../global/AuthContext';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddContact = () => {
   const { user } = useContext(AuthContext);
@@ -33,7 +35,6 @@ const AddContact = () => {
     contact_created_by_user_id: user?.user_id,
   });
 
-  const [error, setError] = useState('');
   const [companies, setCompanies] = useState([]);
   const [services, setServices] = useState([]); // Services for the selected company
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ const AddContact = () => {
         setCompanies(response.data);
       } catch (error) {
         console.error('Error fetching companies:', error);
+        toast.error('Failed to fetch companies');
       }
     };
 
@@ -64,6 +66,7 @@ const AddContact = () => {
         } catch (error) {
           console.error('Error fetching services:', error);
           setServices([]); // Reset services if fetch fails
+          toast.error('Failed to fetch services');
         }
       } else {
         setServices([]); // Reset services when no company is selected
@@ -92,7 +95,7 @@ const AddContact = () => {
         ...contact,
         contact_created_by_user_id: user?.user_id,
       });
-      setError('Contact added successfully');
+      toast.success('Contact added successfully');
 
       // Reset form
       setContact({
@@ -111,18 +114,9 @@ const AddContact = () => {
       }, 3000);
     } catch (error) {
       console.error('Error adding contact:', error);
-      setError('Failed to add contact');
+      toast.error('Failed to add contact');
     }
   };
-
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError('');
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
 
   return (
     <Box m={2}>
@@ -379,19 +373,11 @@ const AddContact = () => {
           >
             Add Contact
           </Button>
-
-          {/* Error/Success Message */}
-          {error && (
-            <Typography
-              variant="body1"
-              color={error.includes('successfully') ? 'green' : 'red'}
-              mt={2}
-            >
-              {error}
-            </Typography>
-          )}
         </Box>
       </Box>
+      <ToastContainer
+        theme='colored'
+      />
     </Box>
   );
 };
