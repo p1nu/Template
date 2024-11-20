@@ -15,6 +15,8 @@ import { tokens } from "../../theme";
 import { MediaLibrary } from "../gallery/Index"; // Adjust the import path as needed
 import { useParams } from "react-router-dom";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Header from "../../components/Header";
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -26,7 +28,6 @@ const Banner = () => {
 
   const [banners, setBanners] = useState([]);
   const [openMediaLibrary, setOpenMediaLibrary] = useState(false);
-  const [message, setMessage] = useState("");
 
   const { open, handleOpen, handleClose } = useMediaGallery();
 
@@ -39,23 +40,13 @@ const Banner = () => {
       setBanners(response.data[0]);
     } catch (error) {
       console.error("Error fetching banners:", error);
-      setMessage("Failed to load banners.");
+      toast.error("Failed to load banners.");
     }
   };
 
   useEffect(() => {
     fetchBanners();
   }, [companyId]);
-
-  useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => {
-        setMessage("");
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
 
   // Handle image selection from Media Library
   const handleSelectImage = async (image) => {
@@ -69,10 +60,10 @@ const Banner = () => {
       await axios.post("http://localhost:3030/banner/new", payload);
 
       fetchBanners(); // Refresh the banner list
-      setMessage("Banner added successfully.");
+      toast.success("Banner added successfully.");
     } catch (error) {
       console.error("Error adding banner:", error);
-      setMessage("Failed to add banner.");
+      toast.error("Failed to add banner.");
     }
   };
 
@@ -129,10 +120,10 @@ const Banner = () => {
                         await axios.delete(
                           `http://localhost:3030/banner/delete/${banner.banner_id}`
                         );
-                        setMessage("Image deleted successfully");
+                        toast.success("Image deleted successfully");
                         fetchBanners();
                       } catch (error) {
-                        setMessage("An error occurred");
+                        toast.error("An error occurred");
                         console.error(error);
                       }
                     }}
@@ -147,17 +138,7 @@ const Banner = () => {
       </Box>
 
       {/* Display Feedback Message */}
-      <Box display="flex" justifyContent="center" mt={2}>
-        {message && (
-          <Typography
-            variant="body1"
-            color={message.includes("successfully") ? "green" : "red"}
-            mt={2}
-          >
-            {message}
-          </Typography>
-        )}
-      </Box>
+      <ToastContainer theme="colored" autoClose={2000} />
     </Box>
   );
 };
