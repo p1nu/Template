@@ -1,8 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, useTheme, Button, InputBase, InputLabel, FormControl, Select, MenuItem } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Typography,
+  useTheme,
+  Button,
+  InputBase,
+  InputLabel,
+  FormControl,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import DataTable from "react-data-table-component";
-import axios from 'axios';
-import { tokens } from '../../theme';
+import axios from "axios";
+import { tokens } from "../../theme";
 import { Link, useParams } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../../components/Header";
@@ -34,19 +44,21 @@ const ServiceCompany = () => {
         const response = await axios.get(`http://localhost:3030/company/${id}`);
         setCompany(response.data);
       } catch (error) {
-        console.error('Error fetching company details:', error);
-        setError('Error fetching company details');
+        console.error("Error fetching company details:", error);
+        setError("Error fetching company details");
       }
     };
 
     // Fetch services by company ID
     const fetchServices = async () => {
       try {
-        const response = await axios.get(`http://localhost:3030/service/company/${id}`);
+        const response = await axios.get(
+          `http://localhost:3030/service/company/${id}`
+        );
         setServices(response.data);
         setFilteredServices(response.data);
       } catch (error) {
-        console.error('Error fetching services:', error);
+        console.error("Error fetching services:", error);
         // Use mock data if there's an error
         setServices(mockServices);
         setFilteredServices(mockServices);
@@ -67,7 +79,9 @@ const ServiceCompany = () => {
   const handleDelete = async (id) => {
     try {
       await axios.put(`http://localhost:3030/service/delete/${id}`);
-      const response = await axios.get(`http://localhost:3030/service/company/${id}`);
+      const response = await axios.get(
+        `http://localhost:3030/service/company/${id}`
+      );
       setServices(response.data);
       setFilteredServices(response.data);
     } catch (error) {
@@ -81,50 +95,19 @@ const ServiceCompany = () => {
       name: "Service Name",
       selector: (row) => row.service_name,
       sortable: true,
-      width: "25%",
-    },
-    {
-      name: "Associated Job",
-      selector: (row) => row.service_job_id,
-      sortable: true,
-      cell: (row) => {
-        const [job, setJob] = useState({
-          job_name: "",
-        });
-
-        useEffect(() => {
-          const fetchJob = async () => {
-            try {
-              const response = await axios.get(
-                `http://localhost:3030/job/${row.service_job_id}`
-              );
-              const jobData = response.data[0];
-              setJob(jobData);
-            } catch (error) {
-              console.error("Error fetching job:", error);
-            }
-          };
-          if (row.service_job_id) {
-            fetchJob();
-          }
-        }, [row.service_job_id]);
-
-        return (
-          <Typography color={colors.grey[100]}>{job.job_name}</Typography>
-        );
-      },
+      width: "auto",
     },
     {
       name: "Description",
       selector: (row) => row.service_desc,
       sortable: true,
-      width: "30%",
+      width: "15%",
     },
     {
       name: "Status",
       selector: (row) => row.service_status_id,
       sortable: true,
-      width: "15%",
+      width: "60%",
       cell: (row) => {
         let status;
 
@@ -143,19 +126,25 @@ const ServiceCompany = () => {
             width="100%"
           >
             <Typography color={colors.grey[100]}>{status}</Typography>
-            <Link to={`/service/${row.service_id}`} style={{ marginLeft: "auto" }}>
-              <Button variant="outlined" color="primary">
-                Edit
+            <Box display={"flex"} justifyContent={"center"} gap={"10px"}>
+              <Link to={`/banner/service/${row.service_id}`}>
+                <Button variant="outlined" color="primary">
+                  Add Banner
+                </Button>
+              </Link>
+              <Link to={`/service/${row.service_id}`}>
+                <Button variant="outlined" color="primary">
+                  Edit
+                </Button>
+              </Link>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => handleDelete(row.service_id)}
+              >
+                Delete
               </Button>
-            </Link>
-            <Button
-              variant="outlined"
-              color="error"
-              sx={{ m: 1 }}
-              onClick={() => handleDelete(row.service_id)}
-            >
-              Delete
-            </Button>
+            </Box>
           </Box>
         );
       },
@@ -215,7 +204,10 @@ const ServiceCompany = () => {
 
   return (
     <Box m="20px">
-      <Header title={`Services for ${company.company_name}`} subTitle="Manage services" />
+      <Header
+        title={`Services for ${company.company_name}`}
+        subTitle="Manage services"
+      />
       <Box
         m="10px 0 0 0"
         height="auto"
@@ -235,12 +227,7 @@ const ServiceCompany = () => {
       </Box>
       {/* Error Message */}
       {error && (
-        <Typography
-          variant="body1"
-          color="red"
-          mt={2}
-          textAlign="center"
-        >
+        <Typography variant="body1" color="red" mt={2} textAlign="center">
           {error}
         </Typography>
       )}

@@ -104,23 +104,26 @@ const Services = () => {
           >
             <Typography color={colors.grey[100]}>{status}</Typography>
             <Box display={"flex"} justifyContent={"center"} gap={"10px"}>
-            <Link to={`/banner/service/${row.service_id}`}>
-              <Button variant="outlined" color="primary">
-                Add Banner
+              <Link to={`/banner/service/${row.service_id}`}>
+                <Button variant="outlined" color="primary">
+                  Add Banner
+                </Button>
+              </Link>
+              <Link
+                to={`/service/${row.service_id}`}
+                style={{ marginLeft: "auto" }}
+              >
+                <Button variant="outlined" color="primary">
+                  Edit
+                </Button>
+              </Link>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => handleDelete(row.service_id)}
+              >
+                Delete
               </Button>
-            </Link>
-            <Link to={`/service/${row.service_id}`} style={{ marginLeft: "auto" }}>
-              <Button variant="outlined" color="primary">
-                Edit
-              </Button>
-            </Link>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={() => handleDelete(row.service_id)}
-            >
-              Delete
-            </Button>
             </Box>
           </Box>
         );
