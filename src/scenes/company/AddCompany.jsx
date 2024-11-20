@@ -98,7 +98,7 @@ const AddCompany = () => {
   const handleSelectBanner = (imagePath) => {
     setCompany((prevCompany) => ({
       ...prevCompany,
-      company_banner: imagePath,
+      company_banner: imagePath.il_path,
     }));
     setError("Banner selected successfully");
     handleClose1();

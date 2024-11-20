@@ -45,14 +45,16 @@ const Banner = () => {
   // Handle image selection from Media Library
   const handleSelectImage = async (image) => {
     try {
-      await axios.post('http://localhost:3030/banner/new', {
+      const payload = {
         banner_name: image.il_name,
         banner_company_id: companyId,
-        banner_image_id: image.il_id, // Use image ID
-      });
-      console.log("image", image);
-      setMessage('Banner added successfully.');
+        banner_image_id: image.il_id,
+      }
+
+      await axios.post('http://localhost:3030/banner/new', payload);
+      
       fetchBanners(); // Refresh the banner list
+      setMessage('Banner added successfully.');
     } catch (error) {
       console.log("image", image);
       console.error('Error adding banner:', error);
@@ -73,6 +75,16 @@ const Banner = () => {
       >
         Add Banner Image
       </Button>
+      {/* Display Feedback Message */}
+      {message && (
+        <Typography
+          variant="body1"
+          color={message.includes('successfully') ? 'green' : 'red'}
+          mt={2}
+        >
+          {message}
+        </Typography>
+      )}
 
       {/* Media Library Modal */}
       <Modal
@@ -102,16 +114,6 @@ const Banner = () => {
         </Box>
       </Modal>
 
-      {/* Display Feedback Message */}
-      {message && (
-        <Typography
-          variant="body1"
-          color={message.includes('successfully') ? 'green' : 'red'}
-          mt={2}
-        >
-          {message}
-        </Typography>
-      )}
 
       {/* Display Banner Images */}
       <Box mt={2}>

@@ -172,7 +172,7 @@ const MediaLibrary = ({ onSelectImage }) => {
   const handleSelectImage = (image) => {
     if (onSelectImage) {
       onSelectImage(image); // Pass the image path and id back to the parent
-      handleClose(); // Close the modal after selection
+      handleClose();
     }
   };
 
