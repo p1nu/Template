@@ -1,65 +1,130 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Button, InputBase, Typography, useTheme, MenuItem, Select, FormControl, TextField } from '@mui/material';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import { tokens } from '../../theme';
-import Header from '../../components/Header';
+import React, { useState, useEffect, useContext } from "react";
+import {
+  Box,
+  Button,
+  InputBase,
+  InputLabel,
+  FormControl,
+  Select,
+  MenuItem,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { tokens } from "../../theme";
+import Header from "../../components/Header";
+import { AuthContext } from "../global/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const UpdateContact = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const { id } = useParams();
-  const [contact, setContact] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-    phone: '',
-    status: '',
-    notes: '',
-  });
-  const [error, setError] = useState('');
 
+  // Contact state
+  const [contact, setContact] = useState({
+    contact_phonenumber: "",
+    contact_address: "",
+    contact_email: "",
+    contact_telegram: "",
+    contact_website: "",
+    contact_company_id: "",
+    contact_service_id: "",
+    contact_created_by_user_id: user?.user_id,
+  });
+
+  const [companies, setCompanies] = useState([]);
+  const [services, setServices] = useState([]); // Services for the selected company
+
+  // Fetch contact data by ID
   useEffect(() => {
-    // Fetch contact data by ID
     const fetchContact = async () => {
       try {
         const response = await axios.get(`http://localhost:3030/contact/${id}`);
-        setContact(response.data);
+        setContact(response.data[0]);
       } catch (error) {
-        console.error('Error fetching contact data:', error);
+        console.error("Error fetching contact data:", error);
+        toast.error("Failed to fetch contact data");
       }
     };
+
     fetchContact();
   }, [id]);
 
+  // Fetch companies on component mount
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const response = await axios.get("http://localhost:3030/company/all");
+        setCompanies(response.data);
+      } catch (error) {
+        console.error("Error fetching companies:", error);
+        toast.error("Failed to fetch companies");
+      }
+    };
+
+    fetchCompanies();
+  }, []);
+
+  // Fetch services when the selected company changes
+  useEffect(() => {
+    const fetchServices = async () => {
+      if (contact.contact_company_id) {
+        try {
+          const response = await axios.get(
+            `http://localhost:3030/service/company/${contact.contact_company_id}`
+          );
+          setServices(response.data);
+        } catch (error) {
+          console.error("Error fetching services:", error);
+          setServices([]); // Reset services if fetch fails
+          toast.error("Failed to fetch services");
+        }
+      } else {
+        setServices([]); // Reset services when no company is selected
+      }
+    };
+
+    fetchServices();
+  }, [contact.contact_company_id]);
+
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setContact((prevContact) => ({ ...prevContact, [name]: value }));
+    setContact((prevContact) => {
+      // Reset service_id when company changes
+      if (name === "contact_company_id") {
+        return { ...prevContact, contact_service_id: "", [name]: value };
+      }
+      return { ...prevContact, [name]: value };
+    });
   };
 
-  const handleUpdate = async () => {
+  // Handle form submission
+  const handleUpdateContact = async () => {
     try {
-      await axios.put(`http://localhost:3030/contact/${id}`, contact);
-      setError('Contact updated successfully');
+      await axios.put(`http://localhost:3030/contact/update/${id}`, {
+        ...contact,
+        contact_created_by_user_id: user?.user_id,
+      });
+      toast.success("Contact updated successfully");
+
+      setTimeout(() => {
+        navigate("/contact");
+      }, 3000);
     } catch (error) {
-      console.error('Error updating contact:', error);
-      setError('Error updating contact');
+      console.error("Error updating contact:", error);
+      toast.error("Failed to update contact");
     }
   };
-
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError('');
-      }, 3000); // Clear error after 3 seconds
-
-      return () => clearTimeout(timer); // Cleanup the timer on component unmount
-    }
-  }, [error]);
 
   return (
     <Box m={2}>
-      <Header title="Update Contact" subTitle={`${contact.first_name} ${contact.last_name}`} />
+      <Header title="Update Contact" subTitle="Modify contact details" />
       <Box
         display="flex"
         flexDirection="column"
@@ -77,131 +142,244 @@ const UpdateContact = () => {
           p={4}
           bgcolor={colors.grey[900]}
           borderRadius="2px"
-          width="50%"
+          width="100%"
           boxShadow={3}
         >
-          <Typography variant="h4" color={colors.grey[100]} mb={2}>
-            Update Contact
-          </Typography>
-          <InputBase
-            placeholder="First Name"
-            name="first_name"
-            value={contact.first_name}
-            onChange={handleChange}
-            sx={{
-              width: '100%',
-              margin: '10px 0',
-              padding: '10px',
-              border: `1px solid ${colors.grey[800]}`,
-              borderRadius: '2px',
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
-            }}
-          />
-          <InputBase
-            placeholder="Last Name"
-            name="last_name"
-            value={contact.last_name}
-            onChange={handleChange}
-            sx={{
-              width: '100%',
-              margin: '10px 0',
-              padding: '10px',
-              border: `1px solid ${colors.grey[800]}`,
-              borderRadius: '2px',
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
-            }}
-          />
-          <InputBase
-            placeholder="Email"
-            name="email"
-            value={contact.email}
-            onChange={handleChange}
-            sx={{
-              width: '100%',
-              margin: '10px 0',
-              padding: '10px',
-              border: `1px solid ${colors.grey[800]}`,
-              borderRadius: '2px',
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
-            }}
-          />
-          <InputBase
-            placeholder="Phone"
-            name="phone"
-            value={contact.phone}
-            onChange={handleChange}
-            sx={{
-              width: '100%',
-              margin: '10px 0',
-              padding: '10px',
-              border: `1px solid ${colors.grey[800]}`,
-              borderRadius: '2px',
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
-            }}
-          />
-          <FormControl fullWidth sx={{ margin: '10px 0' }}>
-            <Select
-              name="status"
-              value={contact.status}
+          {/* Phone Number and Email */}
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            gap="20px"
+            width="100%"
+            alignItems="center"
+          >
+            {/* Phone Number */}
+            <Box display="flex" flexDirection="column" width="100%">
+              <InputLabel
+                htmlFor="contact_phonenumber"
+                sx={{ color: colors.grey[100], mb: "5px" }}
+              >
+                Phone Number
+              </InputLabel>
+              <InputBase
+                id="contact_phonenumber"
+                placeholder="Enter phone number"
+                name="contact_phonenumber"
+                value={contact.contact_phonenumber}
+                onChange={handleChange}
+                sx={{
+                  padding: "10px",
+                  border: `1px solid #000`,
+                  borderRadius: "2px",
+                  backgroundColor: colors.grey[900],
+                  color: colors.grey[100],
+                }}
+              />
+            </Box>
+            {/* Email */}
+            <Box display="flex" flexDirection="column" width="100%">
+              <InputLabel
+                htmlFor="contact_email"
+                sx={{ color: colors.grey[100], mb: "5px" }}
+              >
+                Email
+              </InputLabel>
+              <InputBase
+                id="contact_email"
+                placeholder="Enter email"
+                name="contact_email"
+                value={contact.contact_email}
+                onChange={handleChange}
+                sx={{
+                  padding: "10px",
+                  border: `1px solid #000`,
+                  borderRadius: "2px",
+                  backgroundColor: colors.grey[900],
+                  color: colors.grey[100],
+                }}
+              />
+            </Box>
+          </Box>
+
+          {/* Address */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="contact_address"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Address
+            </InputLabel>
+            <InputBase
+              id="contact_address"
+              placeholder="Enter address"
+              name="contact_address"
+              value={contact.contact_address}
               onChange={handleChange}
               sx={{
-                border: `1px solid ${colors.grey[800]}`,
-                borderRadius: '2px',
+                padding: "10px",
+                border: `1px solid #000`,
+                borderRadius: "2px",
                 backgroundColor: colors.grey[900],
                 color: colors.grey[100],
-                marginTop: '10px',
               }}
+            />
+          </Box>
+
+          {/* Telegram and Website */}
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            gap="20px"
+            width="100%"
+            alignItems="center"
+            marginBottom="10px"
+          >
+            {/* Telegram */}
+            <Box display="flex" flexDirection="column" width="100%">
+              <InputLabel
+                htmlFor="contact_telegram"
+                sx={{ color: colors.grey[100], mb: "5px" }}
+              >
+                Telegram
+              </InputLabel>
+              <InputBase
+                id="contact_telegram"
+                placeholder="Enter Telegram username"
+                name="contact_telegram"
+                value={contact.contact_telegram}
+                onChange={handleChange}
+                sx={{
+                  padding: "10px",
+                  border: `1px solid #000`,
+                  borderRadius: "2px",
+                  backgroundColor: colors.grey[900],
+                  color: colors.grey[100],
+                }}
+              />
+            </Box>
+            {/* Website */}
+            <Box display="flex" flexDirection="column" width="100%">
+              <InputLabel
+                htmlFor="contact_website"
+                sx={{ color: colors.grey[100], mb: "5px" }}
+              >
+                Website
+              </InputLabel>
+              <InputBase
+                id="contact_website"
+                placeholder="Enter website URL"
+                name="contact_website"
+                value={contact.contact_website}
+                onChange={handleChange}
+                sx={{
+                  padding: "10px",
+                  border: `1px solid #000`,
+                  borderRadius: "2px",
+                  backgroundColor: colors.grey[900],
+                  color: colors.grey[100],
+                }}
+              />
+            </Box>
+          </Box>
+
+          {/* Company Selection */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            width="100%"
+            marginBottom="10px"
+          >
+            <InputLabel
+              htmlFor="contact_company_id"
+              sx={{ color: colors.grey[100], mb: "5px" }}
             >
-              <MenuItem value="active">Active</MenuItem>
-              <MenuItem value="inactive">Inactive</MenuItem>
-            </Select>
-          </FormControl>
-          <TextField
-            placeholder="Notes"
-            name="notes"
-            value={contact.notes}
-            onChange={handleChange}
-            multiline
-            rows={4}
-            variant="outlined"
-            InputProps={{
-              style: {
-                color: colors.grey[100],
-                backgroundColor: colors.grey[900],
-                borderRadius: '2px',
-                padding: '10px',
-              },
-            }}
-            InputLabelProps={{
-              style: {
-                color: colors.grey[100],
-              },
-            }}
-            sx={{
-              width: '100%',
-              margin: '10px 0',
-              border: `1px solid ${colors.grey[800]}`,
-            }}
-          />
+              Company
+            </InputLabel>
+            <FormControl fullWidth>
+              <Select
+                name="contact_company_id"
+                value={contact.contact_company_id}
+                onChange={handleChange}
+                sx={{
+                  backgroundColor: colors.grey[900],
+                  color: colors.grey[100],
+                }}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {companies.map((company) => (
+                  <MenuItem key={company.company_id} value={company.company_id}>
+                    {company.company_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          {/* Conditionally Render Service Selection */}
+          {contact.contact_company_id && (
+            <Box
+              display="flex"
+              flexDirection="column"
+              width="100%"
+              marginBottom="10px"
+            >
+              <InputLabel
+                htmlFor="contact_service_id"
+                sx={{ color: colors.grey[100], mb: "5px" }}
+              >
+                Service
+              </InputLabel>
+              <FormControl fullWidth>
+                <Select
+                  name="contact_service_id"
+                  value={contact.contact_service_id}
+                  onChange={handleChange}
+                  sx={{
+                    backgroundColor: colors.grey[900],
+                    color: colors.grey[100],
+                  }}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {services.length > 0 ? (
+                    services.map((service) => (
+                      <MenuItem
+                        key={service.service_id}
+                        value={service.service_id}
+                      >
+                        {service.service_name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem value="">
+                      <em>No Services Available</em>
+                    </MenuItem>
+                  )}
+                </Select>
+              </FormControl>
+            </Box>
+          )}
+
+          {/* Submit Button */}
           <Button
             variant="contained"
             fullWidth
-            onClick={handleUpdate}
+            onClick={handleUpdateContact}
             sx={{ mt: 2, backgroundColor: colors.blueAccent[200] }}
           >
             Update Contact
           </Button>
-          {error && (
-            <Typography variant="body1" color={error.includes('successfully') ? 'green' : 'red'} mt={2}>
-              {error}
-            </Typography>
-          )}
         </Box>
       </Box>
+      <ToastContainer theme="colored" autoClose={2000}/>
     </Box>
   );
 };

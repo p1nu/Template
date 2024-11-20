@@ -121,7 +121,7 @@ const Contact = () => {
       sortable: false,
       cell: (row) => (
         <Box display="flex" gap="10px">
-          <Link to={`/contact/edit/${row.contact_id}`}>
+          <Link to={`/contact/${row.contact_id}`}>
             <Button variant="outlined" color="primary">
               Edit
             </Button>
