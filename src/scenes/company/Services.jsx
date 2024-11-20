@@ -72,50 +72,19 @@ const Services = () => {
       name: "Service Name",
       selector: (row) => row.service_name,
       sortable: true,
-      width: "25%",
-    },
-    {
-      name: "Associated Job",
-      selector: (row) => row.service_job_id,
-      sortable: true,
-      cell: (row) => {
-        const [job, setJob] = useState({
-          job_name: "",
-        });
-
-        useEffect(() => {
-          const fetchJob = async () => {
-            try {
-              const response = await axios.get(
-                `http://localhost:3030/job/${row.service_job_id}`
-              );
-              const jobData = response.data[0];
-              setJob(jobData);
-            } catch (error) {
-              console.error("Error fetching job:", error);
-            }
-          };
-          if (row.service_job_id) {
-            fetchJob();
-          }
-        }, [row.service_job_id]);
-
-        return (
-          <Typography color={colors.grey[100]}>{job.job_name}</Typography>
-        );
-      },
+      width: "auto",
     },
     {
       name: "Description",
       selector: (row) => row.service_desc,
       sortable: true,
-      width: "30%",
+      width: "15%",
     },
     {
       name: "Status",
       selector: (row) => row.service_status_id,
       sortable: true,
-      width: "15%",
+      width: "60%",
       cell: (row) => {
         let status;
 
