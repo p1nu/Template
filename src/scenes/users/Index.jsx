@@ -9,6 +9,8 @@ import { tokens } from '../../theme';
 import { format } from 'date-fns'; // Imported format from date-fns
 import mockUsers from '../data/mockData'; // Import the mock data for users
 // import { AuthContext } from '../global/AuthContext';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Users = () => {
   const theme = useTheme();
@@ -17,7 +19,6 @@ const Users = () => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [search, setSearch] = useState('');
-  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,7 +35,7 @@ const Users = () => {
       } catch (error) {
         // console.log(token);
         console.error('Error fetching data from database:', error);
-        setError("Error fetching user data");
+        toast.error("Error fetching user data");
         // Optionally handle unauthorized access
         if (error.response && error.response.status === 401) {
           // Redirect to login or show a message
@@ -66,6 +67,7 @@ const Users = () => {
       setFilteredUsers(response.data);
     } catch (error) {
       console.error('Error deleting user:', error);
+      toast.error('Error deleting user');
     }
   };
 
@@ -175,17 +177,8 @@ const Users = () => {
           subHeaderComponent={SubHeaderComponent}
           customStyles={customStyles}
         />
-        {/* Error/Success Message */}
-        {error && (
-          <Typography
-            variant="body1"
-            color={error.includes('successfully') ? 'green' : 'red'}
-            mt={2}
-          >
-            {error}
-          </Typography>
-        )}
       </Box>
+      <ToastContainer theme='colored' autoClose={2000}/>
     </Box>
   );
 };

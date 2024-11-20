@@ -6,13 +6,14 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { set } from 'date-fns';
 import { useTimeout } from '@mui/x-data-grid/internals';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [user_name, setUser_name] = useState('');
   const [user_password, setUser_password] = useState('');
-  const [error, setError] = useState('');
 
   const { login } = useContext(AuthContext); // Removed 'user' as it's not needed here
 
@@ -25,24 +26,15 @@ const Login = () => {
       if (response.data.token) {
         login(response.data.token); // Use AuthContext's login function
       }
-      setError('Login successful');
+      toast.success('Login successful');
     } catch (error) {
       console.error(
         'Error logging in:',
         error.response ? error.response.data : error.message
       );
-      setError('Invalid username or password');
+      toast.error('Invalid username or password');
     }
   };
-
-  useEffect(() => {
-    if (error) {
-      const timeout = setTimeout(() => {
-        setError('');
-      }, 5000);
-      return () => clearTimeout(timeout);
-    }
-  }, [error]);
 
   return (
     <Box
@@ -111,16 +103,8 @@ const Login = () => {
         >
           Login
         </Button>
-        {error && (
-            <Typography
-              variant="body1"
-              color={error.includes("successfully") ? "green" : "red"}
-              mt={2}
-            >
-              {error}
-            </Typography>
-          )}
       </Box>
+      <ToastContainer theme='colored' autoClose={2000}/>
     </Box>
   );
 };

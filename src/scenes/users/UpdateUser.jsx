@@ -14,6 +14,8 @@ import axios from "axios";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useNavigate, useParams } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const UpdateUser = () => {
   const theme = useTheme();
@@ -23,7 +25,6 @@ const UpdateUser = () => {
     user_password: "",
     user_role_id: "",
   });
-  const [error, setError] = useState("");
   const navigate = useNavigate();
   const { id } = useParams(); // Assuming you're using React Router v6
   const token = localStorage.getItem("token"); // Retrieve the token
@@ -43,7 +44,7 @@ const UpdateUser = () => {
         });
       } catch (error) {
         console.error("Error fetching user details:", error);
-        setError("Error fetching user details");
+        toast.error("Error fetching user details");
       }
     };
     fetchUser();
@@ -76,25 +77,15 @@ const UpdateUser = () => {
           },
         }
       );
-      setError("User updated successfully");
+      toast.success("User updated successfully");
       setTimeout(() => {
         navigate("/users");
       }, 3000); // Navigate to users page after 3 seconds
     } catch (error) {
       console.error("Error updating user:", error);
-      setError("Error updating user");
+      toast.error("Error updating user");
     }
   };
-
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError("");
-      }, 3000); // Clear error after 3 seconds
-
-      return () => clearTimeout(timer); // Cleanup the timer on component unmount
-    }
-  }, [error]);
 
   return (
     <Box m={2}>
@@ -208,19 +199,9 @@ const UpdateUser = () => {
           >
             Update User
           </Button>
-
-          {/* Error/Success Message */}
-          {error && (
-            <Typography
-              variant="body1"
-              color={error.includes("successfully") ? "green" : "red"}
-              mt={2}
-            >
-              {error}
-            </Typography>
-          )}
         </Box>
       </Box>
+      <ToastContainer theme="colored" autoClose={2000} />
     </Box>
   );
 };

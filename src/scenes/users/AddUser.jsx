@@ -14,6 +14,8 @@ import axios from "axios";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddUser = () => {
   const theme = useTheme();
@@ -24,8 +26,6 @@ const AddUser = () => {
     user_password: "",
     user_role_id: "",
   });
-  const [error, setError] = useState("");
-
   const navegate = useNavigate();
 
   const handleChange = (e) => {
@@ -36,7 +36,7 @@ const AddUser = () => {
   const handleAddUser = async () => {
     try {
       if (!user.user_name || !user.user_password || !user.user_role_id) {
-        setError("Please fill all fields");
+        toast.error("Please fill all fields");
         return;
       }
       await axios.post("http://localhost:3030/user/new", user, {
@@ -44,26 +44,16 @@ const AddUser = () => {
           Authorization: `Bearer ${token}`, // Include the token in headers
         },
       });
-      setError("User added successfully");
+      toast.success("User added successfully");
       setUser({ user_name: "", user_password: "", user_role_id: "" }); // Reset form
       setTimeout(() => {
         navegate("/users");
       }, 3000); // Navigate to users page after 3 seconds
     } catch (error) {
       console.error("Error adding user:", error);
-      setError("Error adding user");
+      toast.error("Error adding user");
     }
   };
-
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError("");
-      }, 3000); // Clear error after 3 seconds
-
-      return () => clearTimeout(timer); // Cleanup the timer on component unmount
-    }
-  }, [error]);
 
   return (
     <Box m={2}>
@@ -171,17 +161,9 @@ const AddUser = () => {
           >
             Add User
           </Button>
-          {error && (
-            <Typography
-              variant="body1"
-              color={error.includes("successfully") ? "green" : "red"}
-              mt={2}
-            >
-              {error}
-            </Typography>
-          )}
         </Box>
       </Box>
+      <ToastContainer theme="colored" autoClose={2000} />
     </Box>
   );
 };
