@@ -12,29 +12,27 @@ import {
 import axios from "axios";
 import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
-import { MediaLibrary } from "../gallery/Index"; // Adjust the import path as needed
+import { MediaLibrary } from "../gallery/Index";
 import { useParams } from "react-router-dom";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import Header from "../../components/Header";
-import CheckIcon from "@mui/icons-material/Check";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const Banner = () => {
+const BannerService = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const companyId = useParams().id;
+  const serviceId = useParams().id;
 
   const [banners, setBanners] = useState([]);
-  const [openMediaLibrary, setOpenMediaLibrary] = useState(false);
   const [message, setMessage] = useState("");
 
   const { open, handleOpen, handleClose } = useMediaGallery();
 
-  // Fetch banners associated with the company
+  // Fetch banners associated with the service
   const fetchBanners = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3030/banner/company/${companyId}`
+        `http://localhost:3030/banner/service/${serviceId}`
       );
       setBanners(response.data[0]);
     } catch (error) {
@@ -45,7 +43,7 @@ const Banner = () => {
 
   useEffect(() => {
     fetchBanners();
-  }, [companyId]);
+  }, [serviceId]);
 
   useEffect(() => {
     if (message) {
@@ -62,7 +60,7 @@ const Banner = () => {
     try {
       const payload = {
         banner_name: image.il_name,
-        banner_company_id: companyId, 
+        banner_service_id: serviceId,
         banner_image_id: image.il_id,
       };
 
@@ -78,14 +76,14 @@ const Banner = () => {
 
   return (
     <Box m="20px">
-      <Header title="Banner Images" />
+      <Header title="Service Banner Images" />
 
       <Button
         variant="contained"
         sx={{ mt: 2, backgroundColor: colors.blueAccent[200] }}
         onClick={handleOpen}
       >
-        Add Banner Image
+        Add Service Banner Image
       </Button>
 
       {/* Media Library Modal */}
@@ -141,7 +139,7 @@ const Banner = () => {
                 actionIcon={
                   <IconButton
                     sx={{ color: "rgba(255, 255, 255, 0.54)" }}
-                    aria-label={`info about ${banner.banner_name}`}
+                    aria-label={`delete ${banner.banner_name}`}
                     onClick={async () => {
                       try {
                         await axios.delete(
@@ -180,4 +178,4 @@ const Banner = () => {
   );
 };
 
-export default Banner;
+export default BannerService;

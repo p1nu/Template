@@ -8,7 +8,7 @@ import AddUser from "./scenes/users/AddUser";
 import UpdateUser from "./scenes/users/UpdateUser";
 import Company from "./scenes/company/Index.jsx";
 import Banner from "./scenes/company/Banner.jsx";
-import AddBanner from "./scenes/company/AddBanner.jsx";
+import BannerService from "./scenes/company/BannerService.jsx";
 import AddCompany from "./scenes/company/AddCompany";
 import UpdateCompany from "./scenes/company/UpdateCompany";
 import Services from "./scenes/company/Services.jsx";
@@ -52,7 +52,7 @@ function App() {
               <Route path="/user/:id" element={<UpdateUser />} />
               <Route path="/company" element={<Company />} />
               <Route path="/banner/company/:id" element={<Banner />} />
-              <Route path="/add-banner" element={<AddBanner />} />
+              <Route path="/banner/service/:id" element={<BannerService />} />
               <Route path="/add-company" element={<AddCompany />} />
               <Route path="/company/:id" element={<UpdateCompany />} />
               <Route path="/services" element={<Services />} />
