@@ -210,7 +210,7 @@ const Contact = () => {
           customStyles={customStyles}
         />
       </Box>
-      <ToastContainer />
+      <ToastContainer theme="colored" autoClose={2000}/>
     </Box>
   );
 };

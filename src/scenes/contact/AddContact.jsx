@@ -375,7 +375,7 @@ const AddContact = () => {
           </Button>
         </Box>
       </Box>
-      <ToastContainer theme="colored" />
+      <ToastContainer theme="colored" autoClose={2000} />
     </Box>
   );
 };
