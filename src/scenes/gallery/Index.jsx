@@ -23,6 +23,8 @@ import { useDropzone } from "react-dropzone";
 import Header from "../../components/Header.jsx";
 import { MediaGalleryProvider, useMediaGallery } from "./MediaGalleryContext";
 import { AuthContext } from "../global/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Dropzone = ({ onDrop }) => {
   const theme = useTheme();
@@ -111,7 +113,6 @@ const MediaLibrary = ({ onSelectImage }) => {
 
   const [files, setFiles] = useState([]);
   const [images, setImages] = useState([]);
-  const [message, setMessage] = useState("");
   const [previewFiles, setPreviewFiles] = useState([]);
 
   const handleDrop = async (acceptedFiles) => {
@@ -120,8 +121,8 @@ const MediaLibrary = ({ onSelectImage }) => {
     const formData = new FormData();
     acceptedFiles.forEach((file) => {
       formData.append("images", file);
-      formData.append("il_created_by_user_id", user?.user_id);
     });
+    formData.append("il_created_by_user_id", user?.user_id);
 
     try {
       await axios.post("http://localhost:3030/image/upload", formData, {
@@ -129,10 +130,10 @@ const MediaLibrary = ({ onSelectImage }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      setMessage("Image uploaded successfully");
+      toast.success("Image uploaded successfully");
       fetchImages();
     } catch (error) {
-      setMessage("An error occurred");
+      toast.error("An error occurred");
       console.error(error);
     }
   };
@@ -143,7 +144,7 @@ const MediaLibrary = ({ onSelectImage }) => {
       const { data } = response;
       setImages(data);
     } catch (error) {
-      setMessage("An error occurred");
+      toast.error("An error occurred");
       console.error(error);
     }
   };
@@ -153,21 +154,10 @@ const MediaLibrary = ({ onSelectImage }) => {
   }, []);
 
   useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => {
-        setMessage("");
-      }, 3000); // Clear message after 3 seconds
-
-      return () => clearTimeout(timer); // Cleanup the timer on component unmount
-    }
     if (previewFiles.length > 0) {
-      const timer = setTimeout(() => {
-        setPreviewFiles([]);
-      }, 3000); // Clear preview files after 3 seconds
-
-      return () => clearTimeout(timer); // Cleanup the timer on component unmount
+      toast(`${previewFiles.length} file(s) added to preview`)
     }
-  }, [message, previewFiles]);
+  }, [previewFiles]);
 
   const handleSelectImage = (image) => {
     if (onSelectImage) {
@@ -210,12 +200,12 @@ const MediaLibrary = ({ onSelectImage }) => {
                           await axios.delete(
                             `http://localhost:3030/image/delete/${item.il_id}`
                           );
-                          setMessage("Image deleted successfully");
+                          toast.success("Image deleted successfully");
                           setImages(
                             images.filter((img) => img.il_id !== item.il_id)
                           );
                         } catch (error) {
-                          setMessage("An error occurred");
+                          toast.error("An error occurred");
                           console.error(error);
                         }
                       }}
@@ -227,45 +217,6 @@ const MediaLibrary = ({ onSelectImage }) => {
               </ImageListItem>
             ))}
           </ImageList>
-          {message === "Image uploaded successfully" ? (
-            <Typography
-              sx={{
-                color: colors.greenAccent[600],
-                fontSize: "1.5rem",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              {message}
-              <CheckIcon
-                sx={{
-                  color: colors.greenAccent[600],
-                  fontSize: "2rem",
-                  marginLeft: "10px",
-                }}
-              />
-            </Typography>
-          ) : (
-            <Typography
-              sx={{
-                color: colors.redAccent[500],
-                fontSize: "1.5rem",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              {message}
-              {message && (
-                <DeleteIcon
-                  sx={{
-                    color: colors.redAccent[500],
-                    fontSize: "2rem",
-                    marginLeft: "10px",
-                  }}
-                />
-              )}
-            </Typography>
-          )}
         </>
       );
     }
@@ -327,44 +278,6 @@ const MediaLibrary = ({ onSelectImage }) => {
               <CustomTabPanel value={value} index={1}>
                 <Dropzone onDrop={handleDrop} />
                 <Box mt={2}>
-                  {message === "Image uploaded successfully" ? (
-                    <Typography
-                      sx={{
-                        color: colors.greenAccent[600],
-                        fontSize: "1.5rem",
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {message}
-                      <CheckIcon
-                        sx={{
-                          color: colors.greenAccent[600],
-                          fontSize: "2rem",
-                          marginLeft: "10px",
-                        }}
-                      />
-                    </Typography>
-                  ) : (
-                    <Typography
-                      sx={{
-                        color: colors.redAccent[500],
-                        fontSize: "1.5rem",
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {message && (
-                        <DangerousIcon
-                          sx={{
-                            color: colors.redAccent[500],
-                            fontSize: "2rem",
-                            marginLeft: "10px",
-                          }}
-                        />
-                      )}
-                    </Typography>
-                  )}
                   {previewFiles.length > 0 && (
                     <Box
                       mt={2}
@@ -395,7 +308,6 @@ function MediaGallery() {
   };
 
   const [images, setImages] = useState([]);
-  const [message, setMessage] = useState("");
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -455,12 +367,12 @@ function MediaGallery() {
                           await axios.delete(
                             `http://localhost:3030/image/delete/${item.il_id}`
                           );
-                          setMessage("Image deleted successfully");
+                          toast.success("Image deleted successfully");
                           setImages(
                             images.filter((img) => img.il_id !== item.il_id)
                           );
                         } catch (error) {
-                          setMessage("An error occurred");
+                          toast.error("An error occurred");
                           console.error(error);
                         }
                       }}
@@ -472,46 +384,8 @@ function MediaGallery() {
               </ImageListItem>
             ))}
           </ImageList>
-          {message === "Image uploaded successfully" ? (
-            <Typography
-              sx={{
-                color: colors.greenAccent[600],
-                fontSize: "1.5rem",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              {message}
-              <CheckIcon
-                sx={{
-                  color: colors.greenAccent[600],
-                  fontSize: "2rem",
-                  marginLeft: "10px",
-                }}
-              />
-            </Typography>
-          ) : (
-            <Typography
-              sx={{
-                color: colors.redAccent[500],
-                fontSize: "1.5rem",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              {message}
-              {message && (
-                <DeleteIcon
-                  sx={{
-                    color: colors.redAccent[500],
-                    fontSize: "2rem",
-                    marginLeft: "10px",
-                  }}
-                />
-              )}
-            </Typography>
-          )}
         </Box>
+        <ToastContainer theme="colored" autoClose={2000}/>
       </>
     </Box>
   );
