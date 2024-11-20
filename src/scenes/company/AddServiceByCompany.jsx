@@ -20,6 +20,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { MediaLibrary } from "../gallery/Index";
 import { AuthContext } from "../global/AuthContext";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddServiceByCompany = () => {
   const { user } = useContext(AuthContext);
@@ -42,7 +44,6 @@ const AddServiceByCompany = () => {
     company_name: "",
   });
   const [companies, setCompanies] = useState([]);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     // Fetch company details
@@ -52,7 +53,7 @@ const AddServiceByCompany = () => {
         setCompany(response.data);
       } catch (error) {
         console.error("Error fetching company details:", error);
-        setError("Error fetching company details");
+        toast.error("Error fetching company details");
       }
     };
 
@@ -63,7 +64,7 @@ const AddServiceByCompany = () => {
         setCompanies(response.data);
       } catch (error) {
         console.error("Error fetching companies:", error);
-        setError("Error fetching companies");
+        toast.error("Error fetching companies");
       }
     };
 
@@ -88,6 +89,7 @@ const AddServiceByCompany = () => {
         setCompany(response.data[0]);
       } catch (error) {
         console.error("Error fetching data from database:", error);
+        toast.error("Failed to fetch company");
       }
     };
     fetchCompany();
@@ -96,7 +98,7 @@ const AddServiceByCompany = () => {
   const handleAddService = async () => {
     try {
       await axios.post(`http://localhost:3030/service/new`, service);
-      setError("Service added successfully");
+      toast.success("Service added successfully");
       setService({
         service_name: "",
         service_desc: "",
@@ -113,27 +115,15 @@ const AddServiceByCompany = () => {
       }, 3000);
     } catch (error) {
       console.error("Error adding service:", error);
-      setError("Error adding service");
+      toast.error("Error adding service");
     }
   };
-
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError("");
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
 
   const { open, handleClose, value, handleOpen } = useMediaGallery();
 
   const handleSelectImage = (imagePath) => {
     setCompany((prevService) => ({ ...prevService, service_logo: imagePath }));
-    setError('Logo selected successfully');
-    // Optionally, add a timeout to clear the message
-    setTimeout(() => setError(''), 3000);
+    toast.success('Logo selected successfully');
   };
 
   const [isHidden, setIsHidden] = useState(false);
@@ -433,17 +423,9 @@ const AddServiceByCompany = () => {
           >
             Add Service
           </Button>
-          {error && (
-            <Typography
-              variant="body1"
-              color={error.includes("successfully") ? "green" : "red"}
-              mt={2}
-            >
-              {error}
-            </Typography>
-          )}
         </Box>
       </Box>
+      <ToastContainer theme="colored" autoClose={2000} />
     </Box>
   );
 };
