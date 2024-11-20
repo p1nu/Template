@@ -24,6 +24,7 @@ import AddContact from "./scenes/contact/AddContact.jsx";
 import UpdateContact from "./scenes/contact/UpdateContact.jsx";
 import News from "./scenes/news/News.jsx";
 import AddNews from "./scenes/news/AddNews.jsx";
+import UpdateNews from "./scenes/news/UpdateNews.jsx";
 import CSR from "./scenes/csr/CSR.jsx";
 import AddCSR from "./scenes/csr/AddCSR.jsx";
 import Jobs from "./scenes/jobs/Jobs.jsx";
@@ -66,6 +67,7 @@ function App() {
               <Route path="/contact/:id" element={<UpdateContact />} />
               <Route path="/news" element={<News />} />
               <Route path="/add-news" element={<AddNews />} />
+              <Route path="/news/:id" element={<UpdateNews />} />
               <Route path="/csr" element={<CSR />} />
               <Route path="/add-csr" element={<AddCSR />} />
               <Route path="/jobs" element={<Jobs />} />
