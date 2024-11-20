@@ -9,6 +9,8 @@ import 'react-quill-new/dist/quill.snow.css';
 import { MediaLibrary } from "../gallery/Index";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { AuthContext } from "../global/AuthContext";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const UpdateService = () => {
   const { user } = useContext(AuthContext);
@@ -27,7 +29,6 @@ const UpdateService = () => {
     service_updated_by_user_id: user?.user_id,
   });
   const [companies, setCompanies] = useState([]);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     // Fetch service data by ID
@@ -37,6 +38,7 @@ const UpdateService = () => {
         setService(response.data[0]);
       } catch (error) {
         console.error('Error fetching service data:', error);
+        toast.error('Failed to load service data');
       }
     };
     fetchService();
@@ -50,6 +52,7 @@ const UpdateService = () => {
         setCompanies(response.data);
       } catch (error) {
         console.error('Error fetching company data:', error);
+        toast.error('Failed to load company data');
       }
     };
     fetchCompany();
@@ -69,33 +72,22 @@ const UpdateService = () => {
       await axios.put(`http://localhost:3030/service/update/${id}`, {
         ...service, service_updated_by_user_id: user?.user_id,
       });
-      setError('Service updated successfully');
+      toast.success('Service updated successfully');
       setTimeout(() => {
         navigate('/services');
       }, 3000); // Navigate to services page after 3 seconds
     } catch (error) {
+      console.log('Service:', service);
       console.error('Error updating service:', error);
-      setError('Error updating service');
+      toast.error('Error updating service');
     }
   };
 
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError('');
-      }, 3000); // Clear error after 3 seconds
-
-      return () => clearTimeout(timer); // Cleanup the timer on component unmount
-    }
-  }, [error]);
-
   const { open, handleClose, value, handleOpen } = useMediaGallery();
 
-  const handleSelectImage = (imagePath) => {
-    setService((prevService) => ({ ...prevService, service_logo: imagePath }));
-    setError('Logo selected successfully');
-    // Optionally, add a timeout to clear the message
-    setTimeout(() => setError(''), 3000);
+  const handleSelectImage = (image) => {
+    setService((prevService) => ({ ...prevService, service_logo: image.il_path }));
+    toast.success('Logo selected successfully');
   };
 
   const [isHidden, setIsHidden] = useState(false);
@@ -390,17 +382,9 @@ const UpdateService = () => {
           >
             Update Service
           </Button>
-          {error && (
-            <Typography
-              variant="body1"
-              color={error.includes("successfully") ? "green" : "red"}
-              mt={2}
-            >
-              {error}
-            </Typography>
-          )}
         </Box>
       </Box>
+      <ToastContainer theme='colored' autoClose={2000} />
     </Box>
   );
 };

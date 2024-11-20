@@ -20,6 +20,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../global/AuthContext";
 import { MediaGallery, OpenMediaButton, MediaLibrary } from "../gallery/Index";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const UpdateCompany = () => {
   const { user } = useContext(AuthContext);
@@ -42,7 +44,6 @@ const UpdateCompany = () => {
   const [username, setUsername] = useState({
     user_name: "",
   });
-  const [error, setError] = useState("");
   const token = localStorage.getItem("token");
   const [isHidden, setIsHidden] = useState(false);
 
@@ -54,6 +55,7 @@ const UpdateCompany = () => {
         setCompany(response.data[0]);
       } catch (error) {
         console.error("Error fetching company data:", error);
+        toast.error("Error fetching company data");
       }
     };
     fetchCompany();
@@ -74,6 +76,7 @@ const UpdateCompany = () => {
         setUsername(response.data);
       } catch (error) {
         console.error("Error fetching user data:", error);
+        toast.error("Error fetching user data");
       }
     };
     if (company.company_created_by_user_id) {
@@ -103,32 +106,22 @@ const UpdateCompany = () => {
         company_status_id: company.company_status_id,
         company_updated_by_user_id: user?.user_id,
       });
-      setError("Company updated successfully");
+      toast.success("Company updated successfully");
       setTimeout(() => {
         navigate("/company");
       }, 3000); // Navigate to companies page after 3 seconds
     } catch (error) {
+      console.log("Company:", company);
       console.error("Error updating company:", error);
-      setError("Error updating company");
+      toast.error("Error updating company");
     }
   };
 
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError("");
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
-
   const { open, handleClose, value, handleOpen } = useMediaGallery();
 
-  const handleSelectImage = (imagePath) => {
-    setCompany((prevCompany) => ({ ...prevCompany, company_logo: imagePath }));
-    setError("Logo selected successfully");
-    // Optionally, add a timeout to clear the message
-    setTimeout(() => setError(""), 3000);
+  const handleSelectImage = (image) => {
+    setCompany((prevCompany) => ({ ...prevCompany, company_logo: image.il_path }));
+    toast.success("Logo selected successfully");
   };
 
   return (
@@ -462,19 +455,9 @@ const UpdateCompany = () => {
           >
             Update Company
           </Button>
-
-          {/* Error/Success Message */}
-          {error && (
-            <Typography
-              variant="body1"
-              color={error.includes("successfully") ? "green" : "red"}
-              mt={2}
-            >
-              {error}
-            </Typography>
-          )}
         </Box>
       </Box>
+      <ToastContainer theme="colored" autoClose={2000} />
     </Box>
   );
 };
