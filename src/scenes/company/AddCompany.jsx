@@ -18,6 +18,8 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../global/AuthContext";
 import { OpenMediaButton, MediaLibrary } from "../gallery/Index";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddCompany = () => {
   const { user } = useContext(AuthContext);
@@ -35,7 +37,7 @@ const AddCompany = () => {
     company_banner: "",
     company_created_by_user_id: user?.user_id,
   });
-  const [error, setError] = useState("");
+
   const [isHidden, setIsHidden] = useState(false);
   const navigate = useNavigate();
 
@@ -54,7 +56,7 @@ const AddCompany = () => {
         ...company,
         company_created_by_user_id: user?.user_id,
       });
-      setError("Company added successfully");
+      toast.success("Company added successfully");
       setCompany({
         company_name: "",
         company_acronym: "",
@@ -71,18 +73,9 @@ const AddCompany = () => {
       }, 3000);
     } catch (error) {
       console.error("Error adding company:", error);
-      setError("Error adding company");
+      toast.error("Error adding company");
     }
   };
-
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError("");
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
 
   const { open, open1, handleOpen, handleOpen1, handleClose, handleClose1 } =
     useMediaGallery();
@@ -92,7 +85,7 @@ const AddCompany = () => {
       ...prevCompany,
       company_logo: imagePath,
     }));
-    setError("Logo selected successfully");
+    toast.success("Logo selected successfully");
   };
 
   const handleSelectBanner = (imagePath) => {
@@ -100,7 +93,7 @@ const AddCompany = () => {
       ...prevCompany,
       company_banner: imagePath.il_path,
     }));
-    setError("Banner selected successfully");
+    toast.success("Banner selected successfully");
     handleClose1();
   };
 
@@ -388,19 +381,9 @@ const AddCompany = () => {
           >
             Add Company
           </Button>
-
-          {/* Error/Success Message */}
-          {error && (
-            <Typography
-              variant="body1"
-              color={error.includes("successfully") ? "green" : "red"}
-              mt={2}
-            >
-              {error}
-            </Typography>
-          )}
         </Box>
       </Box>
+      <ToastContainer theme="colored" autoClose={2000} />
     </Box>
   );
 };
