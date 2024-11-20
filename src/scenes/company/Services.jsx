@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from "react";
 import {
   Box,
-  Typography,
-  useTheme,
   Button,
   InputBase,
   InputLabel,
-  FormControl,
+  Typography,
+  useTheme,
 } from "@mui/material";
 import DataTable from "react-data-table-component";
 import axios from "axios";
 import { tokens } from "../../theme";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../../components/Header";
-import mockServices from "../data/mockServices";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Styled-component for alignment and spacing (if needed)
 const StyledBox = styled.div`
@@ -32,21 +32,24 @@ const Services = () => {
   const [services, setServices] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
   const [search, setSearch] = useState("");
+  const [company, setCompany] = useState({});
+
+  // Fetch services by company ID
+  const fetchServices = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3030/service/all`
+      );
+      setServices(response.data);
+      setFilteredServices(response.data);
+    } catch (error) {
+      console.error("Error fetching services:", error);
+      toast.error("Error fetching services");
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:3030/service/all");
-        setServices(response.data);
-        setFilteredServices(response.data);
-      } catch (error) {
-        console.error("Error fetching services:", error);
-        // Use mock data if there's an error
-        setServices(mockServices);
-        setFilteredServices(mockServices);
-      }
-    };
-    fetchData();
+    fetchServices();
   }, []);
 
   useEffect(() => {
@@ -59,11 +62,11 @@ const Services = () => {
   const handleDelete = async (id) => {
     try {
       await axios.put(`http://localhost:3030/service/delete/${id}`);
-      const response = await axios.get("http://localhost:3030/service/all");
-      setServices(response.data);
-      setFilteredServices(response.data);
+      fetchServices();
+      toast.success("Service deleted successfully");
     } catch (error) {
       console.error("Error deleting service:", error);
+      toast.error("Error deleting service");
     }
   };
 
@@ -202,6 +205,7 @@ const Services = () => {
           customStyles={customStyles}
         />
       </Box>
+      <ToastContainer theme="colored" autoClose={2000} />
     </Box>
   );
 };
