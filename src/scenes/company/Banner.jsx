@@ -62,7 +62,7 @@ const Banner = () => {
     try {
       const payload = {
         banner_name: image.il_name,
-        banner_company_id: companyId, 
+        banner_company_id: companyId,
         banner_image_id: image.il_id,
       };
 
@@ -90,25 +90,7 @@ const Banner = () => {
 
       {/* Media Library Modal */}
       <Modal open={open} onClose={handleClose}>
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          height="100vh"
-          bgcolor="rgba(0, 0, 0, 0.5)"
-        >
-          <Box
-            bgcolor={colors.grey[900]}
-            boxShadow={24}
-            p={4}
-            borderRadius="10px"
-            width="80%"
-            maxHeight="80vh"
-            overflow="auto"
-          >
-            <MediaLibrary onSelectImage={handleSelectImage} />
-          </Box>
-        </Box>
+        <MediaLibrary onSelectImage={handleSelectImage} />
       </Modal>
 
       {/* Display Banner Images */}
