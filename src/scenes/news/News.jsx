@@ -7,6 +7,8 @@ import styled from "styled-components";
 import Header from "../../components/Header";
 import { tokens } from '../../theme';
 import { format } from 'date-fns'; // Imported format from date-fns
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const News = () => {
   const theme = useTheme();
@@ -15,7 +17,6 @@ const News = () => {
   const [news, setNews] = useState([]);
   const [filteredNews, setFilteredNews] = useState([]);
   const [search, setSearch] = useState("");
-  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,6 +26,7 @@ const News = () => {
         setFilteredNews(response.data);
       } catch (error) {
         console.error("Error fetching news:", error);
+        toast.error("Failed to fetch news");
       }
     };
     fetchData();
@@ -43,8 +45,10 @@ const News = () => {
       const response = await axios.get("http://localhost:3030/news/all");
       setNews(response.data);
       setFilteredNews(response.data);
+      toast.success("News deleted successfully");
     } catch (error) {
       console.error("Error deleting news:", error);
+      toast.error("Failed to delete news");
     }
   };
 
