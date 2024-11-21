@@ -27,6 +27,7 @@ import AddNews from "./scenes/news/AddNews.jsx";
 import UpdateNews from "./scenes/news/UpdateNews.jsx";
 import CSR from "./scenes/csr/CSR.jsx";
 import AddCSR from "./scenes/csr/AddCSR.jsx";
+import UpdateCSR from "./scenes/csr/UpdateCSR.jsx";
 import Jobs from "./scenes/jobs/Jobs.jsx";
 import AddJob from "./scenes/jobs/AddJob.jsx";
 import UpdateJob from "./scenes/jobs/UpdateJob.jsx";
@@ -70,6 +71,7 @@ function App() {
               <Route path="/news/:id" element={<UpdateNews />} />
               <Route path="/csr" element={<CSR />} />
               <Route path="/add-csr" element={<AddCSR />} />
+              <Route path="/csr/:id" element={<UpdateCSR />} />
               <Route path="/jobs" element={<Jobs />} />
               <Route path="/add-job" element={<AddJob />} />
               <Route path="/job/:id" element={<UpdateJob />} />
