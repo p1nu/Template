@@ -6,6 +6,9 @@ import {
   useTheme,
   InputLabel,
   Modal,
+  FormControl,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import InputBase from "@mui/material/InputBase";
 import axios from "axios";
@@ -82,7 +85,8 @@ const AddNews = () => {
   useEffect(() => {
     if (user) {
       setNews((prevNews) => ({
-        ...prevNews, news_created_by_user_id: user.user_id
+        ...prevNews,
+        news_created_by_user_id: user.user_id,
       }));
     }
   }, [user]);
@@ -239,34 +243,79 @@ const AddNews = () => {
               }}
             />
           </Box> */}
-
-              {/* News Link */}
-              <Box
-                display="flex"
-                flexDirection="column"
-                margin="10px 0"
-                width="100%"
-              >
-                <InputLabel
-                  htmlFor="news_link"
-                  sx={{ color: colors.grey[100], mb: "5px" }}
+              <Box>
+                {/* News Link */}
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  margin="10px 0"
+                  width="100%"
                 >
-                  News Link
-                </InputLabel>
-                <InputBase
-                  id="news_link"
-                  placeholder="https://example.com"
-                  name="news_link"
-                  value={news.news_link}
-                  onChange={handleChange}
-                  sx={{
-                    padding: "10px",
-                    border: `1px solid #000`,
-                    borderRadius: "2px",
-                    backgroundColor: colors.grey[900],
-                    color: colors.grey[100],
-                  }}
-                />
+                  <InputLabel
+                    htmlFor="news_link"
+                    sx={{ color: colors.grey[100], mb: "5px" }}
+                  >
+                    News Link
+                  </InputLabel>
+                  <InputBase
+                    id="news_link"
+                    placeholder="https://example.com"
+                    name="news_link"
+                    value={news.news_link}
+                    onChange={handleChange}
+                    sx={{
+                      padding: "10px",
+                      border: `1px solid #000`,
+                      borderRadius: "2px",
+                      backgroundColor: colors.grey[900],
+                      color: colors.grey[100],
+                    }}
+                  />
+                </Box>
+                {/* News status */}
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  margin="10px 0"
+                  width="100%"
+                >
+                  <InputLabel
+                    htmlFor="news_status_id"
+                    sx={{ color: colors.grey[100], mb: "5px" }}
+                  >
+                    Company Status
+                  </InputLabel>
+                  <FormControl fullWidth>
+                    <Select
+                      id="news_status_id"
+                      name="news_status_id"
+                      value={news.news_status_id}
+                      onChange={handleChange}
+                      displayEmpty
+                      sx={{
+                        border: `1px solid #000`,
+                        borderRadius: "2px",
+                        backgroundColor: colors.grey[900],
+                        color: colors.grey[100],
+                        "& :hover": {
+                          border: "none !important",
+                        },
+                        "& :focus": {
+                          border: "none",
+                        },
+                        "& .active": {
+                          border: "none",
+                        },
+                      }}
+                    >
+                      <MenuItem value="" disabled>
+                        Select Status
+                      </MenuItem>
+                      <MenuItem value="1">Active</MenuItem>
+                      <MenuItem value="2">Inactive</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Box>
               </Box>
 
               {/* Created By User ID */}
