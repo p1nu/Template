@@ -80,10 +80,10 @@ const AddCompany = () => {
   const { open, open1, handleOpen, handleOpen1, handleClose, handleClose1 } =
     useMediaGallery();
 
-  const handleSelectLogo = (imagePath) => {
+  const handleSelectLogo = (image) => {
     setCompany((prevCompany) => ({
       ...prevCompany,
-      company_logo: imagePath,
+      company_logo: image.il_path,
     }));
     toast.success("Logo selected successfully");
   };
