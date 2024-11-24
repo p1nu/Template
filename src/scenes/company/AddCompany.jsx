@@ -34,7 +34,7 @@ const AddCompany = () => {
     company_mission: "",
     company_desc: "",
     company_logo: "",
-    company_banner: "",
+    company_background: "",
     company_created_by_user_id: user?.user_id,
   });
 
@@ -65,7 +65,7 @@ const AddCompany = () => {
         company_mission: "",
         company_desc: "",
         company_logo: "",
-        company_banner: "",
+        company_background: "",
         company_created_by_user_id: "",
       });
       setTimeout(() => {
@@ -88,10 +88,10 @@ const AddCompany = () => {
     toast.success("Logo selected successfully");
   };
 
-  const handleSelectBanner = (imagePath) => {
+  const handleSelectBackground = (image) => {
     setCompany((prevCompany) => ({
       ...prevCompany,
-      company_banner: imagePath.il_path,
+      company_background: image.il_path,
     }));
     toast.success("Banner selected successfully");
     handleClose1();
@@ -352,11 +352,11 @@ const AddCompany = () => {
               </Modal>
             </Box>
 
-            {/* Add Company Banner
+            {/* Add Company Banner */}
             <Box width={"100%"}>
               <Button
                 variant="contained"
-                title="Add Banner"
+                title="Add Background"
                 onClick={handleOpen1}
                 fullWidth
                 sx={{
@@ -364,12 +364,12 @@ const AddCompany = () => {
                   backgroundColor: colors.blueAccent[200],
                 }}
               >
-                Add Banner
+                Add Background
               </Button>
               <Modal open={open1} onClose={handleClose1}>
-                <MediaLibrary onSelectImage={handleSelectBanner} />
+                <MediaLibrary onSelectImage={handleSelectBackground} />
               </Modal>
-            </Box> */}
+            </Box>
           </Box>
 
           {/* Submit Button */}

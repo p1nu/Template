@@ -93,7 +93,7 @@ const a11yProps = (index) => {
 const MediaLibrary = ({ onSelectImage }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const { open, open1, open2, handleClose, value, handleChange } = useMediaGallery();
+  const { open, open1, open2, handleClose, handleClose1, value, handleChange } = useMediaGallery();
   const { user } = useContext(AuthContext);
 
   const style = {
@@ -228,6 +228,80 @@ const MediaLibrary = ({ onSelectImage }) => {
         <Modal
           open={open}
           onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Box sx={{ width: "100%" }}>
+              <Box sx={{ borderBottom: 1, borderColor: colors.grey[600] }}>
+                <Tabs
+                  value={value}
+                  onChange={handleChange}
+                  aria-label="basic tabs example"
+                >
+                  <Tab
+                    label="Gallery"
+                    {...a11yProps(0)}
+                    sx={{
+                      bgcolor:
+                        value === 0 ? colors.grey[700] : colors.grey[700],
+                      borderRadius: "10px 10px 0 0",
+                      color: colors.primary[500],
+                      "&.Mui-selected": {
+                        bgcolor: colors.primary[500],
+                        color: colors.grey[900],
+                      },
+                    }}
+                  />
+                  <Tab
+                    label="Upload"
+                    {...a11yProps(1)}
+                    sx={{
+                      bgcolor:
+                        value === 0 ? colors.grey[700] : colors.grey[700],
+                      borderRadius: "10px 10px 0 0",
+                      color: colors.primary[500],
+                      "&.Mui-selected": {
+                        bgcolor: colors.primary[500],
+                        color: colors.grey[900],
+                      },
+                    }}
+                  />
+                </Tabs>
+              </Box>
+
+              <CustomTabPanel value={value} index={0}>
+                <Box mt={2} height={"50vh"}>
+                  {displayImages()}
+                </Box>
+              </CustomTabPanel>
+              <CustomTabPanel value={value} index={1}>
+                <Dropzone onDrop={handleDrop} />
+                <Box mt={2}>
+                  {previewFiles.length > 0 && (
+                    <Box
+                      mt={2}
+                      display={"flex"}
+                      flexDirection={"column"}
+                      alignItems={"center"}
+                    >
+                      {previewFiles.map((file, index) => (
+                        <Typography key={index} variant="h5">
+                          {file.name}
+                        </Typography>
+                      ))}
+                    </Box>
+                  )}
+                </Box>
+              </CustomTabPanel>
+            </Box>
+          </Box>
+        </Modal>
+      </Box>
+      <Box>
+        <Modal
+          open={open1}
+          onClose={handleClose1}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
         >
