@@ -67,6 +67,38 @@ const Banner = () => {
     }
   };
 
+  // Add these new state variables
+  const [openSliderModal, setOpenSliderModal] = useState(false);
+  const [selectedBanner, setSelectedBanner] = useState(null);
+
+  // Function to handle image click
+  const handleImageSelect = (banner) => {
+    console.log(banner)
+    setSelectedBanner(banner);
+    setOpenSliderModal(true);
+  };
+
+  // Function to handle adding banner to slider
+  const handleAddToSlider = async () => {
+    try {
+      await axios.put(
+        `http://localhost:3030/banner/${selectedBanner.banner_id}/add-to-slider`
+      );
+      toast.success("Banner updated to show in slider.");
+      setOpenSliderModal(false);
+      fetchBanners(); // Refresh banners if needed
+    } catch (error) {
+      console.error("Error updating banner:", error);
+      toast.error("Failed to update banner.");
+    }
+  };
+
+  // Function to close modal without action
+  const handleCloseSliderModal = () => {
+    setOpenSliderModal(false);
+    setSelectedBanner(null);
+  };
+
   return (
     <Box m="20px">
       <Header title="Banner Images" />
@@ -103,11 +135,7 @@ const Banner = () => {
                 alt={`Banner ${banner.banner_id}`}
                 loading="lazy"
                 style={{ width: "100%", height: "auto" }}
-                onClick={() => {
-                  window.open(
-                    `http://localhost:3030/uploads/${banner.image_path}`
-                  );
-                }}
+                onClick={() => handleImageSelect(banner)}
               />
               <ImageListItemBar
                 title={banner.banner_name}
@@ -135,6 +163,36 @@ const Banner = () => {
             </ImageListItem>
           ))}
         </ImageList>
+        {/* Other components and JSX */}
+
+      {/* Modal Component */}
+      <Modal open={openSliderModal} onClose={handleCloseSliderModal}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            border: '2px solid #000',
+            boxShadow: 24,
+            p: 4,
+            width: 300,
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Add this banner to the slider?
+          </Typography>
+          <Box display="flex" justifyContent="flex-end" mt={2}>
+            <Button onClick={handleCloseSliderModal} sx={{ mr: 2 }}>
+              Cancel
+            </Button>
+            <Button variant="contained" onClick={handleAddToSlider}>
+              Confirm
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
       </Box>
 
       {/* Display Feedback Message */}

@@ -37,6 +37,7 @@ const UpdateCompany = () => {
     company_mission: "",
     company_desc: "",
     company_logo: "",
+    company_background: "",
     company_status_id: "",
     company_created_by_user_id: "",
     company_updated_by_user_id: "",
@@ -103,6 +104,7 @@ const UpdateCompany = () => {
         company_mission: company.company_mission,
         company_desc: company.company_desc,
         company_logo: company.company_logo,
+        company_background: company.company_background,
         company_status_id: company.company_status_id,
         company_updated_by_user_id: user?.user_id,
       });
@@ -117,11 +119,16 @@ const UpdateCompany = () => {
     }
   };
 
-  const { open, handleClose, value, handleOpen } = useMediaGallery();
+  const { open, open1, handleClose, handleClose1, handleOpen, handleOpen1 } = useMediaGallery();
 
-  const handleSelectImage = (image) => {
+  const handleSelectLogo = (image) => {
     setCompany((prevCompany) => ({ ...prevCompany, company_logo: image.il_path }));
     toast.success("Logo selected successfully");
+  };
+
+  const handleSelectBackground = (image) => {
+    setCompany((prevCompany) => ({ ...prevCompany, company_background: image.il_path }));
+    toast.success("Background selected successfully");
   };
 
   return (
@@ -415,35 +422,54 @@ const UpdateCompany = () => {
             </Box>
           )}
 
-          {/* Update Company Logo */}
-          <Box width="100%">
-            <Button
-              variant="contained"
-              title="Add Logo"
-              onClick={handleOpen}
-              sx={{
-                mt: 2,
-                backgroundColor: colors.blueAccent[200],
-              }}
-            >
-              Add Logo
-            </Button>
-            <Modal open={open} onClose={handleClose}>
-              <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                height="100vh"
-                bgcolor="rgba(0, 0, 0, 0.5)"
+          {/* Update Company Logo and Background */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              gap: "20px",
+              width: "100%",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {/* Add Company Logo */}
+            <Box width={"100%"}>
+              <Button
+                variant="contained"
+                title="Add Logo"
+                onClick={handleOpen}
+                fullWidth
+                sx={{
+                  mt: 2,
+                  backgroundColor: colors.blueAccent[200],
+                }}
               >
-                <MediaLibrary
-                  valueName="Add Logo"
-                  companyId={company.company_id}
-                  onSelectImage={handleSelectImage} // Pass the callback
-                  handleClose={handleClose} // Pass the handleClose function
-                />
-              </Box>
-            </Modal>
+                Add Logo
+              </Button>
+              <Modal open={open} onClose={handleClose}>
+                <MediaLibrary onSelectImage={handleSelectLogo} />
+              </Modal>
+            </Box>
+
+            {/* Update Company Banner */}
+            <Box width={"100%"}>
+              <Button
+                variant="contained"
+                title="Add Background"
+                onClick={handleOpen1}
+                fullWidth
+                sx={{
+                  mt: 2,
+                  backgroundColor: colors.blueAccent[200],
+                }}
+              >
+                Add Background
+              </Button>
+              <Modal open={open1} onClose={handleClose1}>
+                <MediaLibrary onSelectImage={handleSelectBackground} />
+              </Modal>
+            </Box>
           </Box>
 
           {/* Update Button */}

@@ -88,12 +88,12 @@ const AddCompany = () => {
     toast.success("Logo selected successfully");
   };
 
-  const handleSelectBackground = (image) => {
+  const handleSelectBackground = (image1) => {
     setCompany((prevCompany) => ({
       ...prevCompany,
-      company_background: image.il_path,
+      company_background: image1.il_path,
     }));
-    toast.success("Banner selected successfully");
+    toast.success("Background selected successfully");
     handleClose1();
   };
 
@@ -322,7 +322,7 @@ const AddCompany = () => {
             </Box>
           )}
 
-          {/* Add Company Logo and Banner */}
+          {/* Add Company Logo and Background */}
           <Box
             sx={{
               display: "flex",
