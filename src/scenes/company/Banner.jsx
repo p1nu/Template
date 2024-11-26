@@ -20,6 +20,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Header from "../../components/Header";
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { set } from "date-fns";
 
 const Banner = () => {
   const theme = useTheme();
@@ -69,13 +70,16 @@ const Banner = () => {
 
   // Add these new state variables
   const [openSliderModal, setOpenSliderModal] = useState(false);
+  const [openValueModal, setOpenValueModal] = useState(false);
+  const [openMissionModal, setOpenMissionModal] = useState(false);
+  const [openVisionModal, setOpenVisionModal] = useState(false);
   const [selectedBanner, setSelectedBanner] = useState(null);
+  const [openTodo, setOpenTodo] = useState(false);
 
   // Function to handle image click
   const handleImageSelect = (banner) => {
-    console.log(banner)
     setSelectedBanner(banner);
-    setOpenSliderModal(true);
+    setOpenTodo(true);
   };
 
   // Function to handle adding banner to slider
@@ -91,6 +95,95 @@ const Banner = () => {
       console.error("Error updating banner:", error);
       toast.error("Failed to update banner.");
     }
+  };
+
+  // Function to handle adding to value
+  const handleAddToValue = async () => {
+    try {
+      await axios.put(
+        `http://localhost:3030/banner/${selectedBanner.banner_id}/add-to-value`
+      );
+      toast.success("Banner added to value.");
+      setOpenValueModal(false);
+      fetchBanners(); // Refresh banners if needed
+    } catch (error) {
+      toast.error("Failed to update banner.");
+    }
+  }
+
+  // Function to handle adding to mission
+  const handleAddToMission = async () => {
+    try {
+      await axios.put(
+        `http://localhost:3030/banner/${selectedBanner.banner_id}/add-to-mission`
+      );
+      toast.success("Banner added to mission.");
+      setOpenMissionModal(false);
+      fetchBanners(); // Refresh banners if needed
+    } catch (error) {
+      toast.error("Failed to update banner.");
+    }
+  }
+
+  // Function to handle adding to vision
+  const handleAddToVision = async () => {
+    try {
+      await axios.put(
+        `http://localhost:3030/banner/${selectedBanner.banner_id}/add-to-vision`
+      );
+      toast.success("Banner added to vision.");
+      setOpenVisionModal(false);
+      fetchBanners(); // Refresh banners if needed
+    } catch (error) {
+      toast.error("Failed to update banner.");
+    }
+  }
+
+  const handleCloseTodo = () => {
+    setOpenTodo(false);
+    setSelectedBanner(null);
+  };
+
+  // Function to open slider modal
+  const handleOpenSlider = () => {
+    setOpenTodo(false);
+    setOpenSliderModal(true);
+  };
+
+  // Function to open value modal
+  const handleOpenValue = () => {
+    setOpenTodo(false);
+    setOpenValueModal(true);
+  };
+
+  // Function to open mission modal
+  const handleOpenMission = () => {
+    setOpenTodo(false);
+    setOpenMissionModal(true);
+  };
+
+  // Function to open vision modal
+  const handleOpenVision = () => {
+    setOpenTodo(false);
+    setOpenVisionModal(true);
+  };
+
+  // Function to close value modal without action
+  const handleCloseValueModal = () => {
+    setOpenValueModal(false);
+    setSelectedBanner(null);
+  };
+
+  // Function to close mission modal without action
+  const handleCloseMissionModal = () => {
+    setOpenMissionModal(false);
+    setSelectedBanner(null);
+  };
+
+  // Function to close vision modal without action
+  const handleCloseVisionModal = () => {
+    setOpenVisionModal(false);
+    setSelectedBanner(null);
   };
 
   // Function to close modal without action
@@ -165,34 +258,146 @@ const Banner = () => {
         </ImageList>
         {/* Other components and JSX */}
 
-      {/* Modal Component */}
-      <Modal open={openSliderModal} onClose={handleCloseSliderModal}>
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            bgcolor: 'background.paper',
-            border: '2px solid #000',
-            boxShadow: 24,
-            p: 4,
-            width: 300,
-          }}
-        >
-          <Typography variant="h6" gutterBottom>
-            Add this banner to the slider?
-          </Typography>
-          <Box display="flex" justifyContent="flex-end" mt={2}>
-            <Button onClick={handleCloseSliderModal} sx={{ mr: 2 }}>
-              Cancel
-            </Button>
-            <Button variant="contained" onClick={handleAddToSlider}>
-              Confirm
-            </Button>
+        {/* Modal Component */}
+        <Modal open={openTodo} onClose={handleCloseTodo}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              bgcolor: "background.paper",
+              border: "2px solid #000",
+              boxShadow: 24,
+              p: 4,
+              width: 300,
+            }}
+          >
+            <Box
+              display="flex"
+              justifyContent="flex-end"
+              flexDirection={"column"}
+              gap={2}
+            >
+              <Button variant="contained" onClick={handleOpenValue}>Add to Value</Button>
+              <Button variant="contained" onClick={handleOpenMission}>Add to Mission</Button>
+              <Button variant="contained" onClick={handleOpenVision}>Add to Vision</Button>
+              <Button variant="contained" onClick={handleOpenSlider}>Add to Slider</Button>
+            </Box>
           </Box>
-        </Box>
-      </Modal>
+        </Modal>
+        {/* Modal Value */}
+        <Modal open={openValueModal} onClose={handleCloseValueModal}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              bgcolor: "background.paper",
+              border: "2px solid #000",
+              boxShadow: 24,
+              p: 4,
+              width: 300,
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              Add this banner to value section?
+            </Typography>
+            <Box display="flex" justifyContent="flex-end" mt={2}>
+              <Button onClick={handleCloseValueModal} sx={{ mr: 2 }}>
+                Cancel
+              </Button>
+              <Button variant="contained" onClick={handleAddToValue}>
+                Confirm
+              </Button>
+            </Box>
+          </Box>
+        </Modal>
+        {/* Modal Mission */}
+        <Modal open={openMissionModal} onClose={handleCloseMissionModal}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              bgcolor: "background.paper",
+              border: "2px solid #000",
+              boxShadow: 24,
+              p: 4,
+              width: 300,
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              Add this banner to mission section?
+            </Typography>
+            <Box display="flex" justifyContent="flex-end" mt={2}>
+              <Button onClick={handleCloseMissionModal} sx={{ mr: 2 }}>
+                Cancel
+              </Button>
+              <Button variant="contained" onClick={handleAddToMission}>
+                Confirm
+              </Button>
+            </Box>
+          </Box>
+        </Modal>
+        {/* Modal Vision */}
+        <Modal open={openVisionModal} onClose={handleCloseVisionModal}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              bgcolor: "background.paper",
+              border: "2px solid #000",
+              boxShadow: 24,
+              p: 4,
+              width: 300,
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              Add this banner to vision section?
+            </Typography>
+            <Box display="flex" justifyContent="flex-end" mt={2}>
+              <Button onClick={handleCloseVisionModal} sx={{ mr: 2 }}>
+                Cancel
+              </Button>
+              <Button variant="contained" onClick={handleAddToVision}>
+                Confirm
+              </Button>
+            </Box>
+          </Box>
+        </Modal>
+        {/* Modal Slider */}
+        <Modal open={openSliderModal} onClose={handleCloseSliderModal}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              bgcolor: "background.paper",
+              border: "2px solid #000",
+              boxShadow: 24,
+              p: 4,
+              width: 300,
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              Add this banner to the slider?
+            </Typography>
+            <Box display="flex" justifyContent="flex-end" mt={2}>
+              <Button onClick={handleCloseSliderModal} sx={{ mr: 2 }}>
+                Cancel
+              </Button>
+              <Button variant="contained" onClick={handleAddToSlider}>
+                Confirm
+              </Button>
+            </Box>
+          </Box>
+        </Modal>
       </Box>
 
       {/* Display Feedback Message */}
