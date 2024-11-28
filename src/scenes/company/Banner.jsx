@@ -73,6 +73,7 @@ const Banner = () => {
   const [openValueModal, setOpenValueModal] = useState(false);
   const [openMissionModal, setOpenMissionModal] = useState(false);
   const [openVisionModal, setOpenVisionModal] = useState(false);
+  const [openBackgroundModal, setOpenBackgroundModal] = useState(false);
   const [selectedBanner, setSelectedBanner] = useState(null);
   const [openTodo, setOpenTodo] = useState(false);
 
@@ -139,6 +140,20 @@ const Banner = () => {
     }
   }
 
+  // Function to hanlde adding to background page
+  const handleAddToBackground = async () => {
+    try {
+      await axios.put(
+        `http://localhost:3030/banner/${selectedBanner.banner_id}/add-to-background`
+      );
+      toast.success("Banner added to background.");
+      setOpenBackgroundModal(false);
+      fetchBanners(); // Refresh banners if needed
+    } catch (error) {
+      toast.error("Failed to update banner.");
+    }
+  }
+
   const handleCloseTodo = () => {
     setOpenTodo(false);
     setSelectedBanner(null);
@@ -168,6 +183,12 @@ const Banner = () => {
     setOpenVisionModal(true);
   };
 
+  // Function to open background modal
+  const handleOpenBackground = () => {
+    setOpenTodo(false);
+    setOpenBackgroundModal(true);
+  };
+
   // Function to close value modal without action
   const handleCloseValueModal = () => {
     setOpenValueModal(false);
@@ -183,6 +204,12 @@ const Banner = () => {
   // Function to close vision modal without action
   const handleCloseVisionModal = () => {
     setOpenVisionModal(false);
+    setSelectedBanner(null);
+  };
+
+  // Function to close background modal without action
+  const handleCloseBackgroundModal = () => {
+    setOpenBackgroundModal(false);
     setSelectedBanner(null);
   };
 
@@ -210,8 +237,8 @@ const Banner = () => {
       </Modal>
 
       {/* Display Banner Images */}
-      <Box mt={2} height="60vh">
-        <ImageList sx={{ width: "100%", height: "inherit" }} cols={3} gap={16}>
+      <Box mt={2} height="70vh">
+        <ImageList sx={{ width: "100%", height: "auto" }} cols={5} gap={16}>
           {banners.toReversed().map((banner) => (
             <ImageListItem
               key={banner.banner_id}
@@ -283,6 +310,7 @@ const Banner = () => {
               <Button variant="contained" onClick={handleOpenMission}>Add to Mission</Button>
               <Button variant="contained" onClick={handleOpenVision}>Add to Vision</Button>
               <Button variant="contained" onClick={handleOpenSlider}>Add to Slider</Button>
+              <Button variant="contained" onClick={handleOpenBackground}>Add to Background</Button>
             </Box>
           </Box>
         </Modal>
@@ -393,6 +421,34 @@ const Banner = () => {
                 Cancel
               </Button>
               <Button variant="contained" onClick={handleAddToSlider}>
+                Confirm
+              </Button>
+            </Box>
+          </Box>
+        </Modal>
+        {/* Modal Background */}
+        <Modal open={openBackgroundModal} onClose={handleCloseBackgroundModal}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              bgcolor: "background.paper",
+              border: "2px solid #000",
+              boxShadow: 24,
+              p: 4,
+              width: 300,
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              Add this banner to the page background?
+            </Typography>
+            <Box display="flex" justifyContent="flex-end" mt={2}>
+              <Button onClick={handleCloseBackgroundModal} sx={{ mr: 2 }}>
+                Cancel
+              </Button>
+              <Button variant="contained" onClick={handleAddToBackground}>
                 Confirm
               </Button>
             </Box>
