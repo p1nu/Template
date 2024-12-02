@@ -66,9 +66,14 @@ const CSR = () => {
           textAlign="center"
           width="100%"
         >
-          <Link to={`/csr/${row.csr_id}`} style={{ marginLeft: "auto", textDecoration: "none" }}>
+          <Link to={`/mission/${row.csr_id}`} style={{ marginLeft: "auto", textDecoration: "none" }}>
             <Button variant="outlined" color="primary">
               View
+            </Button>
+          </Link>
+          <Link to={`/csr/${row.csr_id}`} style={{ marginLeft: "auto", textDecoration: "none" }}>
+            <Button variant="outlined" color="primary">
+              Update
             </Button>
           </Link>
           <Button
