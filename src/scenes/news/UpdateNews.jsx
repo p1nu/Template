@@ -22,6 +22,7 @@ import { MediaLibrary } from "../gallery/Index";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+const API_BASE_URL = process.env.APP_API_URL;
 
 const UpdateNews = () => {
   const { user } = useContext(AuthContext);
@@ -46,7 +47,7 @@ const UpdateNews = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get(`http://localhost:3030/news/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/news/${id}`);
         const newsData = response.data;
 
         // Format the news_date to "yyyy-MM-dd"
@@ -85,7 +86,7 @@ const UpdateNews = () => {
 
   const handleUpdateNews = async () => {
     try {
-      await axios.put(`http://localhost:3030/news/update/${id}`, {
+      await axios.put(`${API_BASE_URL}/news/update/${id}`, {
         ...news,
         news_updated_by_user_id: user?.user_id,
       });

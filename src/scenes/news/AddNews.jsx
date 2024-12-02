@@ -22,6 +22,7 @@ import { MediaLibrary } from "../gallery/Index";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+const API_BASE_URL = process.env.APP_API_URL;
 
 const AddNews = () => {
   const { user } = useContext(AuthContext);
@@ -62,7 +63,7 @@ const AddNews = () => {
 
   const handleAddNews = async () => {
     try {
-      await axios.post("http://localhost:3030/news/new", news);
+      await axios.post(`${API_BASE_URL}/news/new`, news);
       toast.success("News added successfully");
       setNews({
         news_title: "",

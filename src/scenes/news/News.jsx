@@ -9,6 +9,7 @@ import { tokens } from '../../theme';
 import { format } from 'date-fns'; // Imported format from date-fns
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+const API_BASE_URL = process.env.APP_API_URL;
 
 const News = () => {
   const theme = useTheme();
@@ -21,7 +22,7 @@ const News = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3030/news/all");
+        const response = await axios.get(`${API_BASE_URL}/news/all`);
         setNews(response.data);
         setFilteredNews(response.data);
       } catch (error) {
@@ -41,8 +42,8 @@ const News = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.put(`http://localhost:3030/news/delete/${id}`);
-      const response = await axios.get("http://localhost:3030/news/all");
+      await axios.put(`${API_BASE_URL}/news/delete/${id}`);
+      const response = await axios.get(`${API_BASE_URL}/news/all`);
       setNews(response.data);
       setFilteredNews(response.data);
       toast.success("News deleted successfully");
