@@ -20,6 +20,7 @@ import { OpenMediaButton, MediaLibrary } from "../gallery/Index";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+const API_BASE_URL = process.env.APP_API_URL;
 
 const AddCompany = () => {
   const { user } = useContext(AuthContext);
@@ -52,7 +53,7 @@ const AddCompany = () => {
 
   const handleAddCompany = async () => {
     try {
-      await axios.post("http://localhost:3030/company/new", {
+      await axios.post(`${API_BASE_URL}/company/new`, {
         ...company,
         company_created_by_user_id: user?.user_id,
       });

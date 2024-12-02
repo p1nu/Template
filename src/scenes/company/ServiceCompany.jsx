@@ -18,6 +18,7 @@ import styled from "styled-components";
 import Header from "../../components/Header";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+const API_BASE_URL = process.env.APP_API_URL;
 
 // Styled-component for alignment and spacing
 const StyledBox = styled.div`
@@ -41,7 +42,7 @@ const ServiceCompany = () => {
   // Fetch company details
   const fetchCompany = async () => {
     try {
-      const response = await axios.get(`http://localhost:3030/company/${id}`);
+      const response = await axios.get(`${API_BASE_URL}/company/${id}`);
       setCompany(response.data);
     } catch (error) {
       console.error("Error fetching company details:", error);
@@ -53,7 +54,7 @@ const ServiceCompany = () => {
   const fetchServices = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3030/service/company/${id}`
+        `${API_BASE_URL}/service/company/${id}`
       );
       setServices(response.data);
       setFilteredServices(response.data);
@@ -79,7 +80,7 @@ const ServiceCompany = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.put(`http://localhost:3030/service/delete/${id}`);
+      await axios.put(`${API_BASE_URL}/service/delete/${id}`);
       fetchServices();
       toast.success("Service deleted successfully");
     } catch (error) {

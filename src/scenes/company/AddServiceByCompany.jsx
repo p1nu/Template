@@ -22,6 +22,7 @@ import { AuthContext } from "../global/AuthContext";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+const API_BASE_URL = process.env.APP_API_URL;
 
 const AddServiceByCompany = () => {
   const { user } = useContext(AuthContext);
@@ -49,7 +50,7 @@ const AddServiceByCompany = () => {
     // Fetch company details
     const fetchCompany = async () => {
       try {
-        const response = await axios.get(`http://localhost:3030/company/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/company/${id}`);
         setCompany(response.data);
       } catch (error) {
         console.error("Error fetching company details:", error);
@@ -60,7 +61,7 @@ const AddServiceByCompany = () => {
     // Fetch all companies
     const fetchCompanies = async () => {
       try {
-        const response = await axios.get("http://localhost:3030/company/all");
+        const response = await axios.get(`${API_BASE_URL}/company/all`);
         setCompanies(response.data);
       } catch (error) {
         console.error("Error fetching companies:", error);
@@ -85,7 +86,7 @@ const AddServiceByCompany = () => {
     // Fetch company by ID
     const fetchCompany = async () => {
       try {
-        const response = await axios.get(`http://localhost:3030/company/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/company/${id}`);
         setCompany(response.data[0]);
       } catch (error) {
         console.error("Error fetching data from database:", error);
@@ -97,7 +98,7 @@ const AddServiceByCompany = () => {
 
   const handleAddService = async () => {
     try {
-      await axios.post(`http://localhost:3030/service/new`, service);
+      await axios.post(`${API_BASE_URL}/service/new`, service);
       toast.success("Service added successfully");
       setService({
         service_name: "",

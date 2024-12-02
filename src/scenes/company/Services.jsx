@@ -15,6 +15,7 @@ import styled from "styled-components";
 import Header from "../../components/Header";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+const API_BASE_URL = process.env.APP_API_URL;
 
 // Styled-component for alignment and spacing (if needed)
 const StyledBox = styled.div`
@@ -38,7 +39,7 @@ const Services = () => {
   const fetchServices = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3030/service/all`
+        `${API_BASE_URL}/service/all`
       );
       setServices(response.data);
       setFilteredServices(response.data);
@@ -61,7 +62,7 @@ const Services = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.put(`http://localhost:3030/service/delete/${id}`);
+      await axios.put(`${API_BASE_URL}/service/delete/${id}`);
       fetchServices();
       toast.success("Service deleted successfully");
     } catch (error) {

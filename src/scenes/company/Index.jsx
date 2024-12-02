@@ -6,6 +6,7 @@ import { tokens } from "../../theme";
 import { Link } from "react-router-dom";
 import Header from "../../components/Header";
 import mockCompanies from "../data/mockDataCompany"; // Import the mock data for companies
+const API_BASE_URL = process.env.APP_API_URL;
 
 const Companies = () => {
   const theme = useTheme();
@@ -18,7 +19,7 @@ const Companies = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3030/company/all");
+        const response = await axios.get(`${API_BASE_URL}/company/all`);
         setCompanies(response.data);
         setFilteredCompanies(response.data);
       } catch (error) {
@@ -43,8 +44,8 @@ const Companies = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.put(`http://localhost:3030/company/delete/${id}`);
-      const response = await axios.get("http://localhost:3030/company/all");
+      await axios.put(`${API_BASE_URL}/company/delete/${id}`);
+      const response = await axios.get(`${API_BASE_URL}/company/all`);
       setCompanies(response.data);
       setFilteredCompanies(response.data);
     } catch (error) {

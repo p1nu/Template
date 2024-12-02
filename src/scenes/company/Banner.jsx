@@ -21,6 +21,7 @@ import Header from "../../components/Header";
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { set } from "date-fns";
+const API_BASE_URL = process.env.APP_API_URL;
 
 const Banner = () => {
   const theme = useTheme();
@@ -36,7 +37,7 @@ const Banner = () => {
   const fetchBanners = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3030/banner/company/${companyId}`
+        `${API_BASE_URL}/banner/company/${companyId}`
       );
       setBanners(response.data[0]);
     } catch (error) {
@@ -58,7 +59,7 @@ const Banner = () => {
         banner_image_id: image.il_id,
       };
 
-      await axios.post("http://localhost:3030/banner/new", payload);
+      await axios.post(`${API_BASE_URL}/banner/new`, payload);
 
       fetchBanners(); // Refresh the banner list
       toast.success("Banner added successfully.");
@@ -87,7 +88,7 @@ const Banner = () => {
   const handleAddToSlider = async () => {
     try {
       await axios.put(
-        `http://localhost:3030/banner/${selectedBanner.banner_id}/add-to-slider`
+        `${API_BASE_URL}/banner/${selectedBanner.banner_id}/add-to-slider`
       );
       toast.success("Banner updated to show in slider.");
       setOpenSliderModal(false);
@@ -102,7 +103,7 @@ const Banner = () => {
   const handleAddToValue = async () => {
     try {
       await axios.put(
-        `http://localhost:3030/banner/${selectedBanner.banner_id}/add-to-value`
+        `${API_BASE_URL}/banner/${selectedBanner.banner_id}/add-to-value`
       );
       toast.success("Banner added to value.");
       setOpenValueModal(false);
@@ -116,7 +117,7 @@ const Banner = () => {
   const handleAddToMission = async () => {
     try {
       await axios.put(
-        `http://localhost:3030/banner/${selectedBanner.banner_id}/add-to-mission`
+        `${API_BASE_URL}/banner/${selectedBanner.banner_id}/add-to-mission`
       );
       toast.success("Banner added to mission.");
       setOpenMissionModal(false);
@@ -130,7 +131,7 @@ const Banner = () => {
   const handleAddToVision = async () => {
     try {
       await axios.put(
-        `http://localhost:3030/banner/${selectedBanner.banner_id}/add-to-vision`
+        `${API_BASE_URL}/banner/${selectedBanner.banner_id}/add-to-vision`
       );
       toast.success("Banner added to vision.");
       setOpenVisionModal(false);
@@ -144,7 +145,7 @@ const Banner = () => {
   const handleAddToBackground = async () => {
     try {
       await axios.put(
-        `http://localhost:3030/banner/${selectedBanner.banner_id}/add-to-background`
+        `${API_BASE_URL}/banner/${selectedBanner.banner_id}/add-to-background`
       );
       toast.success("Banner added to background.");
       setOpenBackgroundModal(false);
@@ -251,7 +252,7 @@ const Banner = () => {
               }}
             >
               <img
-                src={`http://localhost:3030/uploads/${banner.image_path}`}
+                src={`${API_BASE_URL}/uploads/${banner.image_path}`}
                 alt={`Banner ${banner.banner_id}`}
                 loading="lazy"
                 style={{ width: "100%", height: "auto" }}
@@ -266,7 +267,7 @@ const Banner = () => {
                     onClick={async () => {
                       try {
                         await axios.delete(
-                          `http://localhost:3030/banner/delete/${banner.banner_id}`
+                          `${API_BASE_URL}/banner/delete/${banner.banner_id}`
                         );
                         toast.success("Image deleted successfully");
                         fetchBanners();

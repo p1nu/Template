@@ -22,6 +22,7 @@ import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { AuthContext } from "../global/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+const API_BASE_URL = process.env.APP_API_URL;
 
 const AddService = () => {
   const theme = useTheme();
@@ -53,7 +54,7 @@ const AddService = () => {
 
   const handleAddService = async () => {
     try {
-      await axios.post("http://localhost:3030/service/new", service);
+      await axios.post(`${API_BASE_URL}/service/new`, service);
       toast.success("Service added successfully");
       setService({
         service_name: "",
@@ -79,7 +80,7 @@ const AddService = () => {
     // Fetch company data
     const fetchCompany = async () => {
       try {
-        const response = await axios.get("http://localhost:3030/company/all");
+        const response = await axios.get(`${API_BASE_URL}/company/all`);
         setCompanies(response.data);
       } catch (error) {
         console.error("Error fetching company data:", error);

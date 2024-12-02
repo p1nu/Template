@@ -22,6 +22,7 @@ import { MediaGallery, OpenMediaButton, MediaLibrary } from "../gallery/Index";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+const API_BASE_URL = process.env.APP_API_URL;
 
 const UpdateCompany = () => {
   const { user } = useContext(AuthContext);
@@ -52,7 +53,7 @@ const UpdateCompany = () => {
     // Fetch company data by ID
     const fetchCompany = async () => {
       try {
-        const response = await axios.get(`http://localhost:3030/company/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/company/${id}`);
         setCompany(response.data[0]);
       } catch (error) {
         console.error("Error fetching company data:", error);
@@ -67,7 +68,7 @@ const UpdateCompany = () => {
     const fetchUser = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3030/user/${company.company_created_by_user_id}`,
+          `${API_BASE_URL}/user/${company.company_created_by_user_id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -96,7 +97,7 @@ const UpdateCompany = () => {
 
   const handleUpdateCompany = async () => {
     try {
-      await axios.put(`http://localhost:3030/company/update/${id}`, {
+      await axios.put(`${API_BASE_URL}/company/update/${id}`, {
         company_name: company.company_name,
         company_acronym: company.company_acronym,
         company_value: company.company_value,

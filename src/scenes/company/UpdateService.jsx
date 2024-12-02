@@ -11,6 +11,7 @@ import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { AuthContext } from "../global/AuthContext";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+const API_BASE_URL = process.env.APP_API_URL;
 
 const UpdateService = () => {
   const { user } = useContext(AuthContext);
@@ -34,7 +35,7 @@ const UpdateService = () => {
     // Fetch service data by ID
     const fetchService = async () => {
       try {
-        const response = await axios.get(`http://localhost:3030/service/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/service/${id}`);
         setService(response.data[0]);
       } catch (error) {
         console.error('Error fetching service data:', error);
@@ -48,7 +49,7 @@ const UpdateService = () => {
     // Fetch company data
     const fetchCompany = async () => {
       try {
-        const response = await axios.get('http://localhost:3030/company/all');
+        const response = await axios.get('${API_BASE_URL}/company/all');
         setCompanies(response.data);
       } catch (error) {
         console.error('Error fetching company data:', error);
@@ -69,7 +70,7 @@ const UpdateService = () => {
 
   const handleUpdateService = async () => {
     try {
-      await axios.put(`http://localhost:3030/service/update/${id}`, {
+      await axios.put(`${API_BASE_URL}/service/update/${id}`, {
         ...service, service_updated_by_user_id: user?.user_id,
       });
       toast.success('Service updated successfully');

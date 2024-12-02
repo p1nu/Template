@@ -20,6 +20,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Header from "../../components/Header";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { set } from "date-fns";
+const API_BASE_URL = process.env.APP_API_URL;
 
 const BannerService = () => {
   const theme = useTheme();
@@ -40,7 +41,7 @@ const BannerService = () => {
   const fetchBanners = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3030/banner/service/${serviceId}`
+        `${API_BASE_URL}/banner/service/${serviceId}`
       );
       setBanners(response.data[0]);
     } catch (error) {
@@ -62,7 +63,7 @@ const BannerService = () => {
         banner_image_id: image.il_id,
       };
 
-      await axios.post("http://localhost:3030/banner/new", payload);
+      await axios.post(`${API_BASE_URL}/banner/new`, payload);
 
       fetchBanners(); // Refresh the banner list
       toast.success("Banner added successfully.");
@@ -124,7 +125,7 @@ const BannerService = () => {
   const handleAddToPreview1= async () => {
     try {
       await axios.put(
-        `http://localhost:3030/banner/${selectedBanner.banner_id}/add-to-preview1`
+        `${API_BASE_URL}/banner/${selectedBanner.banner_id}/add-to-preview1`
       );
       toast.success("Banner added to preview1.");
       setOpenPreview1(false);
@@ -139,7 +140,7 @@ const BannerService = () => {
   const handleAddToPreview2= async () => {
     try {
       await axios.put(
-        `http://localhost:3030/banner/${selectedBanner.banner_id}/add-to-preview2`
+        `${API_BASE_URL}/banner/${selectedBanner.banner_id}/add-to-preview2`
       );
       toast.success("Banner added to preview2.");
       setOpenPreview2(false);
@@ -153,7 +154,7 @@ const BannerService = () => {
   const handleAddToPreview3= async () => {
     try {
       await axios.put(
-        `http://localhost:3030/banner/${selectedBanner.banner_id}/add-to-preview3`
+        `${API_BASE_URL}/banner/${selectedBanner.banner_id}/add-to-preview3`
       );
       toast.success("Banner added to preview3.");
       setOpenPreview3(false);
@@ -195,7 +196,7 @@ const BannerService = () => {
               }}
             >
               <img
-                src={`http://localhost:3030/uploads/${banner.image_path}`}
+                src={`${API_BASE_URL}/uploads/${banner.image_path}`}
                 alt={`Banner ${banner.banner_id}`}
                 loading="lazy"
                 style={{ width: "100%", height: "auto" }}
@@ -210,7 +211,7 @@ const BannerService = () => {
                     onClick={async () => {
                       try {
                         await axios.delete(
-                          `http://localhost:3030/banner/delete/${banner.banner_id}`
+                          `${API_BASE_URL}/banner/delete/${banner.banner_id}`
                         );
                         toast.success("Image deleted successfully");
                         fetchBanners();
