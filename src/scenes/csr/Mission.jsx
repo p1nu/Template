@@ -3,6 +3,7 @@ import { Box, Button, Card, CardContent, Typography } from '@mui/material';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import DOMPurify from 'dompurify';
+const API_BASE_URL = process.env.APP_API_URL;
 
 const Mission = () => {
   const { id } = useParams(); // Get CSR ID from URL parameters
@@ -11,7 +12,7 @@ const Mission = () => {
   useEffect(() => {
     const fetchMissions = async () => {
       try {
-        const response = await axios.get(`http://localhost:3030/mission/csr/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/mission/csr/${id}`);
         setMissions(response.data);
       } catch (error) {
         console.error('Error fetching missions:', error);
@@ -34,7 +35,7 @@ const Mission = () => {
             <CardContent>
               {mission.image && (
                 <img
-                  src={`http://localhost:3030/uploads/${mission.image}`}
+                  src={`${API_BASE_URL}/uploads/${mission.image}`}
                   alt="Mission"
                   width="100%"
                 />

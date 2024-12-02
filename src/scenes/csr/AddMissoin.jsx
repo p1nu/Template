@@ -20,6 +20,7 @@ import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, useParams } from "react-router-dom";
+const API_BASE_URL = process.env.APP_API_URL;
 
 const AddMission = () => {
   const id = useParams().id;
@@ -71,7 +72,7 @@ const AddMission = () => {
   // Handle form submission
   const handleAddMission = async () => {
     try {
-      await axios.post("http://localhost:3030/mission/new", mission);
+      await axios.post(`${API_BASE_URL}/mission/new`, mission);
       setMission({
         description: "",
         image: "",
@@ -128,7 +129,7 @@ const AddMission = () => {
           {media && (
             <Box mt={2}>
               <Typography>Selected Image:</Typography>
-              <img src={`http://localhost:3030/uploads/${media}`} alt="Selected" width="200px" />
+              <img src={`${API_BASE_URL}/uploads/${media}`} alt="Selected" width="200px" />
             </Box>
           )}
           <Modal open={open} onClose={handleClose}>

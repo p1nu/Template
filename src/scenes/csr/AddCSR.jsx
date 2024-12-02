@@ -22,6 +22,7 @@ import { MediaLibrary } from "../gallery/Index";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+const API_BASE_URL = process.env.APP_API_URL;
 
 const AddCSR = () => {
   const { user } = useContext(AuthContext);
@@ -60,7 +61,7 @@ const AddCSR = () => {
 
   const handleAddCsr = async () => {
     try {
-      await axios.post("http://localhost:3030/csr/new", csr);
+      await axios.post(`${API_BASE_URL}/csr/new`, csr);
       toast.success("CSR added successfully");
       setCsr({
         csr_name: "",
@@ -295,7 +296,7 @@ const AddCSR = () => {
             >
               {image ? (
                 <img
-                  src={`http://localhost:3030/uploads/${image}`}
+                  src={`${API_BASE_URL}/uploads/${image}`}
                   alt="csr"
                   width="100%"
                   height="auto"

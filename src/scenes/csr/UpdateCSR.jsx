@@ -22,6 +22,7 @@ import { MediaLibrary } from "../gallery/Index";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+const API_BASE_URL = process.env.APP_API_URL;
 
 const UpdateCSR = () => {
   const { user } = useContext(AuthContext);
@@ -44,7 +45,7 @@ const UpdateCSR = () => {
   useEffect(() => {
     const fetchCsr = async () => {
       try {
-        const response = await axios.get(`http://localhost:3030/csr/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/csr/${id}`);
         const csrData = response.data;
 
         setCsr(csrData[0]);
@@ -80,7 +81,7 @@ const UpdateCSR = () => {
 
   const handleUpdateCsr = async () => {
     try {
-      await axios.put(`http://localhost:3030/csr/update/${id}`, {
+      await axios.put(`${API_BASE_URL}/csr/update/${id}`, {
         ...csr,
         csr_updated_by_user_id: user.user_id,
       });
@@ -302,7 +303,7 @@ const UpdateCSR = () => {
             >
               {image ? (
                 <img
-                  src={`http://localhost:3030/uploads/${image}`}
+                  src={`${API_BASE_URL}/uploads/${image}`}
                   alt="csr"
                   width="100%"
                   height="auto"

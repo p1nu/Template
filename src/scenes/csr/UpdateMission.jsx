@@ -20,6 +20,7 @@ import { useMediaGallery } from '../gallery/MediaGalleryContext';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useParams, useNavigate } from 'react-router-dom';
+const API_BASE_URL = process.env.APP_API_URL;
 
 const UpdateMission = () => {
   const theme = useTheme();
@@ -44,7 +45,7 @@ const UpdateMission = () => {
     // Fetch mission data by ID
     const fetchMission = async () => {
       try {
-        const response = await axios.get(`http://localhost:3030/mission/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/mission/${id}`);
         const missionData = response.data;
         setMission(missionData[0]);
         setDescription(missionData[0].description);
@@ -94,7 +95,7 @@ const UpdateMission = () => {
   // Handle form submission
   const handleUpdateMission = async () => {
     try {
-      await axios.put(`http://localhost:3030/mission/update/${id}`, mission);
+      await axios.put(`${API_BASE_URL}/mission/update/${id}`, mission);
       toast.success('Mission updated successfully');
       navigate(-1); // Navigate back
     } catch (error) {
@@ -139,7 +140,7 @@ const UpdateMission = () => {
           {media && (
             <Box mt={2}>
               <Typography>Selected Image:</Typography>
-              <img src={`http://localhost:3030/uploads/${media}`} alt="Selected" width="200px" />
+              <img src={`${API_BASE_URL}/uploads/${media}`} alt="Selected" width="200px" />
             </Box>
           )}
           <Modal open={open} onClose={handleClose}>

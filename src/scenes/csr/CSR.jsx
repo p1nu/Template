@@ -7,6 +7,7 @@ import styled from "styled-components";
 import Header from "../../components/Header";
 import { tokens } from '../../theme';
 import { format } from 'date-fns'; // Imported format from date-fns
+const API_BASE_URL = process.env.APP_API_URL;
 
 const CSR = () => {
   const theme = useTheme();
@@ -20,7 +21,7 @@ const CSR = () => {
   useEffect(() => {
     const fetchCSR = async () => {
       try {
-        const response = await axios.get("http://localhost:3030/csr/all");
+        const response = await axios.get(`${API_BASE_URL}/csr/all`);
         setCSR(response.data);
         setFilteredCSR(response.data);
         console.log(response.data);
@@ -41,8 +42,8 @@ const CSR = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:3030/csr/delete/${id}`);
-      const response = await axios.get("http://localhost:3030/csr/all");
+      await axios.delete(`${API_BASE_URL}/csr/delete/${id}`);
+      const response = await axios.get(`${API_BASE_URL}/csr/all`);
       setCSR(response.data);
       setFilteredCSR(response.data);
       setError("CSR deleted successfully");
