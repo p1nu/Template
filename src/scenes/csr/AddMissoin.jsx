@@ -19,7 +19,7 @@ import { MediaLibrary } from "../gallery/Index";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const AddMission = () => {
   const id = useParams().id;
@@ -27,6 +27,7 @@ const AddMission = () => {
   const colors = tokens(theme.palette.mode);
   const { user } = useContext(AuthContext);
   const { open, handleOpen, handleClose } = useMediaGallery();
+  const navigate = useNavigate();
 
   const [mediaType, setMediaType] = useState("");
   const [media, setMedia] = useState("");
@@ -81,6 +82,9 @@ const AddMission = () => {
       setMediaType("");
       setMedia("");
       setDescription("");
+      setTimeout(() => {
+        navigate(`/mission/${id}`);
+      }, 3000);
       toast.success("Mission added successfully");
     } catch (error) {
       console.error("Error adding mission:", error);
