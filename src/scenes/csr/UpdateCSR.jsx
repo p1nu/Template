@@ -31,11 +31,9 @@ const UpdateCSR = () => {
   const navigate = useNavigate();
 
   const [csr, setCsr] = useState({
-    csr_title: "",
-    csr_article: "",
-    csr_date: "",
-    csr_image_id: "",
-    csr_link: "",
+    csr_name: "",
+    csr_desc: "",
+    csr_thumbnail: "",
     csr_status_id: 1,
     csr_updated_by_user_id: user?.user_id || "",
   });
@@ -49,24 +47,21 @@ const UpdateCSR = () => {
         const response = await axios.get(`http://localhost:3030/csr/${id}`);
         const csrData = response.data;
 
-        // Format the csr_date to "yyyy-MM-dd"
-        const date = new Date(csrData.csr_date);
-        const formattedDate = date.toISOString().split("T")[0];
-
-        setCsr({ ...csrData, csr_date: formattedDate });
-        setImage(csrData.image_path); // Assuming the image path is returned
+        setCsr(csrData[0]);
+        setImage(csrData[0].csr_thumbnail); // Assuming the image path is returned
       } catch (error) {
         console.error("Error fetching CSR data:", error);
         toast.error("Failed to fetch CSR data");
       }
     };
 
+    console.log(user.user_id)
     fetchCsr();
   }, [id]);
 
   // Handle selecting an image from the media gallery
   const handleSelectImage = (image) => {
-    setCsr((prevCsr) => ({ ...prevCsr, csr_image_id: image.il_id }));
+    setCsr((prevCsr) => ({ ...prevCsr, csr_thumbnail: image.il_path }));
     setImage(image.il_path);
     toast.success("Image selected successfully");
     handleClose();
@@ -80,14 +75,14 @@ const UpdateCSR = () => {
 
   // Handle article changes with react-quill
   const handleArticleChange = (value) => {
-    setCsr((prevCsr) => ({ ...prevCsr, csr_article: value }));
+    setCsr((prevCsr) => ({ ...prevCsr, csr_desc: value }));
   };
 
   const handleUpdateCsr = async () => {
     try {
       await axios.put(`http://localhost:3030/csr/update/${id}`, {
         ...csr,
-        csr_updated_by_user_id: user?.user_id,
+        csr_updated_by_user_id: user.user_id,
       });
       toast.success("CSR updated successfully");
       setTimeout(() => {
@@ -139,7 +134,7 @@ const UpdateCSR = () => {
             gap={2}
           >
             <Box width={"55%"}>
-              {/* CSR Title */}
+              {/* CSR Name */}
               <Box
                 display="flex"
                 flexDirection="column"
@@ -147,16 +142,16 @@ const UpdateCSR = () => {
                 width="100%"
               >
                 <InputLabel
-                  htmlFor="csr_title"
+                  htmlFor="csr_name"
                   sx={{ color: colors.grey[100], mb: "5px" }}
                 >
                   CSR Title
                 </InputLabel>
                 <InputBase
-                  id="csr_title"
+                  id="csr_name"
                   placeholder="CSR Title"
-                  name="csr_title"
-                  value={csr.csr_title}
+                  name="csr_name"
+                  value={csr.csr_name}
                   onChange={handleChange}
                   sx={{
                     padding: "10px",
@@ -168,7 +163,7 @@ const UpdateCSR = () => {
                 />
               </Box>
 
-              {/* CSR Article */}
+              {/* CSR Description */}
               <Box
                 display="flex"
                 flexDirection="column"
@@ -176,16 +171,16 @@ const UpdateCSR = () => {
                 width="100%"
               >
                 <InputLabel
-                  htmlFor="csr_article"
+                  htmlFor="csr_desc"
                   sx={{ color: colors.grey[100], mb: "5px" }}
                 >
                   CSR Article
                 </InputLabel>
                 <ReactQuill
                   theme="snow"
-                  value={csr.csr_article}
+                  value={csr.csr_desc}
                   onChange={handleArticleChange}
-                  placeholder="Write your article here..."
+                  placeholder="Write your description here..."
                   style={{
                     backgroundColor: colors.grey[900],
                     color: colors.grey[100],
@@ -195,7 +190,7 @@ const UpdateCSR = () => {
               </Box>
 
               {/* CSR Date */}
-              <Box
+              {/* <Box
                 display="flex"
                 flexDirection="column"
                 margin="10px 0"
@@ -221,10 +216,10 @@ const UpdateCSR = () => {
                     color: colors.grey[100],
                   }}
                 />
-              </Box>
+              </Box> */}
 
               {/* CSR Link */}
-              <Box
+              {/* <Box
                 display="flex"
                 flexDirection="column"
                 margin="10px 0"
@@ -250,7 +245,7 @@ const UpdateCSR = () => {
                     color: colors.grey[100],
                   }}
                 />
-              </Box>
+              </Box> */}
               {/* CSR status */}
               <Box
                 display="flex"
