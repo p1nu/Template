@@ -30,12 +30,9 @@ const AddCSR = () => {
   const navigate = useNavigate();
 
   const [csr, setCsr] = useState({
-    csr_title: "",
-    csr_article: "",
-    csr_date: "",
-    csr_image_id: "",
-    csr_link: "",
-    csr_status_id: 1,
+    csr_name: "",
+    csr_desc: "",
+    csr_thumbnail: "",
     csr_created_by_user_id: user?.user_id || "",
   });
 
@@ -44,7 +41,7 @@ const AddCSR = () => {
 
   // Handle selecting an image from the media gallery
   const handleSelectImage = (image) => {
-    setCsr((prevCsr) => ({ ...prevCsr, csr_image_id: image.il_id }));
+    setCsr((prevCsr) => ({ ...prevCsr, csr_thumbnail: image.il_path }));
     setImage(image.il_path);
     toast.success("Image selected successfully");
     handleClose();
@@ -58,7 +55,7 @@ const AddCSR = () => {
 
   // Handle article changes with react-quill
   const handleArticleChange = (value) => {
-    setCsr((prevCsr) => ({ ...prevCsr, csr_article: value }));
+    setCsr((prevCsr) => ({ ...prevCsr, csr_desc: value }));
   };
 
   const handleAddCsr = async () => {
@@ -66,14 +63,11 @@ const AddCSR = () => {
       await axios.post("http://localhost:3030/csr/new", csr);
       toast.success("CSR added successfully");
       setCsr({
-        csr_title: "",
-        csr_article: "",
-        csr_date: "",
-        csr_image_id: "",
-        csr_link: "",
-        csr_status_id: 1,
+        csr_name: "",
+        csr_desc: "",
+        csr_thumbnail: "",
         csr_created_by_user_id: user?.user_id || "",
-      }); // Reset form
+      });
       setTimeout(() => {
         navigate("/csr");
       }, 3000);
@@ -140,16 +134,16 @@ const AddCSR = () => {
                 width="100%"
               >
                 <InputLabel
-                  htmlFor="csr_title"
+                  htmlFor="csr_name"
                   sx={{ color: colors.grey[100], mb: "5px" }}
                 >
-                  CSR Title
+                  CSR Name
                 </InputLabel>
                 <InputBase
                   id="csr_title"
-                  placeholder="CSR Title"
-                  name="csr_title"
-                  value={csr.csr_title}
+                  placeholder="CSR Name"
+                  name="csr_name"
+                  value={csr.csr_name}
                   onChange={handleChange}
                   sx={{
                     padding: "10px",
@@ -161,7 +155,7 @@ const AddCSR = () => {
                 />
               </Box>
 
-              {/* CSR Article */}
+              {/* CSR Desc */}
               <Box
                 display="flex"
                 flexDirection="column"
@@ -169,16 +163,16 @@ const AddCSR = () => {
                 width="100%"
               >
                 <InputLabel
-                  htmlFor="csr_article"
+                  htmlFor="csr_desc"
                   sx={{ color: colors.grey[100], mb: "5px" }}
                 >
-                  CSR Article
+                  CSR Description
                 </InputLabel>
                 <ReactQuill
                   theme="snow"
-                  value={csr.csr_article}
+                  value={csr.csr_desc}
                   onChange={handleArticleChange}
-                  placeholder="Write your article here..."
+                  placeholder="Write your description here..."
                   style={{
                     backgroundColor: colors.grey[900],
                     color: colors.grey[100],
@@ -188,7 +182,7 @@ const AddCSR = () => {
               </Box>
 
               {/* CSR Date */}
-              <Box
+              {/* <Box
                 display="flex"
                 flexDirection="column"
                 margin="10px 0"
@@ -214,10 +208,10 @@ const AddCSR = () => {
                     color: colors.grey[100],
                   }}
                 />
-              </Box>
+              </Box> */}
 
               {/* CSR Link */}
-              <Box
+              {/* <Box
                 display="flex"
                 flexDirection="column"
                 margin="10px 0"
@@ -243,7 +237,7 @@ const AddCSR = () => {
                     color: colors.grey[100],
                   }}
                 />
-              </Box>
+              </Box> */}
 
               {/* CSR status */}
               <Box
@@ -256,13 +250,13 @@ const AddCSR = () => {
                   htmlFor="csr_status_id"
                   sx={{ color: colors.grey[100], mb: "5px" }}
                 >
-                  Company Status
+                  CSR Status
                 </InputLabel>
                 <FormControl fullWidth>
                   <Select
                     id="csr_status_id"
                     name="csr_status_id"
-                    value={csr.csr_status_id}
+                    value={csr.csr_status_id || 1}
                     onChange={handleChange}
                     displayEmpty
                     sx={{
@@ -307,7 +301,7 @@ const AddCSR = () => {
                   height="auto"
                 />
               ) : (
-                <Typography variant="h6">Click here to select image</Typography>
+                <Typography variant="h6">Click here to select image for thumbnail</Typography>
               )}
             </Box>
           </Box>
