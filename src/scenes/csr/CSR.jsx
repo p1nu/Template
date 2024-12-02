@@ -23,6 +23,7 @@ const CSR = () => {
         const response = await axios.get("http://localhost:3030/csr/all");
         setCSR(response.data);
         setFilteredCSR(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching CSR:", error);
         setError("Error fetching CSR data");
@@ -40,11 +41,12 @@ const CSR = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:3030/csr/${id}`);
+      await axios.delete(`http://localhost:3030/csr/delete/${id}`);
       const response = await axios.get("http://localhost:3030/csr/all");
       setCSR(response.data);
       setFilteredCSR(response.data);
       setError("CSR deleted successfully");
+      console.log(response.data);
     } catch (error) {
       console.error("Error deleting CSR:", error);
       setError("Error deleting CSR");
@@ -53,12 +55,7 @@ const CSR = () => {
 
   const columns = [
     { name: "ID", selector: (row) => row.csr_id, sortable: true },
-    { name: "Title", selector: (row) => row.csr_title, sortable: true },
-    { 
-      name: "Date", 
-      selector: (row) => format(new Date(row.csr_date), 'MM/dd/yyyy'), 
-      sortable: true 
-    },
+    { name: "Title", selector: (row) => row.csr_name, sortable: true },
     {
       name: "Actions",
       cell: (row) => (
