@@ -8,6 +8,7 @@ import { set } from 'date-fns';
 import { useTimeout } from '@mui/x-data-grid/internals';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+const API_BASE_URL = process.env.APP_API_URL;
 
 const Login = () => {
   const theme = useTheme();
@@ -19,7 +20,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:3030/auth/login', {
+      const response = await axios.post(`${API_BASE_URL}/auth/login`, {
         user_name,
         user_password,
       });

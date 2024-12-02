@@ -16,6 +16,7 @@ import Header from "../../components/Header";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+const API_BASE_URL = process.env.APP_API_URL;
 
 const UpdateUser = () => {
   const theme = useTheme();
@@ -32,7 +33,7 @@ const UpdateUser = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`http://localhost:3030/user/${id}`, {
+        const response = await axios.get(`${API_BASE_URL}/user/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`, // Include the token in headers
           },
@@ -69,7 +70,7 @@ const UpdateUser = () => {
       }
 
       await axios.put(
-        `http://localhost:3030/user/update/${id}`,
+        `${API_BASE_URL}/user/update/${id}`,
         updateData,
         {
           headers: {

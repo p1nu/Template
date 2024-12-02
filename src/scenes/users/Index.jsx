@@ -11,6 +11,7 @@ import mockUsers from '../data/mockData'; // Import the mock data for users
 // import { AuthContext } from '../global/AuthContext';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+const API_BASE_URL = process.env.APP_API_URL;
 
 const Users = () => {
   const theme = useTheme();
@@ -25,7 +26,7 @@ const Users = () => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token'); // Retrieve the token
-        const response = await axios.get('http://localhost:3030/user/all', {
+        const response = await axios.get(`${API_BASE_URL}/user/all`, {
           headers: {
             Authorization: `Bearer ${token}`, // Include the token in headers
           },
@@ -61,8 +62,8 @@ const Users = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.put(`http://localhost:3030/user/delete/${id}`);
-      const response = await axios.get('http://localhost:3030/user/all');
+      await axios.put(`${API_BASE_URL}/user/delete/${id}`);
+      const response = await axios.get(`${API_BASE_URL}/user/all`);
       setUsers(response.data);
       setFilteredUsers(response.data);
     } catch (error) {

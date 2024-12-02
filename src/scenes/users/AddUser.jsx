@@ -16,6 +16,7 @@ import Header from "../../components/Header";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+const API_BASE_URL = process.env.APP_API_URL;
 
 const AddUser = () => {
   const theme = useTheme();
@@ -39,7 +40,7 @@ const AddUser = () => {
         toast.error("Please fill all fields");
         return;
       }
-      await axios.post("http://localhost:3030/user/new", user, {
+      await axios.post(`${API_BASE_URL}/user/new`, user, {
         headers: {
           Authorization: `Bearer ${token}`, // Include the token in headers
         },
