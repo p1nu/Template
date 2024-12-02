@@ -30,6 +30,7 @@ import AddCSR from "./scenes/csr/AddCSR.jsx";
 import UpdateCSR from "./scenes/csr/UpdateCSR.jsx";
 import Mission from "./scenes/csr/Mission.jsx";
 import AddMissoin from "./scenes/csr/AddMissoin.jsx";
+import UpdateMission from "./scenes/csr/UpdateMission.jsx";
 import Jobs from "./scenes/jobs/Jobs.jsx";
 import AddJob from "./scenes/jobs/AddJob.jsx";
 import UpdateJob from "./scenes/jobs/UpdateJob.jsx";
@@ -76,6 +77,7 @@ function App() {
               <Route path="/csr/:id" element={<UpdateCSR />} />
               <Route path="/mission/:id" element={<Mission />} />
               <Route path="/add-mission/:id" element={<AddMissoin />} />
+              <Route path="/update-mission/:id" element={<UpdateMission />} />
               <Route path="/jobs" element={<Jobs />} />
               <Route path="/add-job" element={<AddJob />} />
               <Route path="/job/:id" element={<UpdateJob />} />

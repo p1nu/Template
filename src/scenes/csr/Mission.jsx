@@ -30,7 +30,7 @@ const Mission = () => {
       </Box>
       <Box mt={2}>
         {missions.map((mission) => (
-          <Card key={mission.mission_id} sx={{ mb: 2 }}>
+          <Card key={mission.id} sx={{ mb: 2 }}>
             <CardContent>
               {mission.image && (
                 <img
@@ -43,6 +43,13 @@ const Mission = () => {
                 <video src={mission.video} controls width="100%" />
               )}
               <Typography variant="body1" mt={2} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(mission.description) }} />
+              <Box display="flex" justifyContent="flex-end">
+                <Link to={`/update-mission/${mission.id}`} style={{ textDecoration: 'none' }}>
+                  <Button variant="outlined" color="primary">
+                    Update
+                  </Button>
+                </Link>
+              </Box>
             </CardContent>
           </Card>
         ))}
