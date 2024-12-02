@@ -18,6 +18,7 @@ import Header from "../../components/Header";
 import { AuthContext } from "../global/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+const API_BASE_URL = process.env.APP_API_URL;
 
 const Contact = () => {
   const theme = useTheme();
@@ -33,7 +34,7 @@ const Contact = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3030/contact/all");
+        const response = await axios.get(`${API_BASE_URL}/contact/all`);
         setContacts(response.data);
         setFilteredContacts(response.data);
       } catch (error) {
@@ -61,7 +62,7 @@ const Contact = () => {
     if (!window.confirm("Are you sure you want to delete this contact?")) return;
 
     try {
-      await axios.delete(`http://localhost:3030/contact/delete/${id}`);
+      await axios.delete(`${API_BASE_URL}/contact/delete/${id}`);
       toast.success("Contact deleted successfully");
 
       // Remove the deleted contact from state

@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../global/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+const API_BASE_URL = process.env.APP_API_URL;
 
 const AddContact = () => {
   const { user } = useContext(AuthContext);
@@ -43,7 +44,7 @@ const AddContact = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await axios.get("http://localhost:3030/company/all");
+        const response = await axios.get(`${API_BASE_URL}/company/all`);
         setCompanies(response.data);
       } catch (error) {
         console.error("Error fetching companies:", error);
@@ -60,7 +61,7 @@ const AddContact = () => {
       if (contact.contact_company_id) {
         try {
           const response = await axios.get(
-            `http://localhost:3030/service/company/${contact.contact_company_id}`
+            `${API_BASE_URL}/service/company/${contact.contact_company_id}`
           );
           setServices(response.data);
         } catch (error) {
@@ -91,7 +92,7 @@ const AddContact = () => {
   // Handle form submission
   const handleAddContact = async () => {
     try {
-      await axios.post("http://localhost:3030/contact/new", {
+      await axios.post(`${API_BASE_URL}/contact/new`, {
         ...contact,
         contact_created_by_user_id: user?.user_id,
       });

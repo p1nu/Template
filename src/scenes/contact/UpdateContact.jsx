@@ -17,6 +17,7 @@ import Header from "../../components/Header";
 import { AuthContext } from "../global/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+const API_BASE_URL = process.env.APP_API_URL;
 
 const UpdateContact = () => {
   const { id } = useParams();
@@ -44,7 +45,7 @@ const UpdateContact = () => {
   useEffect(() => {
     const fetchContact = async () => {
       try {
-        const response = await axios.get(`http://localhost:3030/contact/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/contact/${id}`);
         setContact(response.data[0]);
       } catch (error) {
         console.error("Error fetching contact data:", error);
@@ -59,7 +60,7 @@ const UpdateContact = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await axios.get("http://localhost:3030/company/all");
+        const response = await axios.get(`${API_BASE_URL}/company/all`);
         setCompanies(response.data);
       } catch (error) {
         console.error("Error fetching companies:", error);
@@ -76,7 +77,7 @@ const UpdateContact = () => {
       if (contact.contact_company_id) {
         try {
           const response = await axios.get(
-            `http://localhost:3030/service/company/${contact.contact_company_id}`
+            `${API_BASE_URL}/service/company/${contact.contact_company_id}`
           );
           setServices(response.data);
         } catch (error) {
@@ -107,7 +108,7 @@ const UpdateContact = () => {
   // Handle form submission
   const handleUpdateContact = async () => {
     try {
-      await axios.put(`http://localhost:3030/contact/update/${id}`, {
+      await axios.put(`${API_BASE_URL}/contact/update/${id}`, {
         ...contact,
         contact_created_by_user_id: user?.user_id,
       });
