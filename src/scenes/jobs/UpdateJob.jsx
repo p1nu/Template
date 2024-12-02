@@ -17,6 +17,7 @@ import { tokens } from '../../theme';
 import Header from '../../components/Header';
 import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns'; // Importing format from date-fns
+const API_BASE_URL = process.env.APP_API_URL;
 
 const UpdateJob = () => {
   const theme = useTheme();
@@ -45,7 +46,7 @@ const UpdateJob = () => {
     // Fetch job data by ID
     const fetchJob = async () => {
       try {
-        const response = await axios.get(`http://localhost:3030/job/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/job/${id}`);
         if (response.data && response.data.length > 0) {
           const fetchedJob = response.data[0];
           
@@ -73,7 +74,7 @@ const UpdateJob = () => {
     // Fetch all companies
     const fetchCompanies = async () => {
       try {
-        const response = await axios.get('http://localhost:3030/company/all');
+        const response = await axios.get(`${API_BASE_URL}/company/all`);
         setCompanies(response.data);
       } catch (error) {
         console.error('Error fetching companies:', error);
@@ -89,7 +90,7 @@ const UpdateJob = () => {
     // Fetch company data by ID
     const fetchCompany = async () => {
       try {
-        const response = await axios.get(`http://localhost:3030/company/${job.job_company_id}`);
+        const response = await axios.get(`${API_BASE_URL}/company/${job.job_company_id}`);
         setCompany(response.data);
         console.log(response.data);
       } catch (error) {
@@ -130,7 +131,7 @@ const UpdateJob = () => {
     }
 
     try {
-      await axios.put(`http://localhost:3030/job/update/${id}`, job);
+      await axios.put(`${API_BASE_URL}/job/update/${id}`, job);
       setError('Job updated successfully');
       setTimeout(() => {
         navigate('/jobs');

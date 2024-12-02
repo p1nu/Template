@@ -16,6 +16,7 @@ import axios from "axios";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useNavigate } from "react-router-dom";
+const API_BASE_URL = process.env.APP_API_URL;
 
 const AddJob = () => {
   const theme = useTheme();
@@ -46,7 +47,7 @@ const AddJob = () => {
 
   const handleAddJob = async () => {
     try {
-      await axios.post("http://localhost:3030/job/new", job);
+      await axios.post(`${API_BASE_URL}job/new`, job);
       setError("Job added successfully");
       setJob({
         job_name: "",
@@ -72,7 +73,7 @@ const AddJob = () => {
     // Fetch company data
     const fetchCompanies = async () => {
       try {
-        const response = await axios.get("http://localhost:3030/company/all");
+        const response = await axios.get(`${API_BASE_URL}/company/all`);
         setCompanies(response.data);
       } catch (error) {
         console.error("Error fetching companies:", error);

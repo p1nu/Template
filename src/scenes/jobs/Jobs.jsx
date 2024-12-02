@@ -14,6 +14,7 @@ import { tokens } from "../../theme";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../../components/Header";
+const API_BASE_URL = process.env.APP_API_URL;
 
 // Styled-component for alignment and spacing
 // const StyledBox = styled.div`
@@ -36,7 +37,7 @@ const Jobs = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3030/job/all");
+        const response = await axios.get(`${API_BASE_URL}/job/all`);
         setJobs(response.data);
         setFilteredJobs(response.data);
       } catch (error) {
@@ -55,8 +56,8 @@ const Jobs = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.put(`http://localhost:3030/job/delete/${id}`);
-      const response = await axios.get("http://localhost:3030/job/all");
+      await axios.put(`${API_BASE_URL}/job/delete/${id}`);
+      const response = await axios.get(`${API_BASE_URL}/job/all`);
       setJobs(response.data);
       setFilteredJobs(response.data);
     } catch (error) {
@@ -81,7 +82,7 @@ const Jobs = () => {
           const fetchCompany = async () => {
             try {
               const response = await axios.get(
-                `http://localhost:3030/company/${row.job_company_id}`
+                `${API_BASE_URL}/company/${row.job_company_id}`
               );
               const company = response.data[0];
               setCompany(company);
