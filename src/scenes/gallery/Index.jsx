@@ -25,6 +25,7 @@ import { MediaGalleryProvider, useMediaGallery } from "./MediaGalleryContext";
 import { AuthContext } from "../global/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+const API_BASE_URL = process.env.APP_API_URL;
 
 const Dropzone = ({ onDrop }) => {
   const theme = useTheme();
@@ -125,7 +126,7 @@ const MediaLibrary = ({ onSelectImage }) => {
     formData.append("il_created_by_user_id", user?.user_id);
 
     try {
-      await axios.post("http://localhost:3030/image/upload", formData, {
+      await axios.post(`${API_BASE_URL}/image/upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -140,7 +141,7 @@ const MediaLibrary = ({ onSelectImage }) => {
 
   const fetchImages = async () => {
     try {
-      const response = await axios.get("http://localhost:3030/image/all");
+      const response = await axios.get(`${API_BASE_URL}/image/all`);
       const { data } = response;
       setImages(data);
     } catch (error) {
@@ -183,7 +184,7 @@ const MediaLibrary = ({ onSelectImage }) => {
                 }}
               >
                 <img
-                  src={`http://localhost:3030/uploads/${item.il_path}`}
+                  src={`${API_BASE_URL}/uploads/${item.il_path}`}
                   alt={item.il_name}
                   loading="lazy"
                   onClick={() => handleSelectImage(item)}
@@ -198,7 +199,7 @@ const MediaLibrary = ({ onSelectImage }) => {
                       onClick={async () => {
                         try {
                           await axios.delete(
-                            `http://localhost:3030/image/delete/${item.il_id}`
+                            `${API_BASE_URL}/image/delete/${item.il_id}`
                           );
                           toast.success("Image deleted successfully");
                           setImages(
@@ -387,7 +388,7 @@ function MediaGallery() {
 
   const fetchImages = async () => {
     try {
-      const response = await axios.get("http://localhost:3030/image/all");
+      const response = await axios.get(`${API_BASE_URL}/image/all`);
       const { data } = response;
       setImages(data);
     } catch (error) {
@@ -419,12 +420,12 @@ function MediaGallery() {
                 }}
               >
                 <img
-                  src={`http://localhost:3030/uploads/${item.il_path}`}
+                  src={`${API_BASE_URL}/uploads/${item.il_path}`}
                   alt={item.il_name}
                   loading="lazy"
                   onClick={() =>
                     window.open(
-                      `http://localhost:3030/uploads/${item.il_path}`,
+                      `${API_BASE_URL}/uploads/${item.il_path}`,
                       "_blank"
                     )
                   }
@@ -439,7 +440,7 @@ function MediaGallery() {
                       onClick={async () => {
                         try {
                           await axios.delete(
-                            `http://localhost:3030/image/delete/${item.il_id}`
+                            `${API_BASE_URL}/image/delete/${item.il_id}`
                           );
                           toast.success("Image deleted successfully");
                           setImages(
