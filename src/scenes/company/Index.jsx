@@ -6,11 +6,12 @@ import { tokens } from "../../theme";
 import { Link } from "react-router-dom";
 import Header from "../../components/Header";
 import mockCompanies from "../data/mockDataCompany"; // Import the mock data for companies
-const API_BASE_URL = process.env.APP_API_URL;
+// const API_BASE_URL = process.env.APP_API_URL;
 
 const Companies = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
 
   const [companies, setCompanies] = useState([]);
   const [filteredCompanies, setFilteredCompanies] = useState([]);

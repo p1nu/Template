@@ -7,9 +7,10 @@ import styled from "styled-components";
 import Header from "../../components/Header";
 import { tokens } from '../../theme';
 import { format } from 'date-fns'; // Imported format from date-fns
-const API_BASE_URL = process.env.APP_API_URL;
+// const API_BASE_URL = process.env.APP_API_URL;
 
 const CSR = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 

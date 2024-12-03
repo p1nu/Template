@@ -15,7 +15,7 @@ import styled from "styled-components";
 import Header from "../../components/Header";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-const API_BASE_URL = process.env.APP_API_URL;
+// const API_BASE_URL = process.env.APP_API_URL;
 
 // Styled-component for alignment and spacing (if needed)
 const StyledBox = styled.div`
@@ -27,6 +27,7 @@ const StyledBox = styled.div`
 `;
 
 const Services = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 

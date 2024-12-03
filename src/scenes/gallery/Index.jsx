@@ -25,11 +25,12 @@ import { MediaGalleryProvider, useMediaGallery } from "./MediaGalleryContext";
 import { AuthContext } from "../global/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-const API_BASE_URL = process.env.APP_API_URL;
+// const API_BASE_URL = process.env.APP_API_URL;
 
 const Dropzone = ({ onDrop }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
 
   const onDropAccepted = useCallback(
     (acceptedFiles) => {
@@ -92,6 +93,7 @@ const a11yProps = (index) => {
 };
 
 const MediaLibrary = ({ onSelectImage }) => {
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { open, open1, open2, handleClose, handleClose1, value, handleChange } = useMediaGallery();
@@ -378,6 +380,7 @@ const MediaLibrary = ({ onSelectImage }) => {
 };
 
 function MediaGallery() {
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
   const onSelectImage = (image) => {
     console.log("Selected image: ", image);
   };

@@ -16,9 +16,10 @@ import Header from "../../components/Header";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-const API_BASE_URL = process.env.APP_API_URL;
+// const API_BASE_URL = process.env.APP_API_URL;
 
 const UpdateUser = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [user, setUser] = useState({

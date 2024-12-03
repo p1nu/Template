@@ -16,9 +16,10 @@ import axios from "axios";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useNavigate } from "react-router-dom";
-const API_BASE_URL = process.env.APP_API_URL;
+// const API_BASE_URL = process.env.APP_API_URL;
 
 const AddJob = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [job, setJob] = useState({

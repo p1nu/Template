@@ -20,9 +20,10 @@ import "react-toastify/dist/ReactToastify.css";
 import Header from "../../components/Header";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { set } from "date-fns";
-const API_BASE_URL = process.env.APP_API_URL;
+// const API_BASE_URL = process.env.APP_API_URL;
 
 const BannerService = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const serviceId = useParams().id;

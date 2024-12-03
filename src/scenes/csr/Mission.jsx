@@ -3,9 +3,10 @@ import { Box, Button, Card, CardContent, Typography } from '@mui/material';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import DOMPurify from 'dompurify';
-const API_BASE_URL = process.env.APP_API_URL;
+// const API_BASE_URL = process.env.APP_API_URL;
 
 const Mission = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
   const { id } = useParams(); // Get CSR ID from URL parameters
   const [missions, setMissions] = useState([]);
 
