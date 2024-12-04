@@ -132,6 +132,7 @@ const AddNews = () => {
             width={"100%"}
             gap={2}
           >
+            {/* News left section */}
             <Box width={"55%"}>
               {/* News Title */}
               <Box
