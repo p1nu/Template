@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import {
   Box,
   Button,
@@ -11,6 +11,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import InputBase from "@mui/material/InputBase";
+import { Editor } from '@tinymce/tinymce-react';
 import axios from "axios";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
@@ -22,9 +23,12 @@ import { MediaLibrary } from "../gallery/Index";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Gallery from '../gallery/Gallery'; // Ensure Gallery component is imported
+import { useGallery } from '../gallery/GalleryContext'; 
 // const API_BASE_URL = process.env.APP_API_URL;
 
 const AddNews = () => {
+  const editorRef = useRef(null);
   const API_BASE_URL = import.meta.env.VITE_API_URL;
   const { user } = useContext(AuthContext);
   const theme = useTheme();
@@ -42,6 +46,7 @@ const AddNews = () => {
   const { open, handleOpen, handleClose } = useMediaGallery();
   const navigate = useNavigate();
   const isHidden = false;
+  const { openGallery, selectedImage } = useGallery(); // Access context functions and state
 
   // Handle selecting an image from the media gallery
   const handleSelectImage = (image) => {
@@ -164,28 +169,49 @@ const AddNews = () => {
               </Box>
 
               {/* News Article */}
-              <Box
-                display="flex"
-                flexDirection="column"
-                margin="10px 0"
-                width="100%"
-              >
-                <InputLabel
-                  htmlFor="news_article"
-                  sx={{ color: colors.grey[100], mb: "5px" }}
-                >
+              {/* TinyMCE Editor */}
+              <Box mb={2}>
+                <InputLabel htmlFor="news_article" sx={{ mb: "5px" }}>
                   News Article
                 </InputLabel>
-                <ReactQuill
-                  theme="snow"
-                  value={news.news_article}
-                  onChange={handleArticleChange}
-                  placeholder="Write your article here..."
-                  style={{
-                    backgroundColor: colors.grey[900],
-                    color: colors.grey[100],
-                    borderRadius: "2px",
+                <Editor
+                  apiKey={import.meta.env.VITE_TINYMCE_API_KEY} // Use environment variable for security
+                  onInit={(evt, editor) => (editorRef.current = editor)}
+                  initialValue="<p>Start writing your article here...</p>"
+                  init={{
+                    height: 500,
+                    menubar: true,
+                    plugins: [
+                      "anchor",
+                      "autolink",
+                      "charmap",
+                      "codesample",
+                      "emoticons",
+                      "image",
+                      "link",
+                      "lists",
+                      "media",
+                      "searchreplace",
+                      "table",
+                      "visualblocks",
+                      "wordcount",
+                    ],
+                    toolbar:
+                      "undo redo | formatselect | bold italic underline | \
+                alignleft aligncenter alignright alignjustify | \
+                bullist numlist outdent indent | removeformat | image | help",
+                    image_title: true,
+                    automatic_uploads: false, // Disable automatic uploads to use custom gallery
+                    file_picker_types: "image",
+                    file_picker_callback: function (cb, value, meta) {
+                      // Open the gallery modal
+                      openGallery((imageUrl) => {
+                        console.log("Selected image:", imageUrl);
+                        cb(imageUrl, { alt: "image" });
+                      });
+                    },
                   }}
+                  onEditorChange={(content, editor) => handleArticleChange(content)}
                 />
               </Box>
 

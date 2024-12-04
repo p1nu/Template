@@ -63,7 +63,7 @@ const Gallery = () => {
       setTabValue(0); // Switch back to Gallery tab
     } catch (error) {
       console.error('Upload Error:', error);
-      setUploadError('Failed to upload images');
+      setUploadError(error && error.response ? error.response.data.message : 'Failed to upload images');
       setUploading(false);
     }
   };
