@@ -35,10 +35,11 @@ export const GalleryProvider = ({ children }) => {
 
   const fetchImages = async () => {
     try {
-      const response = await axios.get('http://localhost:3030/image/all'); // Adjust the URL accordingly
+      const response = await axios.get(`${API_BASE_URL}/image/all`); // Adjust the URL accordingly
       const data = response.data;
+      data.reverse();
+
       setImages(data);
-      console.log(data)
     } catch (error) {
       console.error('Error fetching images:', error);
     }
@@ -70,6 +71,7 @@ export const GalleryProvider = ({ children }) => {
         images,
         selectImage,
         selectedImage,
+        fetchImages,
       }}
     >
       {children}
