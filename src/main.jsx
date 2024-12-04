@@ -5,6 +5,7 @@ import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { MediaGalleryProvider } from "./scenes/gallery/MediaGalleryContext";
 import {AuthProvider} from "./scenes/global/AuthContext";
+import { GalleryProvider } from "./scenes/gallery/GalleryContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -12,7 +13,9 @@ root.render(
     <BrowserRouter>
       <AuthProvider>
         <MediaGalleryProvider>
-          <App />
+          <GalleryProvider>
+            <App />
+          </GalleryProvider>
         </MediaGalleryProvider>
       </AuthProvider>
     </BrowserRouter>

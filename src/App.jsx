@@ -35,6 +35,7 @@ import Jobs from "./scenes/jobs/Jobs.jsx";
 import AddJob from "./scenes/jobs/AddJob.jsx";
 import UpdateJob from "./scenes/jobs/UpdateJob.jsx";
 import Test from "./scenes/news/Test.jsx";
+import Gallery from "./scenes/gallery/Gallery.jsx";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -84,6 +85,7 @@ function App() {
               <Route path="/job/:id" element={<UpdateJob />} />
               <Route path="/test" element={<Test />} />
             </Routes>
+              <Gallery />
           </main>
         </div>
       </ThemeProvider>
