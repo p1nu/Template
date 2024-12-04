@@ -48,9 +48,7 @@ const Test = () => {
           height: 500,
           menubar: true,
           plugins: [
-            'advlist autolink lists link image charmap print preview anchor',
-            'searchreplace visualblocks code fullscreen',
-            'insertdatetime media table paste code help wordcount'
+            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
           ],
           toolbar:
             'undo redo | formatselect | bold italic underline | \
