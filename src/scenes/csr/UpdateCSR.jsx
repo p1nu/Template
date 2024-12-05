@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import {
   Box,
   Button,
@@ -6,11 +6,12 @@ import {
   useTheme,
   InputLabel,
   Modal,
-  MenuItem,
-  Select,
   FormControl,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import InputBase from "@mui/material/InputBase";
+import { Editor } from '@tinymce/tinymce-react';
 import axios from "axios";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
@@ -22,7 +23,9 @@ import { MediaLibrary } from "../gallery/Index";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-// const API_BASE_URL = process.env.APP_API_URL;
+import Gallery from '../gallery/Gallery'; // Ensure Gallery component is imported
+import { useGallery } from '../gallery/GalleryContext';  // Adjust the import path as necessary
+
 
 const UpdateCSR = () => {
   const API_BASE_URL = import.meta.env.VITE_API_URL;
@@ -35,37 +38,48 @@ const UpdateCSR = () => {
   const [csr, setCsr] = useState({
     csr_name: "",
     csr_desc: "",
+    csr_article: "",
     csr_thumbnail: "",
     csr_status_id: 1,
     csr_updated_by_user_id: user?.user_id || "",
   });
 
-  const [image, setImage] = useState("");
+  const [thumbnail, setThumbnail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const editorRef = useRef(null);
   const { open, handleOpen, handleClose } = useMediaGallery();
 
+  // Fetch existing CSR data
   useEffect(() => {
     const fetchCsr = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/csr/${id}`);
-        const csrData = response.data;
-
-        setCsr(csrData[0]);
-        setImage(csrData[0].csr_thumbnail); // Assuming the image path is returned
+        const existingCsr = response.data;
+        setCsr({
+          csr_name: existingCsr.csr_name || "",
+          csr_desc: existingCsr.csr_desc || "",
+          csr_article: existingCsr.csr_article || "",
+          csr_thumbnail: existingCsr.csr_thumbnail || "",
+          csr_status_id: existingCsr.csr_status_id || 1,
+          csr_updated_by_user_id: user?.user_id || "",
+        });
+        setThumbnail(existingCsr.image_path || "");
       } catch (error) {
-        console.error("Error fetching CSR data:", error);
-        toast.error("Failed to fetch CSR data");
+        console.error("Fetch CSR Error:", error);
+        toast.error(
+          error.response?.data?.message || "Failed to fetch CSR details"
+        );
       }
     };
 
-    console.log(user.user_id)
     fetchCsr();
-  }, [id]);
+  }, [API_BASE_URL, id, user]);
 
   // Handle selecting an image from the media gallery
   const handleSelectImage = (image) => {
-    setCsr((prevCsr) => ({ ...prevCsr, csr_thumbnail: image.il_path }));
-    setImage(image.il_path);
-    toast.success("Image selected successfully");
+    setCsr((prevCsr) => ({ ...prevCsr, csr_thumbnail: image.il_id }));
+    setThumbnail(image.il_path);
+    toast.success("Thumbnail selected successfully");
     handleClose();
   };
 
@@ -75,24 +89,39 @@ const UpdateCSR = () => {
     setCsr((prevCsr) => ({ ...prevCsr, [name]: value }));
   };
 
-  // Handle article changes with react-quill
-  const handleArticleChange = (value) => {
-    setCsr((prevCsr) => ({ ...prevCsr, csr_desc: value }));
+  // Handle article changes with TinyMCE
+  const handleArticleChange = (content) => {
+    setCsr((prevCsr) => ({ ...prevCsr, csr_article: content }));
   };
 
+  // Handle form submission to update CSR
   const handleUpdateCsr = async () => {
+    // Basic validation
+    if (
+      !csr.csr_name ||
+      !csr.csr_article ||
+      !csr.csr_desc ||
+      !csr.csr_thumbnail ||
+      !csr.csr_status_id
+    ) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    setLoading(true);
     try {
-      await axios.put(`${API_BASE_URL}/csr/update/${id}`, {
-        ...csr,
-        csr_updated_by_user_id: user.user_id,
-      });
+      await axios.put(`${API_BASE_URL}/csr/update/${id}`, csr);
       toast.success("CSR updated successfully");
       setTimeout(() => {
         navigate("/csr");
       }, 3000);
     } catch (error) {
-      console.error("Error updating CSR:", error);
-      toast.error("Failed to update CSR");
+      console.error("Update CSR Error:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to update CSR"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -124,41 +153,34 @@ const UpdateCSR = () => {
           justifyContent="center"
           p={4}
           bgcolor={colors.grey[900]}
-          borderRadius="2x"
+          borderRadius="8px"
           width="100%"
           boxShadow={3}
         >
           <Box
-            display={"flex"}
-            flexDirection={"row"}
-            justifyContent={"space-between"}
-            width={"100%"}
+            display="flex"
+            flexDirection="row"
+            justifyContent="space-between"
+            width="100%"
             gap={2}
           >
-            <Box width={"55%"}>
+            {/* CSR Information Section */}
+            <Box width="55%">
               {/* CSR Name */}
-              <Box
-                display="flex"
-                flexDirection="column"
-                margin="10px 0"
-                width="100%"
-              >
-                <InputLabel
-                  htmlFor="csr_name"
-                  sx={{ color: colors.grey[100], mb: "5px" }}
-                >
-                  CSR Title
+              <Box display="flex" flexDirection="column" margin="10px 0" width="100%">
+                <InputLabel htmlFor="csr_name" sx={{ color: colors.grey[100], mb: "5px" }}>
+                  CSR Name
                 </InputLabel>
                 <InputBase
                   id="csr_name"
-                  placeholder="CSR Title"
+                  placeholder="CSR Name"
                   name="csr_name"
                   value={csr.csr_name}
                   onChange={handleChange}
                   sx={{
                     padding: "10px",
-                    border: `1px solid #000`,
-                    borderRadius: "2px",
+                    border: "1px solid #000",
+                    borderRadius: "4px",
                     backgroundColor: colors.grey[900],
                     color: colors.grey[100],
                   }}
@@ -166,99 +188,75 @@ const UpdateCSR = () => {
               </Box>
 
               {/* CSR Description */}
-              <Box
-                display="flex"
-                flexDirection="column"
-                margin="10px 0"
-                width="100%"
-              >
-                <InputLabel
-                  htmlFor="csr_desc"
-                  sx={{ color: colors.grey[100], mb: "5px" }}
-                >
-                  CSR Article
+              <Box display="flex" flexDirection="column" margin="10px 0" width="100%">
+                <InputLabel htmlFor="csr_desc" sx={{ color: colors.grey[100], mb: "5px" }}>
+                  CSR Description
                 </InputLabel>
-                <ReactQuill
-                  theme="snow"
+                <InputBase
+                  id="csr_desc"
+                  placeholder="A brief description of the CSR"
+                  name="csr_desc"
                   value={csr.csr_desc}
-                  onChange={handleArticleChange}
-                  placeholder="Write your description here..."
-                  style={{
+                  onChange={handleChange}
+                  sx={{
+                    padding: "10px",
+                    border: "1px solid #000",
+                    borderRadius: "4px",
                     backgroundColor: colors.grey[900],
                     color: colors.grey[100],
-                    borderRadius: "2px",
+                    minHeight: "60px",
                   }}
+                  multiline
                 />
               </Box>
 
-              {/* CSR Date */}
-              {/* <Box
-                display="flex"
-                flexDirection="column"
-                margin="10px 0"
-                width="100%"
-              >
-                <InputLabel
-                  htmlFor="csr_date"
-                  sx={{ color: colors.grey[100], mb: "5px" }}
-                >
-                  CSR Date
+              {/* CSR Article */}
+              <Box mb={2}>
+                <InputLabel htmlFor="csr_article" sx={{ mb: "5px", color: colors.grey[100] }}>
+                  CSR Article
                 </InputLabel>
-                <InputBase
-                  id="csr_date"
-                  name="csr_date"
-                  type="date"
-                  value={csr.csr_date}
-                  onChange={handleChange}
-                  sx={{
-                    padding: "10px",
-                    border: `1px solid #000`,
-                    borderRadius: "2px",
-                    backgroundColor: colors.grey[900],
-                    color: colors.grey[100],
+                <Editor
+                  apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+                  onInit={(evt, editor) => (editorRef.current = editor)}
+                  value={csr.csr_article}
+                  init={{
+                    height: 500,
+                    menubar: true,
+                    plugins: [
+                      "anchor",
+                      "autolink",
+                      "charmap",
+                      "codesample",
+                      "emoticons",
+                      "image",
+                      "link",
+                      "lists",
+                      "media",
+                      "searchreplace",
+                      "table",
+                      "visualblocks",
+                      "wordcount",
+                    ],
+                    toolbar:
+                      "undo redo | formatselect | bold italic underline | \
+                      alignleft aligncenter alignright alignjustify | \
+                      bullist numlist outdent indent | removeformat | image | help",
+                    image_title: true,
+                    automatic_uploads: false,
+                    file_picker_types: "image",
+                    file_picker_callback: function (cb, value, meta) {
+                      openGallery((imageUrl, imageData) => {
+                        cb(imageUrl, { alt: "Selected Image" });
+                      });
+                    },
                   }}
+                  onEditorChange={handleArticleChange}
                 />
-              </Box> */}
+              </Box>
 
-              {/* CSR Link */}
-              {/* <Box
-                display="flex"
-                flexDirection="column"
-                margin="10px 0"
-                width="100%"
-              >
-                <InputLabel
-                  htmlFor="csr_link"
-                  sx={{ color: colors.grey[100], mb: "5px" }}
-                >
-                  CSR Link
-                </InputLabel>
-                <InputBase
-                  id="csr_link"
-                  placeholder="https://example.com"
-                  name="csr_link"
-                  value={csr.csr_link}
-                  onChange={handleChange}
-                  sx={{
-                    padding: "10px",
-                    border: `1px solid #000`,
-                    borderRadius: "2px",
-                    backgroundColor: colors.grey[900],
-                    color: colors.grey[100],
-                  }}
-                />
-              </Box> */}
-              {/* CSR status */}
-              <Box
-                display="flex"
-                flexDirection="column"
-                margin="10px 0"
-                width="100%"
-              >
-                <InputLabel
-                  htmlFor="csr_status_id"
-                  sx={{ color: colors.grey[100], mb: "5px" }}
-                >
+              {/* CSR Status */}
+              <Box display="flex" flexDirection="column" margin="10px 0" width="100%">
+                <InputLabel htmlFor="csr_status_id" sx={{ color: colors.grey[100], mb: "5px" }}>
                   CSR Status
                 </InputLabel>
                 <FormControl fullWidth>
@@ -269,17 +267,14 @@ const UpdateCSR = () => {
                     onChange={handleChange}
                     displayEmpty
                     sx={{
-                      border: `1px solid #000`,
-                      borderRadius: "2px",
+                      border: "1px solid #000",
+                      borderRadius: "4px",
                       backgroundColor: colors.grey[900],
                       color: colors.grey[100],
-                      "& :hover": {
-                        border: "none !important",
+                      "&:hover": {
+                        border: "1px solid #000 !important",
                       },
-                      "& :focus": {
-                        border: "none",
-                      },
-                      "& .active": {
+                      "& .MuiOutlinedInput-notchedOutline": {
                         border: "none",
                       },
                     }}
@@ -287,46 +282,79 @@ const UpdateCSR = () => {
                     <MenuItem value="" disabled>
                       Select Status
                     </MenuItem>
-                    <MenuItem value="1">Active</MenuItem>
-                    <MenuItem value="2">Inactive</MenuItem>
+                    <MenuItem value={1}>Active</MenuItem>
+                    <MenuItem value={2}>Inactive</MenuItem>
                   </Select>
                 </FormControl>
               </Box>
             </Box>
+
+            {/* Thumbnail Selection Section */}
             <Box
               width="45%"
-              border={"1px solid #000"}
-              display={"flex"}
-              justifyContent={"center"}
-              textAlign={"center"}
-              alignItems={"center"}
+              border="1px solid #000"
+              display="flex"
+              justifyContent="center"
+              textAlign="center"
+              alignItems="center"
               onClick={handleOpen}
+              sx={{
+                borderRadius: "4px",
+                cursor: "pointer",
+                height: "220px",
+                overflow: "hidden",
+              }}
             >
-              {image ? (
+              {thumbnail ? (
                 <img
-                  src={`${API_BASE_URL}/uploads/${image}`}
-                  alt="csr"
+                  src={`${API_BASE_URL}/uploads/${thumbnail}`}
+                  alt="CSR Thumbnail"
                   width="100%"
                   height="auto"
+                  style={{ objectFit: "cover" }}
                 />
               ) : (
-                <Typography variant="h6" sx={{ color: colors.grey[100] }}>
-                  Click to select an image
+                <Typography variant="h6" color={colors.grey[100]}>
+                  Click here to select a thumbnail
                 </Typography>
               )}
             </Box>
           </Box>
+
+          {/* Media Library Modal */}
           <Modal open={open} onClose={handleClose}>
-            <MediaLibrary onSelectImage={handleSelectImage} />
+            <Box
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: "80%",
+                height: "80%",
+                bgcolor: "background.paper",
+                boxShadow: 24,
+                p: 4,
+                overflowY: "auto",
+                borderRadius: "8px",
+              }}
+            >
+              <MediaLibrary onSelectImage={handleSelectImage} />
+            </Box>
           </Modal>
+
           {/* Submit Button */}
           <Button
             variant="contained"
             fullWidth
             onClick={handleUpdateCsr}
-            sx={{ mt: 2, backgroundColor: colors.blueAccent[200] }}
+            disabled={loading}
+            sx={{
+              mt: 2,
+              backgroundColor: colors.blueAccent[200],
+              "&:hover": { backgroundColor: colors.blueAccent[400] },
+            }}
           >
-            Update CSR
+            {loading ? "Updating CSR..." : "Update CSR"}
           </Button>
         </Box>
       </Box>
