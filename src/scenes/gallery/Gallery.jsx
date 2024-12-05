@@ -58,7 +58,7 @@ const Gallery = () => {
         },
       });
       toast.success('Images uploaded successfully');
-      fetchImages(); // Reload images after upload
+      fetchImages(); // Reload images after upload  
       setUploading(false);
       setTabValue(0); // Switch back to Gallery tab
     } catch (error) {

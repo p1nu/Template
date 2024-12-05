@@ -38,7 +38,7 @@ const AddNews = () => {
     news_article: "",
     news_date: "",
     news_image_id: "",
-    news_link: "",
+    news_desc: "",
     news_status_id: 1,
     news_created_by_user_id: user?.user_id || "",
   });
@@ -76,7 +76,7 @@ const AddNews = () => {
         news_article: "",
         news_date: "",
         news_image_id: "",
-        news_link: "",
+        news_desc: "",
         news_status_id: 1,
         news_created_by_user_id: user?.user_id || "",
       }); // Reset form
@@ -273,7 +273,7 @@ const AddNews = () => {
             />
           </Box> */}
               <Box>
-                {/* News Link */}
+                {/* News Description */}
                 <Box
                   display="flex"
                   flexDirection="column"
@@ -281,16 +281,16 @@ const AddNews = () => {
                   width="100%"
                 >
                   <InputLabel
-                    htmlFor="news_link"
+                    htmlFor="news_desc"
                     sx={{ color: colors.grey[100], mb: "5px" }}
                   >
-                    News Link
+                    News Description
                   </InputLabel>
                   <InputBase
-                    id="news_link"
-                    placeholder="https://example.com"
-                    name="news_link"
-                    value={news.news_link}
+                    id="news_desc"
+                    placeholder="A brief description of the news"
+                    name="news_desc"
+                    value={news.news_desc}
                     onChange={handleChange}
                     sx={{
                       padding: "10px",
