@@ -8,6 +8,7 @@ import {
   Modal,
   ImageListItemBar,
   IconButton,
+  InputBase,
 } from "@mui/material";
 import axios from "axios";
 import { useTheme } from "@mui/material/styles";
@@ -78,6 +79,9 @@ const Banner = () => {
   const [openBackgroundModal, setOpenBackgroundModal] = useState(false);
   const [selectedBanner, setSelectedBanner] = useState(null);
   const [openTodo, setOpenTodo] = useState(false);
+  const [openSliderFormModal, setOpenSliderFormModal] = useState(false);
+  const [sliderTitle, setSliderTitle] = useState("");
+  const [sliderDescription, setSliderDescription] = useState("");
 
   // Function to handle image click
   const handleImageSelect = (banner) => {
@@ -89,8 +93,15 @@ const Banner = () => {
   const handleAddToSlider = async () => {
     try {
       await axios.put(
-        `${API_BASE_URL}/banner/${selectedBanner.banner_id}/add-to-slider`
+        `${API_BASE_URL}/banner/${selectedBanner.banner_id}/add-to-slider`,
+        {
+          slider_title: sliderTitle,
+          slider_desc: sliderDescription,
+        }
       );
+      console.log("Slider Title:", sliderTitle);
+      console.log("Slider Description:", sliderDescription);
+      console.log("Banner ID:", selectedBanner.banner_id);
       toast.success("Banner updated to show in slider.");
       setOpenSliderModal(false);
       fetchBanners(); // Refresh banners if needed
@@ -316,6 +327,7 @@ const Banner = () => {
             </Box>
           </Box>
         </Modal>
+
         {/* Modal Value */}
         <Modal open={openValueModal} onClose={handleCloseValueModal}>
           <Box
@@ -344,6 +356,7 @@ const Banner = () => {
             </Box>
           </Box>
         </Modal>
+
         {/* Modal Mission */}
         <Modal open={openMissionModal} onClose={handleCloseMissionModal}>
           <Box
@@ -372,6 +385,7 @@ const Banner = () => {
             </Box>
           </Box>
         </Modal>
+
         {/* Modal Vision */}
         <Modal open={openVisionModal} onClose={handleCloseVisionModal}>
           <Box
@@ -400,6 +414,7 @@ const Banner = () => {
             </Box>
           </Box>
         </Modal>
+
         {/* Modal Slider */}
         <Modal open={openSliderModal} onClose={handleCloseSliderModal}>
           <Box
@@ -418,6 +433,34 @@ const Banner = () => {
             <Typography variant="h6" gutterBottom>
               Add this banner to the slider?
             </Typography>
+            <Box display="flex" flexDirection="column" gap={2} mt={2}>
+              <InputBase
+                placeholder="Title"
+                value={sliderTitle}
+                onChange={(e) => setSliderTitle(e.target.value)}
+                sx={{
+                  padding: "10px",
+                  border: "1px solid #000",
+                  borderRadius: "4px",
+                  backgroundColor: "background.default",
+                  color: "text.primary",
+                }}
+              />
+              <InputBase
+                placeholder="Description"
+                value={sliderDescription}
+                onChange={(e) => setSliderDescription(e.target.value)}
+                sx={{
+                  padding: "10px",
+                  border: "1px solid #000",
+                  borderRadius: "4px",
+                  backgroundColor: "background.default",
+                  color: "text.primary",
+                }}
+                multiline
+                rows={3}
+              />
+            </Box>
             <Box display="flex" justifyContent="flex-end" mt={2}>
               <Button onClick={handleCloseSliderModal} sx={{ mr: 2 }}>
                 Cancel
@@ -428,6 +471,7 @@ const Banner = () => {
             </Box>
           </Box>
         </Modal>
+
         {/* Modal Background */}
         <Modal open={openBackgroundModal} onClose={handleCloseBackgroundModal}>
           <Box
@@ -444,7 +488,7 @@ const Banner = () => {
             }}
           >
             <Typography variant="h6" gutterBottom>
-              Add this banner to the page background?
+              Add this banner to the background?
             </Typography>
             <Box display="flex" justifyContent="flex-end" mt={2}>
               <Button onClick={handleCloseBackgroundModal} sx={{ mr: 2 }}>
@@ -456,6 +500,7 @@ const Banner = () => {
             </Box>
           </Box>
         </Modal>
+        
       </Box>
 
       {/* Display Feedback Message */}
