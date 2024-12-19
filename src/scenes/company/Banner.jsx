@@ -99,9 +99,6 @@ const Banner = () => {
           slider_desc: sliderDescription,
         }
       );
-      console.log("Slider Title:", sliderTitle);
-      console.log("Slider Description:", sliderDescription);
-      console.log("Banner ID:", selectedBanner.banner_id);
       toast.success("Banner updated to show in slider.");
       setOpenSliderModal(false);
       fetchBanners(); // Refresh banners if needed
