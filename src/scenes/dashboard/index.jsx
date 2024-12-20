@@ -12,9 +12,19 @@ import AddCSR from '../csr/AddCSR';
 const Dashboard = () => {
   return (
     <div>
-      dashboard
+      <Homepage />
     </div>
   );
 };
+
+const Homepage = () => {
+  return (
+    <div>
+      <h1>About section Homepage</h1>
+      
+    </div>
+  );
+}
+
 
 export default Dashboard;
