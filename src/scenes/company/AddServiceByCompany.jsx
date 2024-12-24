@@ -1,27 +1,16 @@
-import React, { useState, useEffect, useContext } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-  useTheme,
-  InputBase,
-  InputLabel,
-  FormControl,
-  Select,
-  MenuItem,
-  Modal,
-} from "@mui/material";
-import ReactQuill from "react-quill-new";
-import "react-quill-new/dist/quill.snow.css";
-import axios from "axios";
-import { tokens } from "../../theme";
-import Header from "../../components/Header";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useState, useContext, useEffect } from 'react';
+import { Box, Button, InputBase, Modal, Typography, useTheme, FormControl, Select, MenuItem, InputLabel } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { tokens } from '../../theme';
+import Header from '../../components/Header';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 import { MediaLibrary } from "../gallery/Index";
-import { AuthContext } from "../global/AuthContext";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { AuthContext } from "../global/AuthContext";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // const API_BASE_URL = process.env.APP_API_URL;
 
 const AddServiceByCompany = () => {
@@ -30,51 +19,36 @@ const AddServiceByCompany = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { open, handleClose, handleOpen } = useMediaGallery();
+
   const [service, setService] = useState({
-    service_name: "",
-    service_desc: "",
-    service_value: "",
-    service_vision: "",
-    service_mission: "",
-    service_logo: "",
-    service_company_id: id,
+    service_name: '',
+    service_desc: '',
+    service_value: '',
+    service_vision: '',
+    service_mission: '',
+    service_link: '',
+    service_logo: '',
+    service_company_id: '',
     service_status_id: 1,
     service_created_by_user_id: user?.user_id,
   });
-  const [company, setCompany] = useState({
-    company_name: "",
-  });
   const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Fetch company details
+    // Fetch company data
     const fetchCompany = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/company/${id}`);
-        setCompany(response.data);
-      } catch (error) {
-        console.error("Error fetching company details:", error);
-        toast.error("Error fetching company details");
-      }
-    };
-
-    // Fetch all companies
-    const fetchCompanies = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/company/all`);
         setCompanies(response.data);
       } catch (error) {
-        console.error("Error fetching companies:", error);
-        toast.error("Error fetching companies");
+        console.error('Error fetching company data:', error);
+        toast.error('Failed to load company data');
       }
     };
-
-    console.log(service)
-
     fetchCompany();
-    fetchCompanies();
-  }, [id]);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -83,36 +57,6 @@ const AddServiceByCompany = () => {
 
   const handleQuillChange = (field, value) => {
     setService((prevService) => ({ ...prevService, [field]: value }));
-  };
-
-  useEffect(() => {
-    // Fetch company by ID
-    const fetchCompany = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/company/${id}`);
-        setCompany(response.data[0]);
-      } catch (error) {
-        console.error("Error fetching data from database:", error);
-        toast.error("Failed to fetch company");
-      }
-    };
-    fetchCompany();
-  }, [id]);
-
-  const { open, handleClose, value, handleOpen } = useMediaGallery();
-
-  const handleSelectImage = (image) => {
-    // Log the image object to verify its structure
-    console.log('Selected Image:', image);
-  
-    // Check if the il_path property exists
-    if (image && image.il_path) {
-      setService((prevService) => ({ ...prevService, service_logo: image.il_path }));
-      toast.success('Logo selected successfully');
-    } else {
-      console.error('Image object does not contain il_path property:', image);
-      toast.error('Failed to select logo. Invalid image object.');
-    }
   };
 
   const handleAddService = async () => {
@@ -125,7 +69,7 @@ const AddServiceByCompany = () => {
       await axios.post(`${API_BASE_URL}/service/new`, service);
       toast.success("Service added successfully");
       setTimeout(() => {
-        navigate(`/company/service/${id}`);
+        navigate(`/company/service/${service.service_company_id}`);
       }, 3000);
     } catch (error) {
       console.error("Error adding service:", error);
@@ -133,9 +77,15 @@ const AddServiceByCompany = () => {
     }
   };
 
-
-
-  const [isHidden, setIsHidden] = useState(false);
+  const handleSelectImage = (image) => {
+    if (image && image.il_path) {
+      setService((prevService) => ({ ...prevService, service_logo: image.il_path }));
+      toast.success('Logo selected successfully');
+    } else {
+      console.error('Image object does not contain il_path property:', image);
+      toast.error('Failed to select logo. Invalid image object.');
+    }
+  };
 
   return (
     <Box m={2}>
@@ -170,14 +120,17 @@ const AddServiceByCompany = () => {
           width="100%"
           boxShadow={3}
         >
+
           {/* Service Name and Select Company */}
           <Box
             display="flex"
-            justifyContent="space-between"
-            gap="20px"
+            justifyContent={"space-between"}
             width="100%"
-            alignItems="center"
+            gap={"20px"}
+            alignContent={"center"}
+            height="100%"
           >
+
             {/* Service Name */}
             <Box display="flex" flexDirection="column" width="100%">
               <InputLabel
@@ -193,6 +146,7 @@ const AddServiceByCompany = () => {
                 value={service.service_name}
                 onChange={handleChange}
                 sx={{
+                  width: "100%",
                   padding: "10px",
                   border: `1px solid #000`,
                   borderRadius: "2px",
@@ -201,6 +155,7 @@ const AddServiceByCompany = () => {
                 }}
               />
             </Box>
+
             {/* Select Company */}
             <Box display="flex" flexDirection="column" width="100%">
               <InputLabel
@@ -212,7 +167,7 @@ const AddServiceByCompany = () => {
               <FormControl fullWidth>
                 <Select
                   name="service_company_id"
-                  value={service.service_company_id || ""}
+                  value={service.service_company_id}
                   onChange={handleChange}
                   displayEmpty
                   sx={{
@@ -223,8 +178,13 @@ const AddServiceByCompany = () => {
                   }}
                 >
                   <MenuItem value="" disabled>
-                    {company.company_name || "Select Company"} 
+                    Select Company
                   </MenuItem>
+                  {companies.map((company) => (
+                    <MenuItem key={company.company_id} value={company.company_id}>
+                      {company.company_name}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Box>
@@ -244,15 +204,15 @@ const AddServiceByCompany = () => {
               Service Description
             </InputLabel>
             <ReactQuill
-              theme="snow"
-              placeholder="Enter service description..."
               value={service.service_desc}
               onChange={(value) => handleQuillChange("service_desc", value)}
+              theme="snow"
+              placeholder="Enter service description..."
               style={{
-                height: "150px",
-                backgroundColor: colors.grey[900],
-                color: colors.grey[100],
-                marginBottom: "40px",
+                height: "250px",
+                width: "100%",
+                margin: "10px 0",
+                border: `1px solid #000`,
               }}
             />
           </Box>
@@ -271,15 +231,15 @@ const AddServiceByCompany = () => {
               Service Value
             </InputLabel>
             <ReactQuill
-              theme="snow"
-              placeholder="Enter service value..."
               value={service.service_value}
               onChange={(value) => handleQuillChange("service_value", value)}
+              theme="snow"
+              placeholder="Enter service value..."
               style={{
-                height: "150px",
-                backgroundColor: colors.grey[900],
-                color: colors.grey[100],
-                marginBottom: "40px",
+                height: "250px",
+                width: "100%",
+                margin: "10px 0",
+                border: `1px solid #000`,
               }}
             />
           </Box>
@@ -298,15 +258,15 @@ const AddServiceByCompany = () => {
               Service Vision
             </InputLabel>
             <ReactQuill
-              theme="snow"
-              placeholder="Enter service vision..."
               value={service.service_vision}
               onChange={(value) => handleQuillChange("service_vision", value)}
+              theme="snow"
+              placeholder="Enter service vision..."
               style={{
-                height: "150px",
-                backgroundColor: colors.grey[900],
-                color: colors.grey[100],
-                marginBottom: "40px",
+                height: "250px",
+                width: "100%",
+                margin: "10px 0",
+                border: `1px solid #000`,
               }}
             />
           </Box>
@@ -325,39 +285,20 @@ const AddServiceByCompany = () => {
               Service Mission
             </InputLabel>
             <ReactQuill
-              theme="snow"
-              placeholder="Enter service mission..."
               value={service.service_mission}
               onChange={(value) => handleQuillChange("service_mission", value)}
+              theme="snow"
+              placeholder="Enter service mission..."
               style={{
-                height: "150px",
-                backgroundColor: colors.grey[900],
-                color: colors.grey[100],
-                marginBottom: "40px",
+                height: "250px",
+                width: "100%",
+                margin: "10px 0",
+                border: `1px solid #000`,
               }}
             />
           </Box>
 
-          {/* Add Service Logo */}
-          <Box>
-            <Button
-              variant="contained"
-              title="Add Logo"
-              onClick={handleOpen}
-              sx={{
-                mt: 2,
-                backgroundColor: colors.blueAccent[200],
-              }}
-            >
-              Add Logo
-            </Button>
-            <Modal open={open} onClose={handleClose}>
-              <MediaLibrary onSelectImage={handleSelectImage}/>
-            </Modal>
-          </Box>
-
-          {/* Service Status */}
-          {isHidden && (
+          {/* Service Status ID */}
           <Box
             display="flex"
             flexDirection="column"
@@ -368,7 +309,7 @@ const AddServiceByCompany = () => {
               htmlFor="service_status_id"
               sx={{ color: colors.grey[100], mb: "5px" }}
             >
-              Service Status
+              Service Status ID
             </InputLabel>
             <FormControl fullWidth>
               <Select
@@ -391,37 +332,45 @@ const AddServiceByCompany = () => {
               </Select>
             </FormControl>
           </Box>
-          )}
 
-          {/* Created By User ID */}
-          {isHidden && (
-          <Box
-            display="flex"
-            flexDirection="column"
-            margin="10px 0"
-            width="100%"
-          >
-            <InputLabel
-              htmlFor="service_created_by_user_id"
-              sx={{ color: colors.grey[100], mb: "5px" }}
-            >
-              Created By User ID
+          {/* Service Link */}
+          <Box display="flex" flexDirection="column" margin="10px 0" width="100%">
+            <InputLabel htmlFor="service_link" sx={{ color: colors.grey[100], mb: '5px' }}>
+              Service Link
             </InputLabel>
             <InputBase
-              placeholder="Created By User ID"
-              name="service_created_by_user_id"
-              value={service.service_created_by_user_id}
+              id="service_link"
+              placeholder="Service Link"
+              name="service_link"
+              value={service.service_link}
               onChange={handleChange}
               sx={{
-                padding: "10px",
-                border: `1px solid #000`,
-                borderRadius: "2px",
+                padding: '10px',
+                border: '1px solid #000',
+                borderRadius: '4px',
                 backgroundColor: colors.grey[900],
                 color: colors.grey[100],
               }}
             />
           </Box>
-          )}
+
+          {/* Add Logo */}
+          <Box>
+            <Button
+              variant="contained"
+              title="Add Logo"
+              onClick={handleOpen}
+              sx={{
+                mt: 2,
+                backgroundColor: colors.blueAccent[200],
+              }}
+            >
+              Add Logo
+            </Button>
+            <Modal open={open} onClose={handleClose}>
+              <MediaLibrary onSelectImage={handleSelectImage} />
+            </Modal>
+          </Box>
 
           {/* Add Service Button */}
           <Button
