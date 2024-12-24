@@ -70,6 +70,8 @@ const AddServiceByCompany = () => {
       }
     };
 
+    console.log(service)
+
     fetchCompany();
     fetchCompanies();
   }, [id]);
@@ -97,23 +99,33 @@ const AddServiceByCompany = () => {
     fetchCompany();
   }, [id]);
 
+  const { open, handleClose, value, handleOpen } = useMediaGallery();
+
+  const handleSelectImage = (image) => {
+    // Log the image object to verify its structure
+    console.log('Selected Image:', image);
+  
+    // Check if the il_path property exists
+    if (image && image.il_path) {
+      setService((prevService) => ({ ...prevService, service_logo: image.il_path }));
+      toast.success('Logo selected successfully');
+    } else {
+      console.error('Image object does not contain il_path property:', image);
+      toast.error('Failed to select logo. Invalid image object.');
+    }
+  };
+
   const handleAddService = async () => {
     try {
+      if (!service.service_name || !service.service_desc || !service.service_logo) {
+        toast.error("Please fill in all required fields");
+        return;
+      }
+
       await axios.post(`${API_BASE_URL}/service/new`, service);
       toast.success("Service added successfully");
-      setService({
-        service_name: "",
-        service_desc: "",
-        service_value: "",
-        service_vision: "",
-        service_mission: "",
-        service_logo: "",
-        service_company_id: id,
-        service_status_id: 1,
-        service_created_by_user_id: user?.user_id,
-      });
       setTimeout(() => {
-        navigate("/services");
+        navigate(`/company/service/${id}`);
       }, 3000);
     } catch (error) {
       console.error("Error adding service:", error);
@@ -121,12 +133,7 @@ const AddServiceByCompany = () => {
     }
   };
 
-  const { open, handleClose, value, handleOpen } = useMediaGallery();
 
-  const handleSelectImage = (image) => {
-    setCompany((prevService) => ({ ...prevService, service_logo: image.il_path }));
-    toast.success('Logo selected successfully');
-  };
 
   const [isHidden, setIsHidden] = useState(false);
 

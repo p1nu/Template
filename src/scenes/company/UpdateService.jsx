@@ -26,6 +26,8 @@ const UpdateService = () => {
     service_value: '',
     service_vision: '',
     service_mission: '',
+    service_link: '',
+    service_logo: '',
     service_company_id: '',
     service_status_id: '',
     service_updated_by_user_id: user?.user_id,
@@ -50,7 +52,7 @@ const UpdateService = () => {
     // Fetch company data
     const fetchCompany = async () => {
       try {
-        const response = await axios.get('${API_BASE_URL}/company/all');
+        const response = await axios.get(`${API_BASE_URL}/company/all`);
         setCompanies(response.data);
       } catch (error) {
         console.error('Error fetching company data:', error);
@@ -76,7 +78,7 @@ const UpdateService = () => {
       });
       toast.success('Service updated successfully');
       setTimeout(() => {
-        navigate('/services');
+        navigate(`/company/service/${service.service_company_id}`);
       }, 3000); // Navigate to services page after 3 seconds
     } catch (error) {
       console.log('Service:', service);
@@ -336,6 +338,27 @@ const UpdateService = () => {
                 </Select>
               </FormControl>
             </Box>
+
+            {/* Service Link */}
+          <Box display="flex" flexDirection="column" margin="10px 0" width="100%">
+            <InputLabel htmlFor="service_link" sx={{ color: colors.grey[100], mb: '5px' }}>
+              Service Link
+            </InputLabel>
+            <InputBase
+              id="service_link"
+              placeholder="Service Link"
+              name="service_link"
+              value={service.service_link}
+              onChange={handleChange}
+              sx={{
+                padding: '10px',
+                border: '1px solid #000',
+                borderRadius: '4px',
+                backgroundColor: colors.grey[900],
+                color: colors.grey[100],
+              }}
+            />
+          </Box>
           
 
           {/* Add Logo or Update Logo */}
