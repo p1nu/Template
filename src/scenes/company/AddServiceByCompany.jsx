@@ -123,8 +123,8 @@ const AddServiceByCompany = () => {
 
   const { open, handleClose, value, handleOpen } = useMediaGallery();
 
-  const handleSelectImage = (imagePath) => {
-    setCompany((prevService) => ({ ...prevService, service_logo: imagePath }));
+  const handleSelectImage = (image) => {
+    setCompany((prevService) => ({ ...prevService, service_logo: image.il_path }));
     toast.success('Logo selected successfully');
   };
 

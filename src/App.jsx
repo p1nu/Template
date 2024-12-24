@@ -36,6 +36,8 @@ import AddJob from "./scenes/jobs/AddJob.jsx";
 import UpdateJob from "./scenes/jobs/UpdateJob.jsx";
 import Test from "./scenes/news/Test.jsx";
 import Gallery from "./scenes/gallery/Gallery.jsx";
+import Products from "./scenes/products/Products.jsx";
+import AddProduct from "./scenes/products/AddProduct.jsx";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -84,6 +86,8 @@ function App() {
               <Route path="/add-job" element={<AddJob />} />
               <Route path="/job/:id" element={<UpdateJob />} />
               <Route path="/test" element={<Test />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/add-product" element={<AddProduct />} />
             </Routes>
               <Gallery />
           </main>
