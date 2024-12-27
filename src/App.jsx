@@ -38,6 +38,8 @@ import Test from "./scenes/news/Test.jsx";
 import Gallery from "./scenes/gallery/Gallery.jsx";
 import Products from "./scenes/products/Products.jsx";
 import AddProduct from "./scenes/products/AddProduct.jsx";
+import Categories from "./scenes/products/Categories.jsx";
+import AddCategory from "./scenes/products/AddCategory.jsx";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -88,6 +90,8 @@ function App() {
               <Route path="/test" element={<Test />} />
               <Route path="/products" element={<Products />} />
               <Route path="/add-product" element={<AddProduct />} />
+              <Route path="/categories" element={<Categories />} />
+              <Route path="/add-category" element={<AddCategory />} />
             </Routes>
               <Gallery />
           </main>
