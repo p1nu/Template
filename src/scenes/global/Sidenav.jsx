@@ -184,6 +184,13 @@ const Sidenav = () => {
                 selected={selected}
                 setSelected={setSelected}
               />
+              <Item
+                title="All Products"
+                to="/products"
+                icon={<CategoryOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
             </SubMenu>
             <Item
               title="Gallery"

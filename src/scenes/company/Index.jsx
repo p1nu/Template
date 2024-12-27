@@ -3,7 +3,7 @@ import { Box, Typography, useTheme, Button, InputBase } from "@mui/material";
 import DataTable from "react-data-table-component";
 import axios from "axios";
 import { tokens } from "../../theme";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import mockCompanies from "../data/mockDataCompany"; // Import the mock data for companies
 // const API_BASE_URL = process.env.APP_API_URL;
@@ -12,6 +12,7 @@ const Companies = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const API_BASE_URL = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
 
   const [companies, setCompanies] = useState([]);
   const [filteredCompanies, setFilteredCompanies] = useState([]);
@@ -106,6 +107,11 @@ const Companies = () => {
               <Link to={`/company/service/${row.company_id}`}>
                 <Button variant="outlined" color="primary">
                   Services
+                </Button>
+              </Link>
+              <Link to={`/products`}>
+                <Button variant="outlined" color="primary">
+                  Products
                 </Button>
               </Link>
               <Button
