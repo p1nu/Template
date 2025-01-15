@@ -9,6 +9,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { MediaLibrary } from "../gallery/Index";
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 
 const AddProduct = () => {
   const API_BASE_URL = import.meta.env.VITE_API_URL;
@@ -98,6 +100,13 @@ const AddProduct = () => {
     }
   };
 
+  const handleEditorChange = (content) => {
+    setProduct((prevProduct) => ({
+      ...prevProduct,
+      product_desc: content,
+    }));
+  };
+
   return (
     <Box m={2}>
       <Header title={isEditMode ? "Edit Product" : "Add New Product"} subTitle={isEditMode ? "Update the product details" : "Create a new product"} />
@@ -162,21 +171,16 @@ const AddProduct = () => {
             <InputLabel htmlFor="product_desc" sx={{ color: colors.grey[100], mb: '5px' }}>
               Product Description
             </InputLabel>
-            <InputBase
-              id="product_desc"
-              placeholder="Product Description"
-              name="product_desc"
+            <ReactQuill
+              theme="snow"
               value={product.product_desc}
-              onChange={handleChange}
-              sx={{
-                padding: '10px',
-                border: '1px solid #000',
-                borderRadius: '4px',
+              onChange={handleEditorChange}
+              style={{
                 backgroundColor: colors.grey[900],
                 color: colors.grey[100],
+                borderRadius: '4px',
+                border: '1px solid #000',
               }}
-              multiline
-              rows={4}
             />
           </Box>
 

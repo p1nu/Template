@@ -91,45 +91,40 @@ const Products = () => {
 
   const columns = [
     {
+      name: 'Actions',
+      cell: (row) => (
+        <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+          <IconButton onClick={() => handleEditProduct(row)}>
+            <EditIcon sx={{ color: colors.blueAccent[400] }} />
+          </IconButton>
+          <IconButton onClick={() => handleDeleteProduct(row.product_id)}>
+            <DeleteIcon sx={{ color: colors.redAccent[400] }} />
+          </IconButton>
+        </Box>
+      ),
+      wrap: true,
+      width: '100px',
+    },
+    {
       name: 'Product Name',
       selector: (row) => row.product_name,
       sortable: true,
-      width: 'auto',
-    },
-    {
-      name: 'Description',
-      selector: (row) => row.product_desc,
-      sortable: true,
-      width: '15%',
+      wrap: true,
     },
     {
       name: 'Price',
       selector: (row) => `$${row.product_price}`,
       sortable: true,
-      width: '10%',
+      wrap: true,
     },
     {
       name: 'Company',
       selector: (row) => {
-        const company = companies.find((company) => company.company_id === row.company_id);
+        const company = companies.find((c) => c.company_id === row.company_id);
         return company ? company.company_name : 'Unknown';
       },
       sortable: true,
-      width: '15%',
-    },
-    {
-      name: 'Actions',
-      cell: (row) => (
-        <Box display="flex" justifyContent="space-between" alignItems="center" textAlign="center" width="100%">
-          <IconButton edge="end" aria-label="edit" onClick={() => handleEditProduct(row)}>
-            <EditIcon sx={{ color: colors.blueAccent[400] }} />
-          </IconButton>
-          <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteProduct(row.product_id)}>
-            <DeleteIcon sx={{ color: colors.redAccent[400] }} />
-          </IconButton>
-        </Box>
-      ),
-      width: '15%',
+      wrap: true,
     },
   ];
 
@@ -144,8 +139,9 @@ const Products = () => {
       <Header title="Products" subTitle="List of all products" />
       <Box
         display="flex"
-        justifyContent="space-between"
+        justifyContent="start"
         width="100%"
+        gap={2}
         mb={2}
       >
         <Button
@@ -245,10 +241,11 @@ const Products = () => {
           columns={columns}
           data={filteredProducts}
           keyField="product_id"
-          pagination
+          pageSize={products.length > 10 ? 10 : products.length}
           highlightOnHover
           pointerOnHover
           responsive
+          
         />
       </Box>
       <ToastContainer theme="colored" autoClose={2000} />
