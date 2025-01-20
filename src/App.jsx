@@ -41,11 +41,14 @@ import AddProduct from "./scenes/products/AddProduct.jsx";
 import Categories from "./scenes/products/Categories.jsx";
 import AddCategory from "./scenes/products/AddCategory.jsx";
 
+
 function App() {
   const [theme, colorMode] = useMode();
   const location = useLocation();
 
   const isLoginPage = location.pathname === "/login";
+
+
 
   return (
     <ColorModeContext.Provider value={colorMode}>

@@ -1,4 +1,3 @@
-// GalleryContext.jsx
 import axios from 'axios';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
@@ -11,27 +10,15 @@ export const GalleryProvider = ({ children }) => {
   const [images, setImages] = useState([]); // Store all uploaded images
   const [insertImageCallback, setInsertImageCallback] = useState(null);
 
-  // const openGallery = () => setIsGalleryOpen(true);
-  // const closeGallery = () => setIsGalleryOpen(false);
-
   const openGallery = (callback) => {
-    console.log('openGallery')
     setInsertImageCallback(() => callback);
     setIsGalleryOpen(true);
-  }
+  };
 
   const closeGallery = () => {
     setIsGalleryOpen(false);
     setInsertImageCallback(null);
-  }
-
-  // const selectImage = (image) => {
-  //   const imageUrl = `${API_BASE_URL}/uploads/${image}`;
-  //   console.log(image)
-  //   console.log(imageUrl)
-  //   setSelectedImage(imageUrl);
-  //   closeGallery();
-  // };
+  };
 
   const fetchImages = async () => {
     try {
@@ -53,14 +40,13 @@ export const GalleryProvider = ({ children }) => {
   }, [isGalleryOpen]);
 
   const selectImage = (image) => {
-    console.log('selectImage', image)
     if (insertImageCallback) {
-      const fullImageUrl = `${API_BASE_URL}/uploads/${image}`;
+      const fullImageUrl = `${API_BASE_URL}/uploads/${image.il_path}`;
       insertImageCallback(fullImageUrl);
       setInsertImageCallback(null);
     }
     closeGallery();
-  }
+  };
 
   return (
     <GalleryContext.Provider

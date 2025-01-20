@@ -330,7 +330,7 @@ const UpdateNews = () => {
               sx={{
                 borderRadius: '4px',
                 cursor: 'pointer',
-                height: '220px',
+                height: '70vh',
                 overflow: 'hidden',
               }}
             >
