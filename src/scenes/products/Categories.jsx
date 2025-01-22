@@ -35,6 +35,7 @@ const Categories = () => {
   const navigate = useNavigate();
   const { open, handleClose, handleOpen } = useMediaGallery();
 
+  const [companies, setCompanies] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [openModal, setOpenModal] = useState(false);
@@ -45,21 +46,18 @@ const Categories = () => {
     category_name: '',
     category_desc: '',
     category_image: '',
+    company_id: '',
     sub_id: '',
-    created_by_user_id: user?.user_id,
   });
   const [newSubCategory, setNewSubCategory] = useState({
     sub_name: '',
     sub_desc: '',
     sub_image: '',
-    created_by_user_id: user?.user_id,
   });
   const [loading, setLoading] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteItem, setDeleteItem] = useState(null);
   const [deleteType, setDeleteType] = useState('');
-
-  // New state for toggling views
   const [showSubCategories, setShowSubCategories] = useState(false);
 
   const fetchCategories = async () => {
@@ -82,10 +80,20 @@ const Categories = () => {
     }
   };
 
+  const fetchCompanies = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/company/all`);
+      setCompanies(response.data);
+    } catch (error) {
+      console.error('Error fetching companies data:', error);
+      toast.error('Failed to load companies data');
+    }
+  };
+
   useEffect(() => {
-    // Fetch categories and subcategories data
     fetchCategories();
     fetchSubCategories();
+    fetchCompanies();
   }, [API_BASE_URL]);
 
   const handleOpenModal = () => setOpenModal(true);
@@ -98,7 +106,7 @@ const Categories = () => {
       category_desc: '',
       category_image: '',
       sub_id: '',
-      created_by_user_id: user?.user_id,
+      company_id: '',
     });
   };
 
@@ -109,16 +117,14 @@ const Categories = () => {
       sub_name: '',
       sub_desc: '',
       sub_image: '',
-      created_by_user_id: user?.user_id,
     });
   };
 
-  // Separate change handlers
   const handleCategoryChange = (e) => {
     const { name, value } = e.target;
     setNewCategory((prevCategory) => ({
       ...prevCategory,
-      [name]: value || '', // Ensure no null values
+      [name]: value || '',
     }));
   };
 
@@ -139,29 +145,40 @@ const Categories = () => {
   };
 
   const handleAddCategory = async () => {
-    if (!newCategory.category_name || !newCategory.category_desc || !newCategory.category_image) {
-      toast.error('Please fill in all required fields');
+    if (!newCategory.category_name) {
+      toast.error('Please fill in the category name');
       return;
     }
 
-    if (!newCategory.sub_id) {
-      toast.error('Please select a subcategory');
+    if (!newCategory.company_id) {
+      toast.error('Please select a company');
       return;
     }
 
     setLoading(true);
     try {
+      const categoryData = {
+        category_name: newCategory.category_name,
+        category_desc: newCategory.category_desc,
+        category_image: newCategory.category_image,
+        company_id: newCategory.company_id,
+      };
+
+      if (newCategory.sub_id) {
+        categoryData.sub_id = newCategory.sub_id;
+      }
+
       if (editMode) {
-        await axios.put(`${API_BASE_URL}/product/category/update/${currentCategory.category_id}`, newCategory);
+        await axios.put(`${API_BASE_URL}/product/category/update/${currentCategory.category_id}`, categoryData);
         toast.success('Category updated successfully');
       } else {
-        await axios.post(`${API_BASE_URL}/product/category/new`, newCategory);
+        await axios.post(`${API_BASE_URL}/product/category/new`, categoryData);
         toast.success('Category added successfully');
       }
       fetchCategories();
       handleCloseModal();
     } catch (error) {
-      console.error('Error adding/updating category:', error);
+      console.error('Error adding/updating category:', error.response ? error.response.data : error.message);
       toast.error('Error adding/updating category');
     } finally {
       setLoading(false);
@@ -179,7 +196,7 @@ const Categories = () => {
       await axios.post(`${API_BASE_URL}/subcategory/new`, newSubCategory);
       toast.success('Subcategory added successfully');
       handleCloseSubModal();
-      fetchSubCategories(); // Refresh subcategories list
+      fetchSubCategories();
     } catch (error) {
       console.error('Error adding subcategory:', error);
       toast.error('Error adding subcategory');
@@ -195,7 +212,7 @@ const Categories = () => {
       category_desc: category.category_desc || '',
       category_image: category.category_image || '',
       sub_id: category.sub_id !== null && category.sub_id !== undefined ? category.sub_id : '',
-      created_by_user_id: user?.user_id,
+      company_id: category.company_id !== null && category.company_id !== undefined ? category.company_id : '',
     });
     setEditMode(true);
     handleOpenModal();
@@ -206,7 +223,6 @@ const Categories = () => {
       sub_name: subCategory.sub_name || '',
       sub_desc: subCategory.sub_desc || '',
       sub_image: subCategory.sub_image || '',
-      created_by_user_id: user?.user_id,
     });
     setEditMode(true);
     handleOpenSubModal();
@@ -257,7 +273,6 @@ const Categories = () => {
     setDeleteType('');
   };
 
-  // New toggle function
   const toggleView = () => {
     setShowSubCategories(!showSubCategories);
   };
@@ -274,7 +289,15 @@ const Categories = () => {
         padding={2}
         bgcolor={colors.grey[800]}
       >
-        <Box display="flex" justifyContent="flex-start" width="100%" mb={2}>
+        <Box display="flex" justifyContent="flex-start" width="100%" mb={2} gap={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate('/products')}
+            sx={{ backgroundColor: colors.blueAccent[200] }}
+          >
+            Products
+          </Button>
           <Button
             variant="contained"
             color="primary"
@@ -287,7 +310,7 @@ const Categories = () => {
             variant="contained"
             color="primary"
             onClick={toggleView}
-            sx={{ backgroundColor: colors.blueAccent[200], ml: 2 }}
+            sx={{ backgroundColor: colors.blueAccent[200] }}
           >
             {showSubCategories ? 'Show All Categories' : 'Show All Subcategories'}
           </Button>
@@ -295,7 +318,7 @@ const Categories = () => {
             variant="contained"
             color="primary"
             onClick={handleOpenSubModal}
-            sx={{ backgroundColor: colors.blueAccent[200], ml: 2 }}
+            sx={{ backgroundColor: colors.blueAccent[200] }}
           >
             Add New Subcategory
           </Button>
@@ -344,7 +367,7 @@ const Categories = () => {
           width="400px"
           boxShadow={3}
           mx="auto"
-          mt="10%"
+          mt="10px"
         >
           <Typography variant="h6" sx={{ color: colors.grey[100], mb: 2 }}>
             {editMode ? 'Edit Category' : 'Add New Category'}
@@ -389,8 +412,6 @@ const Categories = () => {
               rows={4}
             />
           </Box>
-
-          {/* Subcategory Select Input */}
           <Box display="flex" flexDirection="column" margin="10px 0" width="100%">
             <InputLabel htmlFor="sub_id" sx={{ color: colors.grey[100], mb: '5px' }}>
               Subcategory
@@ -415,8 +436,30 @@ const Categories = () => {
               </Select>
             </FormControl>
           </Box>
-
-          {/* Category Image Upload */}
+          <Box display="flex" flexDirection="column" margin="10px 0" width="100%">
+            <InputLabel htmlFor="company_id" sx={{ color: colors.grey[100], mb: '5px' }}>
+              Company
+            </InputLabel>
+            <FormControl fullWidth sx={{ backgroundColor: colors.grey[900], borderRadius: '4px' }}>
+              <Select
+                id="company_id"
+                name="company_id"
+                value={newCategory.company_id || ''}
+                onChange={handleCategoryChange}
+                displayEmpty
+                sx={{ color: colors.grey[100] }}
+              >
+                <MenuItem value="" disabled>
+                  Select Company
+                </MenuItem>
+                {companies.map((company) => (
+                  <MenuItem key={company.company_id} value={company.company_id}>
+                    {company.company_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
           <Box display="flex" flexDirection="column" margin="10px 0" width="100%">
             <InputLabel htmlFor="category_image" sx={{ color: colors.grey[100], mb: '5px' }}>
               Category Image

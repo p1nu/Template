@@ -1,13 +1,15 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import {
   Box,
   Button,
+  InputBase,
+  Modal,
   Typography,
   useTheme,
-  InputBase,
-  InputLabel,
   FormControl,
-  Modal,
+  Select,
+  MenuItem,
+  InputLabel,
 } from "@mui/material";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
@@ -16,19 +18,24 @@ import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../global/AuthContext";
-import { OpenMediaButton, MediaLibrary } from "../gallery/Index";
+import { MediaLibrary } from "../gallery/Index";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-// const API_BASE_URL = process.env.APP_API_URL;
+import JoditEditor from "jodit-react";
+
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const AddCompany = () => {
-  const API_BASE_URL = import.meta.env.VITE_API_URL;
   const { user } = useContext(AuthContext);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const navigate = useNavigate();
+  const { open, open1, handleClose, handleClose1, handleOpen, handleOpen1 } =
+    useMediaGallery();
+  const editorRef = useRef();
+
   const [company, setCompany] = useState({
-    company_id: "",
     company_name: "",
     company_acronym: "",
     company_value: "",
@@ -37,353 +44,260 @@ const AddCompany = () => {
     company_desc: "",
     company_logo: "",
     company_background: "",
+    company_status_id: "",
     company_created_by_user_id: user?.user_id,
   });
+  const [currentField, setCurrentField] = useState("");
 
-  const [isHidden, setIsHidden] = useState(false);
-  const navigate = useNavigate();
+  const handleEditorChange = (field, content) => {
+    setCompany((prevCompany) => ({
+      ...prevCompany,
+      [field]: content,
+    }));
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setCompany((prevCompany) => ({ ...prevCompany, [name]: value }));
+    setCompany((prevCompany) => ({
+      ...prevCompany,
+      [name]: value,
+    }));
   };
 
-  const handleQuillChange = (field, value) => {
-    setCompany((prevCompany) => ({ ...prevCompany, [field]: value }));
+  const handleImageChange = (image) => {
+    const editor = editorRef.current;
+    if (editor && currentField) {
+      editor.selection.insertImage(`${API_BASE_URL}/uploads/${image.il_path}`);
+    }
+    handleClose();
   };
 
-  const handleAddCompany = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      await axios.post(`${API_BASE_URL}/company/new`, {
-        ...company,
-        company_created_by_user_id: user?.user_id,
-      });
+      await axios.post(`${API_BASE_URL}/company/new`, company);
       toast.success("Company added successfully");
-      setCompany({
-        company_name: "",
-        company_acronym: "",
-        company_value: "",
-        company_vision: "",
-        company_mission: "",
-        company_desc: "",
-        company_logo: "",
-        company_background: "",
-        company_created_by_user_id: "",
-      });
       setTimeout(() => {
-        navigate("/company");
-      }, 3000);
+        navigate(`/company`);
+      }, 3000); // Navigate to company page after 3 seconds
     } catch (error) {
       console.error("Error adding company:", error);
       toast.error("Error adding company");
     }
   };
 
-  const { open, open1, handleOpen, handleOpen1, handleClose, handleClose1 } =
-    useMediaGallery();
-
-  const handleSelectLogo = (image) => {
-    setCompany((prevCompany) => ({
-      ...prevCompany,
-      company_logo: image.il_path,
-    }));
-    toast.success("Logo selected successfully");
+  const handleOpenForEditor = (field) => {
+    setCurrentField(field);
+    handleOpen();
   };
 
-  const handleSelectBackground = (image1) => {
-    setCompany((prevCompany) => ({
-      ...prevCompany,
-      company_background: image1.il_path,
-    }));
-    toast.success("Background selected successfully");
-    handleClose1();
+  const config = {
+    minHeight: 400,
+    readonly: false,
+    uploader: { insertImageAsBase64URI: true },
+    events: {
+      blur: (editor) => {
+        const content = editor.current?.value;
+        handleEditorChange(currentField, content);
+      },
+    },
   };
 
   return (
     <Box m={2}>
       <Header title="Add New Company" subTitle="Create a new company" />
       <Box
+        component="form"
+        onSubmit={handleSubmit}
         display="flex"
         flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        height="100%"
-        padding={2}
+        gap={3}
+        width="100%"
+        maxWidth="800px"
+        mx="auto"
+        p={3}
         bgcolor={colors.grey[800]}
-        sx={{
-          "& .ql-container.ql-snow": {
-            width: "100% !important",
-            height: "84% !important",
-            border: "1px solid #000",
-          },
-          "& .ql-toolbar": {
-            border: "1px solid #000",
-          },
-        }}
+        borderRadius="8px"
       >
         <Box
           display="flex"
-          flexDirection="column"
-          alignItems="center"
           justifyContent="center"
-          p={4}
-          bgcolor={colors.grey[900]}
-          borderRadius="2px"
-          width="100%"
-          boxShadow={3}
+          alignItems="center"
+          gap={2}
+          width={"100%"}
         >
-          {/* Company Name and Acronym */}
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            gap="20px"
-            width="100%"
-            alignItems="center"
-          >
-            <Box display="flex" flexDirection="column" width="100%">
-              <InputLabel
-                htmlFor="company_name"
-                sx={{ color: colors.grey[100], mb: "5px" }}
-              >
-                Company Name
-              </InputLabel>
-              <InputBase
-                id="company_name"
-                placeholder="Company Name"
-                name="company_name"
-                value={company.company_name}
+          {/* Company Name */}
+          <Box display="flex" flexDirection="column" gap={1} width="100%">
+            <InputLabel htmlFor="company_name" sx={{ color: colors.grey[100] }}>
+              Company Name
+            </InputLabel>
+            <InputBase
+              id="company_name"
+              name="company_name"
+              value={company.company_name}
+              onChange={handleChange}
+              placeholder="Enter company name"
+              sx={{
+                padding: "10px",
+                border: "1px solid #000",
+                borderRadius: "4px",
+                backgroundColor: colors.grey[900],
+                color: colors.grey[100],
+              }}
+            />
+          </Box>
+          {/* Company Acronym */}
+          <Box display="flex" flexDirection="column" gap={1} width="100%">
+            <InputLabel
+              htmlFor="company_acronym"
+              sx={{ color: colors.grey[100] }}
+            >
+              Company Acronym
+            </InputLabel>
+            <InputBase
+              id="company_acronym"
+              name="company_acronym"
+              placeholder="Enter company acronym"
+              value={company.company_acronym}
+              onChange={handleChange}
+              sx={{
+                padding: "10px",
+                border: "1px solid #000",
+                borderRadius: "4px",
+                backgroundColor: colors.grey[900],
+                color: colors.grey[100],
+              }}
+            />
+          </Box>
+          {/* Company Status */}
+          <Box display="flex" flexDirection="column" gap={1} width="100%">
+            <InputLabel
+              htmlFor="company_status_id"
+              sx={{ color: colors.grey[100] }}
+            >
+              Company Status
+            </InputLabel>
+            <FormControl
+              fullWidth
+              sx={{ backgroundColor: colors.grey[900], borderRadius: "4px" }}
+            >
+              <Select
+                id="company_status_id"
+                name="company_status_id"
+                value={company.company_status_id}
                 onChange={handleChange}
-                sx={{
-                  padding: "10px",
-                  border: `1px solid #000`,
-                  borderRadius: "2px",
-                  backgroundColor: colors.grey[900],
-                  color: colors.grey[100],
-                }}
-              />
-            </Box>
-            <Box display="flex" flexDirection="column" width="100%">
-              <InputLabel
-                htmlFor="company_acronym"
-                sx={{ color: colors.grey[100], mb: "5px" }}
+                displayEmpty
+                sx={{ color: colors.grey[100] }}
               >
-                Company Acronym
-              </InputLabel>
-              <InputBase
-                id="company_acronym"
-                placeholder="Company Acronym"
-                name="company_acronym"
-                value={company.company_acronym}
-                onChange={handleChange}
-                sx={{
-                  padding: "10px",
-                  border: `1px solid #000`,
-                  borderRadius: "2px",
-                  backgroundColor: colors.grey[900],
-                  color: colors.grey[100],
-                }}
-              />
-            </Box>
+                <MenuItem value="" disabled>
+                  Select Status
+                </MenuItem>
+                <MenuItem value={1}>Active</MenuItem>
+                <MenuItem value={2}>Inactive</MenuItem>
+              </Select>
+            </FormControl>
           </Box>
-
-          {/* Company Value */}
-          <Box
-            display="flex"
-            flexDirection="column"
-            margin="10px 0"
-            width="100%"
-          >
-            <InputLabel
-              htmlFor="company_value"
-              sx={{ color: colors.grey[100], mb: "5px" }}
-            >
-              Company Value
-            </InputLabel>
-            <ReactQuill
-              theme="snow"
-              placeholder="Enter company value..."
-              value={company.company_value}
-              onChange={(value) => handleQuillChange("company_value", value)}
-              style={{
-                height: "150px",
-                backgroundColor: colors.grey[900],
-                color: colors.grey[100],
-              }}
-            />
-          </Box>
-
-          {/* Company Vision */}
-          <Box
-            display="flex"
-            flexDirection="column"
-            margin="10px 0"
-            width="100%"
-          >
-            <InputLabel
-              htmlFor="company_vision"
-              sx={{ color: colors.grey[100], mb: "5px" }}
-            >
-              Company Vision
-            </InputLabel>
-            <ReactQuill
-              theme="snow"
-              placeholder="Enter company vision..."
-              value={company.company_vision}
-              onChange={(value) => handleQuillChange("company_vision", value)}
-              style={{
-                height: "150px",
-                backgroundColor: colors.grey[900],
-                color: colors.grey[100],
-              }}
-            />
-          </Box>
-
-          {/* Company Mission */}
-          <Box
-            display="flex"
-            flexDirection="column"
-            margin="10px 0"
-            width="100%"
-          >
-            <InputLabel
-              htmlFor="company_mission"
-              sx={{ color: colors.grey[100], mb: "5px" }}
-            >
-              Company Mission
-            </InputLabel>
-            <ReactQuill
-              theme="snow"
-              placeholder="Enter company mission..."
-              value={company.company_mission}
-              onChange={(value) => handleQuillChange("company_mission", value)}
-              style={{
-                height: "150px",
-                backgroundColor: colors.grey[900],
-                color: colors.grey[100],
-              }}
-            />
-          </Box>
-
-          {/* Company Description */}
-          <Box
-            display="flex"
-            flexDirection="column"
-            margin="10px 0"
-            width="100%"
-          >
-            <InputLabel
-              htmlFor="company_desc"
-              sx={{ color: colors.grey[100], mb: "5px" }}
-            >
-              Company Description
-            </InputLabel>
-            <ReactQuill
-              theme="snow"
-              placeholder="Enter company description..."
-              value={company.company_desc}
-              onChange={(value) => handleQuillChange("company_desc", value)}
-              style={{
-                height: "200px",
-                backgroundColor: colors.grey[900],
-                color: colors.grey[100],
-              }}
-            />
-          </Box>
-
-          {/* Created By User ID */}
-          {/* This field should be disabled and should automatically populate with the user ID of the currently logged in user */}
-          {/* The user ID can be accessed from the AuthContext */}
-          {isHidden && (
-            <Box
-              display="flex"
-              flexDirection="column"
-              margin="10px 0"
-              width="100%"
-            >
-              <InputLabel
-                htmlFor="company_created_by_user_id"
-                sx={{ color: colors.grey[100], mb: "5px" }}
-              >
-                Created By User ID
-              </InputLabel>
-              <InputBase
-                id="company_created_by_user_id"
-                placeholder="Created By User ID"
-                name="company_created_by_user_id"
-                value={user?.user_id}
-                disabled
-                // onChange={handleChange}
-                sx={{
-                  padding: "10px",
-                  border: `1px solid #000`,
-                  borderRadius: "2px",
-                  backgroundColor: colors.grey[900],
-                  color: colors.grey[100],
-                }}
-              />
-            </Box>
-          )}
-
-          {/* Add Company Logo and Background */}
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              gap: "20px",
-              width: "100%",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {/* Add Company Logo */}
-            <Box width={"100%"}>
-              <Button
-                variant="contained"
-                title="Add Logo"
-                onClick={handleOpen}
-                fullWidth
-                sx={{
-                  mt: 2,
-                  backgroundColor: colors.blueAccent[200],
-                }}
-              >
-                Add Logo
-              </Button>
-              <Modal open={open} onClose={handleClose}>
-                <MediaLibrary onSelectImage={handleSelectLogo} />
-              </Modal>
-            </Box>
-
-            {/* Add Company Banner */}
-            <Box width={"100%"}>
-              <Button
-                variant="contained"
-                title="Add Background"
-                onClick={handleOpen1}
-                fullWidth
-                sx={{
-                  mt: 2,
-                  backgroundColor: colors.blueAccent[200],
-                }}
-              >
-                Add Background
-              </Button>
-              <Modal open={open1} onClose={handleClose1}>
-                <MediaLibrary onSelectImage={handleSelectBackground} />
-              </Modal>
-            </Box>
-          </Box>
-
-          {/* Submit Button */}
-          <Button
-            variant="contained"
-            fullWidth
-            onClick={handleAddCompany}
-            sx={{ mt: 2, backgroundColor: colors.blueAccent[200] }}
-          >
-            Add Company
-          </Button>
         </Box>
+        {/* Logo and Background */}
+        <Box display="flex" justifyContent="center" gap={2} width="100%">
+          {/* Company Logo */}
+          <Box display="flex" flexDirection="column" gap={1} width="100%">
+            <Button
+              variant="contained"
+              title="Add Logo"
+              onClick={() => handleOpenForEditor("company_logo")}
+              sx={{
+                mt: 2,
+                backgroundColor: colors.blueAccent[200],
+              }}
+            >
+              Add Logo
+            </Button>
+            <Modal open={open} onClose={handleClose}>
+              <MediaLibrary onSelectImage={handleImageChange} />
+            </Modal>
+          </Box>
+          {/* Company Background */}
+          <Box display="flex" flexDirection="column" gap={1} width="100%">
+            <Button
+              variant="contained"
+              title="Add Background"
+              onClick={() => handleOpenForEditor("company_background")}
+              sx={{
+                mt: 2,
+                backgroundColor: colors.blueAccent[200],
+              }}
+            >
+              Add Background
+            </Button>
+            <Modal open={open1} onClose={handleClose1}>
+              <MediaLibrary onSelectImage={handleImageChange} />
+            </Modal>
+          </Box>
+        </Box>
+        {/* Company Value */}
+        <Box display="flex" flexDirection="column" gap={1}>
+          <InputLabel htmlFor="company_value" sx={{ color: colors.grey[100] }}>
+            Company Value
+          </InputLabel>
+          <JoditEditor
+            ref={editorRef}
+            value={company.company_value}
+            config={config}
+            onBlur={(content) => handleEditorChange("company_value", content)}
+          />
+        </Box>
+        {/* Company Vision */}
+        <Box display="flex" flexDirection="column" gap={1}>
+          <InputLabel htmlFor="company_vision" sx={{ color: colors.grey[100] }}>
+            Company Vision
+          </InputLabel>
+          <JoditEditor
+            ref={editorRef}
+            value={company.company_vision}
+            config={config}
+            onBlur={(content) => handleEditorChange("company_vision", content)}
+          />
+        </Box>
+        {/* Company Mission */}
+        <Box display="flex" flexDirection="column" gap={1}>
+          <InputLabel
+            htmlFor="company_mission"
+            sx={{ color: colors.grey[100] }}
+          >
+            Company Mission
+          </InputLabel>
+          <JoditEditor
+            ref={editorRef}
+            value={company.company_mission}
+            config={config}
+            onBlur={(content) => handleEditorChange("company_mission", content)}
+          />
+        </Box>
+        {/* Company Description */}
+        <Box display="flex" flexDirection="column" gap={1}>
+          <InputLabel htmlFor="company_desc" sx={{ color: colors.grey[100] }}>
+            Company Description
+          </InputLabel>
+          <JoditEditor
+            ref={editorRef}
+            value={company.company_desc}
+            config={config}
+            onBlur={(content) => handleEditorChange("company_desc", content)}
+          />
+        </Box>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          sx={{
+            mt: 2,
+            backgroundColor: colors.blueAccent[200],
+            "&:hover": { backgroundColor: colors.blueAccent[400] },
+          }}
+        >
+          Add Company
+        </Button>
       </Box>
       <ToastContainer theme="colored" autoClose={2000} />
     </Box>

@@ -6,15 +6,22 @@ import {
   InputLabel,
   Typography,
   useTheme,
+  IconButton,
+  FormControl,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import DataTable from "react-data-table-component";
 import axios from "axios";
 import { tokens } from "../../theme";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../../components/Header";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 // const API_BASE_URL = process.env.APP_API_URL;
 
 // Styled-component for alignment and spacing (if needed)
@@ -34,24 +41,36 @@ const Services = () => {
   const [services, setServices] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
   const [search, setSearch] = useState("");
-  const [company, setCompany] = useState({});
+  const [companies, setCompanies] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState("");
+  const navigate = useNavigate();
 
   // Fetch services by company ID
   const fetchServices = async () => {
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/service/all`
-      );
+      const response = await axios.get(`${API_BASE_URL}/service/all`);
       setServices(response.data);
       setFilteredServices(response.data);
+      console.log(response.data);
     } catch (error) {
       console.error("Error fetching services:", error);
       toast.error("Error fetching services");
     }
   };
+  // Fetch companies
+  const fetchCompanies = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/company/all`);
+      setCompanies(response.data);
+    } catch (error) {
+      console.error("Error fetching companies:", error);
+      toast.error("Error fetching companies");
+    }
+  };
 
   useEffect(() => {
     fetchServices();
+    fetchCompanies();
   }, []);
 
   useEffect(() => {
@@ -74,22 +93,53 @@ const Services = () => {
 
   const columns = [
     {
+      name: "Actions",
+      cell: (row) => (
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          width="100%"
+        >
+          <Link to={`/banner/service/${row.service_id}`}>
+            <Button
+              variant="contained"
+              sx={{ bgcolor: colors.blueAccent[200] }}
+            >
+              Add Banner
+            </Button>
+          </Link>
+          <Link to={`/service/${row.service_id}`}>
+            <IconButton>
+              <EditIcon sx={{ color: colors.blueAccent[400] }} />
+            </IconButton>
+          </Link>
+          <IconButton onClick={() => handleDelete(row.service_id)}>
+            <DeleteIcon sx={{ color: colors.redAccent[400] }} />
+          </IconButton>
+        </Box>
+      ),
+      wrap: true,
+      width: "250px",
+    },
+    {
+      name: "ID",
+      selector: (row) => row.service_id,
+      sortable: true,
+      wrap: true,
+      width: "80px",
+    },
+    {
       name: "Service Name",
       selector: (row) => row.service_name,
       sortable: true,
-      width: "auto",
-    },
-    {
-      name: "Description",
-      selector: (row) => row.service_desc,
-      sortable: true,
-      width: "15%",
+      wrap: true,
     },
     {
       name: "Status",
       selector: (row) => row.service_status_id,
       sortable: true,
-      width: "60%",
+      wrap: true,
       cell: (row) => {
         let status;
 
@@ -99,112 +149,118 @@ const Services = () => {
           status = "Inactive";
         }
 
-        return (
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            textAlign="center"
-            width="100%"
-          >
-            <Typography color={colors.grey[100]}>{status}</Typography>
-            <Box display={"flex"} justifyContent={"center"} gap={"10px"}>
-              <Link to={`/banner/service/${row.service_id}`}>
-                <Button variant="outlined" color="primary">
-                  Add Banner
-                </Button>
-              </Link>
-              <Link
-                to={`/service/${row.service_id}`}
-                style={{ marginLeft: "auto" }}
-              >
-                <Button variant="outlined" color="primary">
-                  Edit
-                </Button>
-              </Link>
-              <Button
-                variant="outlined"
-                color="error"
-                onClick={() => handleDelete(row.service_id)}
-              >
-                Delete
-              </Button>
-            </Box>
-          </Box>
-        );
+        return <Typography color={colors.grey[100]}>{status}</Typography>;
       },
+    },
+    {
+      name: "Company",
+      selector: (row) => row.company_name,
+      sortable: true,
+      wrap: true,
     },
   ];
 
-  const customStyles = {
-    header: {
-      style: {
-        backgroundColor: colors.grey[900],
-        color: colors.grey[100],
-      },
-    },
-    headCells: {
-      style: {
-        color: colors.grey[100],
-        fontWeight: "bold",
-        borderTop: `1px solid #000`,
-        borderBottom: `1px solid #000`,
-      },
-    },
-    cells: {
-      style: {
-        borderBottom: "1px solid #000",
-      },
-    },
+  const handleCompanyChange = (e) => {
+    const companyId = e.target.value;
+    setSelectedCompany(companyId);
+    if (companyId) {
+      const filtered = services.filter(
+        (service) => service.service_company_id === companyId
+      );
+      setFilteredServices(filtered);
+    } else {
+      setFilteredServices(services);
+    }
   };
 
-  const SubHeaderComponent = (
-    <Box display="flex" alignItems="center">
-      <InputBase
-        placeholder="Search Service Name"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        sx={{
-          ml: 2,
-          border: "1px solid",
-          borderColor: colors.grey[700],
-          borderRadius: "4px",
-          width: "200px",
-          height: "35px",
-          padding: "10px",
-          color: colors.grey[100],
-          bgcolor: colors.grey[900],
-        }}
-      />
-      <Link
-        to="/add-service"
-        style={{ textDecoration: "none", marginLeft: "10px" }}
-      >
-        <Button variant="contained" sx={{ bgcolor: colors.blueAccent[200] }}>
-          Add Service
-        </Button>
-      </Link>
-    </Box>
-  );
+    // Get the set of company IDs that have products
+    const companyIdsWithService = new Set(
+      services.map((service) => service.service_company_id)
+    );
+  
+    // Filter companies to only include those that have products
+    const filteredCompanies = companies.filter((company) =>
+      companyIdsWithService.has(company.company_id)
+    );
 
   return (
-    <Box m="20px">
+    <Box m={2}>
       <Header title="Services" subTitle="Manage services" />
       <Box
-        m="10px 0 0 0"
-        height="auto"
+        display="flex"
+        justifyContent="start"
+        width="100%"
+        gap={2}
+        mb={2}
+      ></Box>
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        height="100%"
+        padding={2}
         bgcolor={colors.grey[800]}
-        padding="10px"
       >
+        <Box display="flex" justifyContent="start" width="100%" mb={2} gap={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/add-service")}
+            sx={{ backgroundColor: colors.blueAccent[200] }}
+          >
+            Add Service
+          </Button>
+
+          <InputBase
+            placeholder="Search Services"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{
+              padding: "10px",
+              border: "1px solid #000",
+              borderRadius: "4px",
+              backgroundColor: colors.grey[900],
+              color: colors.grey[100],
+              width: "30%",
+            }}
+          />
+          <FormControl sx={{ width: "30%" }}>
+            <Select
+              value={selectedCompany}
+              onChange={handleCompanyChange}
+              displayEmpty
+              sx={{
+                border: "1px solid #000",
+                borderRadius: "4px",
+                backgroundColor: colors.grey[900],
+                color: colors.grey[100],
+                "&:hover": {
+                  border: "1px solid #000 !important",
+                },
+                "& .MuiOutlinedInput-notchedOutline": {
+                  border: "none",
+                },
+              }}
+            >
+              <MenuItem value="">All Companies</MenuItem>
+              {filteredCompanies.map((company) => (
+                <MenuItem key={company.company_id} value={company.company_id}>
+                  {company.company_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
         <DataTable
           columns={columns}
           data={filteredServices}
-          pagination
+          keyField="service_id"
+          pageSize={services.length > 10 ? 10 : services.length}
           highlightOnHover
+          pointerOnHover
           responsive
-          subHeader
-          subHeaderComponent={SubHeaderComponent}
-          customStyles={customStyles}
+          // customStyles={customStyles}
         />
       </Box>
       <ToastContainer theme="colored" autoClose={2000} />

@@ -1,23 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, useTheme, Button, InputBase, InputLabel } from "@mui/material";
-import DataTable from "react-data-table-component";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useContext } from 'react';
+import { Box, Button, InputBase, Typography, useTheme, IconButton } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
-import styled from "styled-components";
-import Header from "../../components/Header";
 import { tokens } from '../../theme';
-import { format } from 'date-fns'; // Imported format from date-fns
-// const API_BASE_URL = process.env.APP_API_URL;
+import Header from '../../components/Header';
+import { AuthContext } from "../global/AuthContext";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import DataTable from 'react-data-table-component';
+import { useNavigate } from 'react-router-dom';
 
 const CSR = () => {
   const API_BASE_URL = import.meta.env.VITE_API_URL;
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [csr, setCSR] = useState([]);
   const [filteredCSR, setFilteredCSR] = useState([]);
-  const [search, setSearch] = useState("");
-  const [error, setError] = useState("");
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const fetchCSR = async () => {
@@ -27,154 +30,128 @@ const CSR = () => {
         setFilteredCSR(response.data);
         console.log(response.data);
       } catch (error) {
-        console.error("Error fetching CSR:", error);
-        setError("Error fetching CSR data");
+        console.error('Error fetching CSR:', error);
+        toast.error('Failed to load CSR');
       }
     };
+
     fetchCSR();
-  }, []);
+  }, [API_BASE_URL]);
 
   useEffect(() => {
-    const results = csr.filter((entry) =>
-      (entry.csr_title || "").toLowerCase().includes(search.toLowerCase())
+    const results = csr.filter(
+      (entry) =>
+        (entry.csr_name && entry.csr_name.toLowerCase().includes(search.toLowerCase()))
     );
     setFilteredCSR(results);
   }, [search, csr]);
 
-  const handleDelete = async (id) => {
+  const handleDeleteCSR = async (csr_id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/csr/delete/${id}`);
-      const response = await axios.get(`${API_BASE_URL}/csr/all`);
-      setCSR(response.data);
-      setFilteredCSR(response.data);
-      setError("CSR deleted successfully");
-      console.log(response.data);
+      await axios.delete(`${API_BASE_URL}/csr/delete/${csr_id}`);
+      toast.success('CSR deleted successfully');
+      setCSR((prevCSR) => prevCSR.filter(entry => entry.csr_id !== csr_id));
+      setFilteredCSR((prevFilteredCSR) => prevFilteredCSR.filter(entry => entry.csr_id !== csr_id));
     } catch (error) {
-      console.error("Error deleting CSR:", error);
-      setError("Error deleting CSR");
+      console.error('Error deleting CSR:', error);
+      toast.error('Error deleting CSR');
     }
   };
 
-  const columns = [
-    { name: "ID", selector: (row) => row.csr_id, sortable: true },
-    { name: "Title", selector: (row) => row.csr_name, sortable: true },
-    {
-      name: "Actions",
-      cell: (row) => (
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          textAlign="center"
-          width="100%"
-        >
-          <Link to={`/mission/${row.csr_id}`} style={{ marginLeft: "auto", textDecoration: "none" }}>
-            <Button variant="outlined" color="primary">
-              View
-            </Button>
-          </Link>
-          <Link to={`/csr/${row.csr_id}`} style={{ marginLeft: "auto", textDecoration: "none" }}>
-            <Button variant="outlined" color="primary">
-              Update
-            </Button>
-          </Link>
-          <Button
-            variant="outlined"
-            color="error"
-            sx={{ m: 1 }}
-            onClick={() => handleDelete(row.csr_id)}
-          >
-            Delete
-          </Button>
-        </Box>
-      ),
-      sortable: false,
-      width: "50%",
-    },
-  ];
-
-  const customStyles = {
-    header: {
-      style: {
-        backgroundColor: colors.grey[900],
-        color: colors.grey[100],
-      },
-    },
-    headCells: {
-      style: {
-        color: colors.grey[100],
-        fontWeight: "bold",
-        borderTop: `1px solid #000`,
-        borderBottom: `1px solid #000`,
-      },
-    },
-    cells: {
-      style: {
-        borderBottom: "1px solid #000",
-      },
-    },
+  const handleEditCSR = (id) => {
+    navigate(`/csr/${id}`);
   };
 
-  // Subheader Component - Search Bar and Add CSR Button
-  const SubHeaderComponent = (
-    <Box display="flex" alignItems="center">
-      <InputBase
-        placeholder="Search Title"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        sx={{
-          ml: 2,
-          border: "1px solid",
-          borderColor: colors.grey[700],
-          borderRadius: "4px",
-          width: "200px",
-          height: "35px",
-          padding: "10px",
-          color: colors.grey[100],
-          bgcolor: colors.grey[900],
-        }}
-      />
-      <Link
-        to="/add-csr"
-        style={{ textDecoration: "none", marginLeft: "10px" }}
-      >
-        <Button variant="contained" sx={{ bgcolor: colors.blueAccent[200] }}>
-          Add CSR
-        </Button>
-      </Link>
-    </Box>
-  );
+  const columns = [
+    {
+      name: 'Actions',
+      cell: (row) => (
+        <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+          <IconButton onClick={() => handleEditCSR(row.csr_id)}>
+            <EditIcon sx={{ color: colors.blueAccent[400] }} />
+          </IconButton>
+          <IconButton onClick={() => handleDeleteCSR(row.csr_id)}>
+            <DeleteIcon sx={{ color: colors.redAccent[400] }} />
+          </IconButton>
+        </Box>
+      ),
+      wrap: true,
+      width: '100px',
+    },
+    {
+      name: 'ID',
+      selector: (row) => row.csr_id,
+      sortable: true,
+      wrap: true,
+    },
+    {
+      name: 'Title',
+      selector: (row) => row.csr_name,
+      sortable: true,
+      wrap: true,
+    },
+    // {
+    //   name: 'Date',
+    //   selector: (row) => new Date(row.csr_date).toLocaleDateString(),
+    //   sortable: true,
+    //   wrap: true,
+    // },
+  ];
 
   return (
-    <Box m="20px">
-      <Header title="CSR" subTitle="Manage CSR entries" />
+    <Box m={2}>
+      <Header title="CSR" subTitle="List of all CSR entries" />
       <Box
-        m="10px 0 0 0"
-        height="auto"
-        bgcolor={colors.grey[800]}
-        padding="10px"
+        display="flex"
+        justifyContent="start"
+        width="100%"
+        gap={2}
+        mb={2}
       >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate('/add-csr')}
+          sx={{ backgroundColor: colors.blueAccent[200] }}
+        >
+          Add CSR
+        </Button>
+      </Box>
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        height="100%"
+        padding={2}
+        bgcolor={colors.grey[800]}
+      >
+        <Box display="flex" justifyContent="space-between" width="100%" mb={2}>
+          <InputBase
+            placeholder="Search CSR"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{
+              padding: '10px',
+              border: '1px solid #000',
+              borderRadius: '4px',
+              backgroundColor: colors.grey[900],
+              color: colors.grey[100],
+              width: '30%',
+            }}
+          />
+        </Box>
         <DataTable
           columns={columns}
           data={filteredCSR}
-          pagination
+          keyField="csr_id"
+          pageSize={csr.length > 10 ? 10 : csr.length}
           highlightOnHover
+          pointerOnHover
           responsive
-          subHeader
-          subHeaderComponent={SubHeaderComponent}
-          customStyles={customStyles}
         />
-        {/* Error/Success Message */}
-        {error && (
-          <Typography
-            variant="body1"
-            color={error.includes('successfully') ? 'green' : 'red'}
-            mt={2}
-          >
-            {error}
-          </Typography>
-        )}
       </Box>
+      <ToastContainer theme="colored" autoClose={2000} />
     </Box>
   );
 };

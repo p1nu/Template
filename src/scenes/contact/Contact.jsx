@@ -18,7 +18,19 @@ import Header from "../../components/Header";
 import { AuthContext } from "../global/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-// const API_BASE_URL = process.env.APP_API_URL;
+import styled from "styled-components";
+import IconButton from "@mui/material/IconButton";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+
+// Styled-component for alignment and spacing (if needed)
+const StyledBox = styled.div`
+  display: flex;
+  justify-content: ${({ $align }) => $align || "flex-start"};
+  align-items: center;
+  text-align: center;
+  width: 100%;
+`;
 
 const Contact = () => {
   const API_BASE_URL = import.meta.env.VITE_API_URL;
@@ -31,6 +43,8 @@ const Contact = () => {
   const [contacts, setContacts] = useState([]);
   const [filteredContacts, setFilteredContacts] = useState([]);
   const [search, setSearch] = useState("");
+  const [companyies, setCompanies] = useState([]);
+  const [services, setServices] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,6 +58,30 @@ const Contact = () => {
       }
     };
 
+    // fetch companies name
+    const fetchCompanies = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/company/all`);
+        setCompanies(response.data);
+      } catch (error) {
+        console.error("Error fetching data from database:", error);
+        toast.error("Failed to fetch companies");
+      }
+    };
+
+    // fetch services name
+    const fetchServices = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/service/all`);
+        setServices(response.data);
+      } catch (error) {
+        console.error("Error fetching data from database:", error);
+        toast.error("Failed to fetch services");
+      }
+    };
+
+    fetchServices();
+    fetchCompanies();
     fetchData();
   }, []);
 
@@ -77,142 +115,141 @@ const Contact = () => {
 
   const columns = [
     {
+      name: "Actions",
+      cell: (row) => (
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          width="100%"
+          gap={1}
+        >
+          <Link to={`/contact/${row.contact_id}`}>
+            <IconButton>
+              <EditIcon sx={{ color: colors.blueAccent[400] }} />
+            </IconButton>
+          </Link>
+          <IconButton onClick={() => handleDelete(row.contact_id)}>
+            <DeleteIcon sx={{ color: colors.redAccent[400] }} />
+          </IconButton>
+        </Box>
+      ),
+      wrap: true,
+      width: "100px",
+    },
+    {
       name: "ID",
       selector: (row) => row.contact_id,
       sortable: true,
-      width: "60px",
+      wrap: true,
+      width: "80px",
     },
     {
       name: "Phone Number",
       selector: (row) => row.contact_phonenumber,
       sortable: true,
+      wrap: true,
     },
     {
       name: "Email",
       selector: (row) => row.contact_email,
       sortable: true,
+      wrap: true,
     },
-    {
-      name: "Address",
-      selector: (row) => row.contact_address,
-      sortable: true,
-    },
+    // {
+    //   name: "Address",
+    //   selector: (row) => row.contact_address,
+    //   sortable: true,
+    //   wrap: true,
+    // },
     {
       name: "Telegram",
       selector: (row) => row.contact_telegram,
       sortable: true,
+      wrap: true,
     },
     {
       name: "Website",
       selector: (row) => row.contact_website,
       sortable: true,
+      wrap: true,
     },
     {
       name: "Company ID",
       selector: (row) => row.contact_company_id,
       sortable: true,
+      wrap: true,
+      cell: (row) => {
+        const company = companyies.find((company) => company.company_id === row.contact_company_id);
+        return company ? company.company_name : "N/A";
+      }
     },
     {
       name: "Service ID",
       selector: (row) => row.contact_service_id,
       sortable: true,
-    },
-    {
-      name: "Actions",
-      selector: (row) => row.contact_id,
-      sortable: false,
-      cell: (row) => (
-        <Box display="flex" gap="10px">
-          <Link to={`/contact/${row.contact_id}`}>
-            <Button variant="outlined" color="primary">
-              Edit
-            </Button>
-          </Link>
-          <Button
-            variant="outlined"
-            color="error"
-            onClick={() => handleDelete(row.contact_id)}
-          >
-            Delete
-          </Button>
-        </Box>
-      ),
-      width: "200px",
+      wrap: true,
+      cell: (row) => {
+        const service = services.find((service) => service.service_id === row.contact_service_id);
+        return service ? service.service_name : "N/A";
+      }
     },
   ];
 
-  const customStyles = {
-    header: {
-      style: {
-        backgroundColor: colors.grey[900],
-        color: colors.grey[100],
-      },
-    },
-    headCells: {
-      style: {
-        color: colors.grey[100],
-        fontWeight: "bold",
-        borderTop: `1px solid #000`,
-        borderBottom: `1px solid #000`,
-      },
-    },
-    cells: {
-      style: {
-        borderBottom: "1px solid #000",
-      },
-    },
-  };
-
-  const SubHeaderComponent = (
-    <Box display="flex" alignItems="center">
-      <InputBase
-        placeholder="Search Phone or Email"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        sx={{
-          ml: 2,
-          border: "1px solid",
-          borderColor: colors.grey[700],
-          borderRadius: "4px",
-          width: "250px",
-          height: "35px",
-          padding: "10px",
-          color: colors.grey[100],
-          bgcolor: colors.grey[900],
-        }}
-      />
-      <Link
-        to="/add-contact"
-        style={{ textDecoration: "none", marginLeft: "10px" }}
-      >
-        <Button variant="contained" sx={{ bgcolor: colors.blueAccent[200] }}>
-          Add Contact
-        </Button>
-      </Link>
-    </Box>
-  );
-
   return (
-    <Box m="20px">
+    <Box m={2}>
       <Header title="Contacts" subTitle="Manage your contacts" />
       <Box
-        m="10px 0 0 0"
-        height="auto"
+        display="flex"
+        justifyContent="start"
+        width="100%"
+        gap={2}
+        mb={2}
+      ></Box>
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        height="100%"
+        padding={2}
         bgcolor={colors.grey[800]}
-        padding="10px"
       >
+        <Box display="flex" justifyContent="start" width="100%" mb={2} gap={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/add-contact")}
+            sx={{ backgroundColor: colors.blueAccent[200] }}
+          >
+            Add Contact
+          </Button>
+
+          <InputBase
+            placeholder="Search Phone or Email"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{
+              padding: "10px",
+              border: "1px solid #000",
+              borderRadius: "4px",
+              backgroundColor: colors.grey[900],
+              color: colors.grey[100],
+              width: "30%",
+            }}
+          />
+        </Box>
         <DataTable
           columns={columns}
           data={filteredContacts}
-          pagination
+          keyField="contact_id"
+          pageSize={contacts.length > 10 ? 10 : contacts.length}
           highlightOnHover
+          pointerOnHover
           responsive
-          subHeader
-          subHeaderComponent={SubHeaderComponent}
-          customStyles={customStyles}
         />
       </Box>
-      <ToastContainer theme="colored" autoClose={2000}/>
+      <ToastContainer theme="colored" autoClose={2000} />
     </Box>
   );
 };

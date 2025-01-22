@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useCallback,
+} from "react";
 import {
   Box,
   Button,
@@ -11,7 +17,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import InputBase from "@mui/material/InputBase";
-import { Editor } from '@tinymce/tinymce-react';
+import JoditEditor from "jodit-react";
 import axios from "axios";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
@@ -23,8 +29,8 @@ import { MediaLibrary } from "../gallery/Index";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Gallery from '../gallery/Gallery'; // Ensure Gallery component is imported
-import { useGallery } from '../gallery/GalleryContext';  // Adjust the import path as necessary
+import Gallery from "../gallery/Gallery"; // Ensure Gallery component is imported
+import { useGallery } from "../gallery/GalleryContext"; // Adjust the import path as necessary
 
 const UpdateNews = () => {
   const { id } = useParams(); // Assuming you're using React Router to pass the news ID
@@ -32,6 +38,7 @@ const UpdateNews = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate();
+  const [content, setContent] = useState(""); // State to hold the article content
 
   const editorRef = useRef(null);
   const API_BASE_URL = import.meta.env.VITE_API_URL;
@@ -39,17 +46,17 @@ const UpdateNews = () => {
   const { openGallery, selectedImage } = useGallery(); // Access context functions and state
 
   const [news, setNews] = useState({
-    news_title: '',
-    news_article: '',
-    news_date: '',
-    news_image_id: '',
-    news_desc: '',
+    news_title: "",
+    news_article: "",
+    news_date: "",
+    news_image_id: "",
+    news_desc: "",
     news_status_id: 1,
-    news_created_by_user_id: user?.user_id || '',
+    news_created_by_user_id: user?.user_id || "",
   });
 
-  const [image, setImage] = useState('');
-  const { open, handleOpen, handleClose } = useGallery(); // Assuming useGallery manages media gallery modal
+  const [image, setImage] = useState("");
+  const { open, handleOpen, handleClose } = useMediaGallery(); // Assuming useGallery manages media gallery modal
 
   const [loading, setLoading] = useState(true); // To manage loading state
 
@@ -59,20 +66,25 @@ const UpdateNews = () => {
       const response = await axios.get(`${API_BASE_URL}/news/${id}`);
       const existingNews = response.data;
       setNews({
-        news_title: existingNews.news_title || '',
-        news_article: existingNews.news_article || '',
-        news_date: existingNews.news_date ? existingNews.news_date.split('T')[0] : '',
-        news_image_id: existingNews.news_image_id || '',
-        news_desc: existingNews.news_desc || '',
+        news_title: existingNews.news_title || "",
+        news_article: existingNews.news_article || "",
+        news_date: existingNews.news_date
+          ? existingNews.news_date.split("T")[0]
+          : "",
+        news_image_id: existingNews.news_image_id || "",
+        news_desc: existingNews.news_desc || "",
         news_status_id: existingNews.news_status_id || 1,
-        news_created_by_user_id: existingNews.news_created_by_user_id || user?.user_id || '',
+        news_created_by_user_id:
+          existingNews.news_created_by_user_id || user?.user_id || "",
       });
-      setImage(existingNews.news_image_id ? existingNews.image_path : '');
+      setImage(existingNews.news_image_id ? existingNews.image_path : "");
 
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching news:', error);
-      toast.error(error.response?.data?.message || 'Failed to fetch news details');
+      console.error("Error fetching news:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to fetch news details"
+      );
       setLoading(false);
     }
   };
@@ -86,7 +98,7 @@ const UpdateNews = () => {
   const handleSelectImage = (image) => {
     setNews((prevNews) => ({ ...prevNews, news_image_id: image.il_id }));
     setImage(image.il_path);
-    toast.success('Image selected successfully');
+    toast.success("Image selected successfully");
     handleClose();
   };
 
@@ -101,16 +113,36 @@ const UpdateNews = () => {
     setNews((prevNews) => ({ ...prevNews, news_article: content }));
   };
 
+
+  const handleEditorChange = () => {
+    const finalContent = editorRef.current?.value;
+    setNews((prev) => ({ ...prev, news_article: finalContent }));
+  };
+
+
+  const joditConfig = {
+    minHeight: 400,
+    uploader: {
+      insertImageAsBase64URI: true,
+    },
+    events: {
+      blur: (editor) => {
+        const content = editorRef.current?.value;
+        setNews((prev) => ({ ...prev, news_article: content }));
+      }
+    }
+  };
+
   const handleUpdateNews = async () => {
     try {
       await axios.put(`${API_BASE_URL}/news/update/${id}`, news);
-      toast.success('News updated successfully');
+      toast.success("News updated successfully");
       setTimeout(() => {
-        navigate('/news'); // Navigate to the news list or another appropriate page
+        navigate("/news"); // Navigate to the news list or another appropriate page
       }, 3000);
     } catch (error) {
-      console.error('Update Error:', error);
-      toast.error(error.response?.data?.message || 'Failed to update news');
+      console.error("Update Error:", error);
+      toast.error(error.response?.data?.message || "Failed to update news");
     }
   };
 
@@ -126,7 +158,13 @@ const UpdateNews = () => {
 
   if (loading) {
     return (
-      <Box m={2} display="flex" justifyContent="center" alignItems="center" height="80vh">
+      <Box
+        m={2}
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="80vh"
+      >
         <Typography variant="h6" color={colors.grey[100]}>
           Loading...
         </Typography>
@@ -142,16 +180,16 @@ const UpdateNews = () => {
         flexDirection="column"
         alignItems="center"
         justifyContent="center"
-        padding={2}
-        bgcolor={colors.grey[800]}
+        // padding={2}
+        // bgcolor={colors.grey[800]}
         sx={{
-          '& .ql-container.ql-snow': {
-            width: '100% !important',
-            height: '200px !important',
-            border: '1px solid #000',
+          "& .ql-container.ql-snow": {
+            width: "100% !important",
+            height: "200px !important",
+            border: "1px solid #000",
           },
-          '& .ql-toolbar': {
-            border: '1px solid #000',
+          "& .ql-toolbar": {
+            border: "1px solid #000",
           },
         }}
       >
@@ -174,10 +212,50 @@ const UpdateNews = () => {
             gap={2}
           >
             {/* News Information Section */}
-            <Box width="55%">
+            <Box width="100%">
+              {/* Image Selection Section */}
+              <Box
+                width="45%"
+                border="1px solid #000"
+                display="flex"
+                justifyContent="center"
+                textAlign="center"
+                alignItems="center"
+                onClick={handleOpen}
+                sx={{
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  height: "auto",
+                  width: "100%",
+                  overflow: "hidden",
+                }}
+              >
+                {image ? (
+                  <img
+                    src={`${API_BASE_URL}/uploads/${image}`}
+                    alt="Selected News"
+                    width="60%"
+                    // mix-width="100%"
+                    height="auto"
+                    style={{ objectFit: "cover" }}
+                  />
+                ) : (
+                  <Typography variant="h6" color={colors.grey[100]}>
+                    Click here to select an image
+                  </Typography>
+                )}
+              </Box>
               {/* News Title */}
-              <Box display="flex" flexDirection="column" margin="10px 0" width="100%">
-                <InputLabel htmlFor="news_title" sx={{ color: colors.grey[100], mb: '5px' }}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                margin="10px 0"
+                width="100%"
+              >
+                <InputLabel
+                  htmlFor="news_title"
+                  sx={{ color: colors.grey[100], mb: "5px" }}
+                >
                   News Title
                 </InputLabel>
                 <InputBase
@@ -187,63 +265,28 @@ const UpdateNews = () => {
                   value={news.news_title}
                   onChange={handleChange}
                   sx={{
-                    padding: '10px',
-                    border: '1px solid #000',
-                    borderRadius: '4px',
+                    padding: "10px",
+                    border: "1px solid #000",
+                    borderRadius: "4px",
                     backgroundColor: colors.grey[900],
                     color: colors.grey[100],
                   }}
                 />
               </Box>
 
-              {/* News Article */}
-              <Box mb={2}>
-                <InputLabel htmlFor="news_article" sx={{ mb: '5px', color: colors.grey[100] }}>
-                  News Article
-                </InputLabel>
-                <Editor
-                  apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
-                  onInit={(evt, editor) => (editorRef.current = editor)}
-                  initialValue={news.news_article || '<p>Start writing your article here...</p>'}
-                  init={{
-                    height: 500,
-                    menubar: true,
-                    plugins: [
-                      'anchor',
-                      'autolink',
-                      'charmap',
-                      'codesample',
-                      'emoticons',
-                      'image',
-                      'link',
-                      'lists',
-                      'media',
-                      'searchreplace',
-                      'table',
-                      'visualblocks',
-                      'wordcount',
-                    ],
-                    toolbar:
-                      'undo redo | formatselect | bold italic underline | \
-                      alignleft aligncenter alignright alignjustify | \
-                      bullist numlist outdent indent | removeformat | image | help',
-                    image_title: true,
-                    automatic_uploads: false,
-                    file_picker_types: 'image',
-                    file_picker_callback: function (cb, value, meta) {
-                      // Open the gallery modal
-                      openGallery((imageUrl) => {
-                        cb(imageUrl, { alt: 'Selected Image' });
-                      });
-                    },
-                  }}
-                  onEditorChange={handleArticleChange}
-                />
-              </Box>
+              
 
               {/* News Date */}
-              <Box display="flex" flexDirection="column" margin="10px 0" width="100%">
-                <InputLabel htmlFor="news_date" sx={{ color: colors.grey[100], mb: '5px' }}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                margin="10px 0"
+                width="100%"
+              >
+                <InputLabel
+                  htmlFor="news_date"
+                  sx={{ color: colors.grey[100], mb: "5px" }}
+                >
                   News Date
                 </InputLabel>
                 <InputBase
@@ -253,9 +296,9 @@ const UpdateNews = () => {
                   value={news.news_date}
                   onChange={handleChange}
                   sx={{
-                    padding: '10px',
-                    border: '1px solid #000',
-                    borderRadius: '4px',
+                    padding: "10px",
+                    border: "1px solid #000",
+                    borderRadius: "4px",
                     backgroundColor: colors.grey[900],
                     color: colors.grey[100],
                   }}
@@ -263,8 +306,16 @@ const UpdateNews = () => {
               </Box>
 
               {/* News Description */}
-              <Box display="flex" flexDirection="column" margin="10px 0" width="100%">
-                <InputLabel htmlFor="news_desc" sx={{ color: colors.grey[100], mb: '5px' }}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                margin="10px 0"
+                width="100%"
+              >
+                <InputLabel
+                  htmlFor="news_desc"
+                  sx={{ color: colors.grey[100], mb: "5px" }}
+                >
                   News Description
                 </InputLabel>
                 <InputBase
@@ -274,9 +325,9 @@ const UpdateNews = () => {
                   value={news.news_desc}
                   onChange={handleChange}
                   sx={{
-                    padding: '10px',
-                    border: '1px solid #000',
-                    borderRadius: '4px',
+                    padding: "10px",
+                    border: "1px solid #000",
+                    borderRadius: "4px",
                     backgroundColor: colors.grey[900],
                     color: colors.grey[100],
                   }}
@@ -284,8 +335,16 @@ const UpdateNews = () => {
               </Box>
 
               {/* News Status */}
-              <Box display="flex" flexDirection="column" margin="10px 0" width="100%">
-                <InputLabel htmlFor="news_status_id" sx={{ color: colors.grey[100], mb: '5px' }}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                margin="10px 0"
+                width="100%"
+              >
+                <InputLabel
+                  htmlFor="news_status_id"
+                  sx={{ color: colors.grey[100], mb: "5px" }}
+                >
                   News Status
                 </InputLabel>
                 <FormControl fullWidth>
@@ -296,15 +355,15 @@ const UpdateNews = () => {
                     onChange={handleChange}
                     displayEmpty
                     sx={{
-                      border: '1px solid #000',
-                      borderRadius: '4px',
+                      border: "1px solid #000",
+                      borderRadius: "4px",
                       backgroundColor: colors.grey[900],
                       color: colors.grey[100],
-                      '&:hover': {
-                        border: '1px solid #000 !important',
+                      "&:hover": {
+                        border: "1px solid #000 !important",
                       },
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        border: 'none',
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        border: "none",
                       },
                     }}
                   >
@@ -316,37 +375,21 @@ const UpdateNews = () => {
                   </Select>
                 </FormControl>
               </Box>
-            </Box>
-
-            {/* Image Selection Section */}
-            <Box
-              width="45%"
-              border="1px solid #000"
-              display="flex"
-              justifyContent="center"
-              textAlign="center"
-              alignItems="center"
-              onClick={handleOpen}
-              sx={{
-                borderRadius: '4px',
-                cursor: 'pointer',
-                height: '70vh',
-                overflow: 'hidden',
-              }}
-            >
-              {image ? (
-                <img
-                  src={`${API_BASE_URL}/uploads/${image}`}
-                  alt="Selected News"
-                  width="100%"
-                  height="auto"
-                  style={{ objectFit: 'cover' }}
+              {/* News Article */}
+              <Box mb={2}>
+                <InputLabel
+                  htmlFor="news_article"
+                  sx={{ mb: "5px", color: colors.grey[100] }}
+                >
+                  News Article
+                </InputLabel>
+                <JoditEditor
+                  ref={editorRef}
+                  value={news.news_article}
+                  config={joditConfig}
+                  // onChange={handleEditorChange}
                 />
-              ) : (
-                <Typography variant="h6" color={colors.grey[100]}>
-                  Click here to select an image
-                </Typography>
-              )}
+              </Box>
             </Box>
           </Box>
 
@@ -354,17 +397,17 @@ const UpdateNews = () => {
           <Modal open={open} onClose={handleClose}>
             <Box
               sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: '80%',
-                height: '80%',
-                bgcolor: 'background.paper',
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: "90%",
+                height: "90%",
+                // bgcolor: "background.paper",
                 boxShadow: 24,
                 p: 4,
-                overflowY: 'auto',
-                borderRadius: '8px',
+                overflowY: "auto",
+                borderRadius: "8px",
               }}
             >
               <MediaLibrary onSelectImage={handleSelectImage} />
@@ -376,7 +419,11 @@ const UpdateNews = () => {
             variant="contained"
             fullWidth
             onClick={handleUpdateNews}
-            sx={{ mt: 2, backgroundColor: colors.blueAccent[200], '&:hover': { backgroundColor: colors.blueAccent[400] } }}
+            sx={{
+              mt: 2,
+              backgroundColor: colors.blueAccent[200],
+              "&:hover": { backgroundColor: colors.blueAccent[400] },
+            }}
           >
             Update News
           </Button>

@@ -1,15 +1,26 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
-import { Box, Button, InputBase, Modal, Typography, useTheme, FormControl, Select, MenuItem, InputLabel } from '@mui/material';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { tokens } from '../../theme';
-import Header from '../../components/Header';
-import JoditEditor from 'jodit-react';
+import React, { useState, useEffect, useContext, useRef } from "react";
+import {
+  Box,
+  Button,
+  InputBase,
+  Modal,
+  Typography,
+  useTheme,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel,
+} from "@mui/material";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { tokens } from "../../theme";
+import Header from "../../components/Header";
+import JoditEditor from "jodit-react";
 import { MediaLibrary } from "../gallery/Index";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { AuthContext } from "../global/AuthContext";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -23,19 +34,19 @@ const UpdateService = () => {
   const editorRef = useRef(null);
 
   const [service, setService] = useState({
-    service_name: '',
-    service_desc: '',
-    service_value: '',
-    service_vision: '',
-    service_mission: '',
-    service_link: '',
-    service_logo: '',
-    service_company_id: '',
-    service_status_id: '',
+    service_name: "",
+    service_desc: "",
+    service_value: "",
+    service_vision: "",
+    service_mission: "",
+    service_link: "",
+    service_logo: "",
+    service_company_id: "",
+    service_status_id: "",
     service_updated_by_user_id: user?.user_id,
   });
   const [companies, setCompanies] = useState([]);
-  const [currentField, setCurrentField] = useState('');
+  const [currentField, setCurrentField] = useState("");
 
   useEffect(() => {
     // Fetch service data by ID
@@ -44,8 +55,8 @@ const UpdateService = () => {
         const response = await axios.get(`${API_BASE_URL}/service/${id}`);
         setService(response.data[0]);
       } catch (error) {
-        console.error('Error fetching service data:', error);
-        toast.error('Failed to load service data');
+        console.error("Error fetching service data:", error);
+        toast.error("Failed to load service data");
       }
     };
     fetchService();
@@ -58,8 +69,8 @@ const UpdateService = () => {
         const response = await axios.get(`${API_BASE_URL}/company/all`);
         setCompanies(response.data);
       } catch (error) {
-        console.error('Error fetching company data:', error);
-        toast.error('Failed to load company data');
+        console.error("Error fetching company data:", error);
+        toast.error("Failed to load company data");
       }
     };
     fetchCompany();
@@ -81,42 +92,41 @@ const UpdateService = () => {
   };
 
   const handleImageChange = (image) => {
-    const editor = editorRef.current;
-    if (editor && currentField) {
-      editor.selection.insertImage(`${API_BASE_URL}/uploads/${image.il_path}`);
-    }
-    handleClose();
+    setService((prevService) => ({ ...prevService, service_logo: image.il_path }));
+    toast.success('Logo selected successfully');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await axios.put(`${API_BASE_URL}/service/update/${id}`, service);
-      toast.success('Service updated successfully');
-      navigate('/services');
+      toast.success("Service updated successfully");
+      setTimeout(() => {
+        navigate(`/services`);
+      }, 3000); // Navigate to services page after 3 seconds
     } catch (error) {
-      console.error('Error updating service:', error);
-      toast.error('Error updating service');
+      console.error("Error updating service:", error);
+      toast.error("Error updating service");
     }
   };
 
-  const handleOpenForEditor = () => {e
-    setCurrentField('service_desc');
-    handleOpen(); // uses your MediaLibrary to insert images into Jodit
+  const handleOpenForEditor = (field) => {
+    setCurrentField(field);
+    handleOpen();
   };
 
-  // In your Jodit config, call the new function instead of handleOpen directly
+  const handleEditorBlur = (field, content) => {
+    setService((prevService) => ({ ...prevService, [field]: content }));
+  };
+
   const config = {
+    minHeight: 400,
     readonly: false,
     uploader: { insertImageAsBase64URI: true },
-    filebrowser: {
-      buttons: ['image'],
-      insertImageAsBase64URI: false,
-      image: {
-        upload: false,
-        insert: () => {
-          handleOpenForEditor();
-        },
+    events: {
+      blur: (editor) => {
+        const content = editor.current?.value;
+        handleEditorChange(currentField, content);
       },
     },
   };
@@ -129,9 +139,15 @@ const UpdateService = () => {
         onSubmit={handleSubmit}
         display="flex"
         flexDirection="column"
-        gap={2}
+        gap={3}
         width="100%"
+        maxWidth="800px"
+        mx="auto"
+        p={3}
+        bgcolor={colors.grey[800]}
+        borderRadius="8px"
       >
+        {/* Service Name */}
         <Box display="flex" flexDirection="column" gap={1}>
           <InputLabel htmlFor="service_name" sx={{ color: colors.grey[100] }}>
             Service Name
@@ -142,100 +158,28 @@ const UpdateService = () => {
             value={service.service_name}
             onChange={handleChange}
             sx={{
-              padding: '10px',
-              border: '1px solid #000',
-              borderRadius: '4px',
+              padding: "10px",
+              border: "1px solid #000",
+              borderRadius: "4px",
               backgroundColor: colors.grey[900],
               color: colors.grey[100],
             }}
           />
         </Box>
-        <Box display="flex" flexDirection="column" gap={1}>
-          <InputLabel htmlFor="service_desc" sx={{ color: colors.grey[100] }}>
-            Service Description
-          </InputLabel>
-          <JoditEditor
-            ref={editorRef}
-            value={service.service_desc}
-            config={config}
-            onChange={(content) => handleEditorChange('service_desc', content)}
-          />
-        </Box>
-        <Box display="flex" flexDirection="column" gap={1}>
-          <InputLabel htmlFor="service_value" sx={{ color: colors.grey[100] }}>
-            Service Value
-          </InputLabel>
-          <JoditEditor
-            ref={editorRef}
-            value={service.service_value}
-            config={config}
-            onChange={(content) => handleEditorChange('service_value', content)}
-          />
-        </Box>
-        <Box display="flex" flexDirection="column" gap={1}>
-          <InputLabel htmlFor="service_vision" sx={{ color: colors.grey[100] }}>
-            Service Vision
-          </InputLabel>
-          <JoditEditor
-            ref={editorRef}
-            value={service.service_vision}
-            config={config}
-            onChange={(content) => handleEditorChange('service_vision', content)}
-          />
-        </Box>
-        <Box display="flex" flexDirection="column" gap={1}>
-          <InputLabel htmlFor="service_mission" sx={{ color: colors.grey[100] }}>
-            Service Mission
-          </InputLabel>
-          <JoditEditor
-            ref={editorRef}
-            value={service.service_mission}
-            config={config}
-            onChange={(content) => handleEditorChange('service_mission', content)}
-          />
-        </Box>
-        <Box display="flex" flexDirection="column" gap={1}>
-          <InputLabel htmlFor="service_link" sx={{ color: colors.grey[100] }}>
-            Service Link
-          </InputLabel>
-          <InputBase
-            id="service_link"
-            name="service_link"
-            value={service.service_link}
-            onChange={handleChange}
-            sx={{
-              padding: '10px',
-              border: '1px solid #000',
-              borderRadius: '4px',
-              backgroundColor: colors.grey[900],
-              color: colors.grey[100],
-            }}
-          />
-        </Box>
-        <Box display="flex" flexDirection="column" gap={1}>
-          <InputLabel htmlFor="service_logo" sx={{ color: colors.grey[100] }}>
-            Service Logo
-          </InputLabel>
-          <Button
-            variant="contained"
-            title="Add Logo"
-            onClick={() => handleOpen()} // Separate handler for logo
-            sx={{
-              mt: 2,
-              backgroundColor: colors.blueAccent[200],
-            }}
+        {/* Company and status */}
+        <Box display="flex" flexDirection="row" gap={1} width="100%">
+        {/* Company */}
+        <Box display="flex" flexDirection="column" gap={1} width="100%">
+          <InputLabel
+            htmlFor="service_company_id"
+            sx={{ color: colors.grey[100] }}
           >
-            Add Logo
-          </Button>
-          <Modal open={open} onClose={handleClose}>
-            <MediaLibrary onSelectImage={handleImageChange} />
-          </Modal>
-        </Box>
-        <Box display="flex" flexDirection="column" gap={1}>
-          <InputLabel htmlFor="service_company_id" sx={{ color: colors.grey[100] }}>
             Company
           </InputLabel>
-          <FormControl fullWidth sx={{ backgroundColor: colors.grey[900], borderRadius: '4px' }}>
+          <FormControl
+            fullWidth
+            sx={{ backgroundColor: colors.grey[900], borderRadius: "4px" }}
+          >
             <Select
               id="service_company_id"
               name="service_company_id"
@@ -255,11 +199,18 @@ const UpdateService = () => {
             </Select>
           </FormControl>
         </Box>
-        <Box display="flex" flexDirection="column" gap={1}>
-          <InputLabel htmlFor="service_status_id" sx={{ color: colors.grey[100] }}>
+        {/* Status */}
+        <Box display="flex" flexDirection="column" gap={1} width="100%">
+          <InputLabel
+            htmlFor="service_status_id"
+            sx={{ color: colors.grey[100] }}
+          >
             Status
           </InputLabel>
-          <FormControl fullWidth sx={{ backgroundColor: colors.grey[900], borderRadius: '4px' }}>
+          <FormControl
+            fullWidth
+            sx={{ backgroundColor: colors.grey[900], borderRadius: "4px" }}
+          >
             <Select
               id="service_status_id"
               name="service_status_id"
@@ -271,10 +222,84 @@ const UpdateService = () => {
               <MenuItem value="" disabled>
                 Select Status
               </MenuItem>
-              {/* Add status options here */}
+              <MenuItem value={1}>Active</MenuItem>
+              <MenuItem value={2}>Inactive</MenuItem>
             </Select>
           </FormControl>
         </Box>
+        </Box>
+        {/* Service Description */}
+        <Box display="flex" flexDirection="column" gap={1}>
+          <InputLabel htmlFor="service_desc" sx={{ color: colors.grey[100] }}>
+            Service Description
+          </InputLabel>
+          <JoditEditor
+            ref={editorRef}
+            value={service.service_desc}
+            config={config}
+            onBlur={(content) => handleEditorChange("service_desc", content)}
+          />
+        </Box>
+        {/* Service Value */}
+        <Box display="flex" flexDirection="column" gap={1}>
+          <InputLabel htmlFor="service_value" sx={{ color: colors.grey[100] }}>
+            Service Value
+          </InputLabel>
+          <JoditEditor
+            ref={editorRef}
+            value={service.service_value}
+            config={config}
+            onBlur={(content) => handleEditorChange("service_value", content)}
+          />
+        </Box>
+        {/* Service Vision */}
+        <Box display="flex" flexDirection="column" gap={1}>
+          <InputLabel htmlFor="service_vision" sx={{ color: colors.grey[100] }}>
+            Service Vision
+          </InputLabel>
+          <JoditEditor
+            ref={editorRef}
+            value={service.service_vision}
+            config={config}
+            onBlur={(content) => handleEditorChange("service_vision", content)}
+          />
+        </Box>
+        {/* Service Mission */}
+        <Box display="flex" flexDirection="column" gap={1}>
+          <InputLabel
+            htmlFor="service_mission"
+            sx={{ color: colors.grey[100] }}
+          >
+            Service Mission
+          </InputLabel>
+          <JoditEditor
+            ref={editorRef}
+            value={service.service_mission}
+            config={config}
+            onBlur={(content) => handleEditorChange("service_mission", content)}
+          />
+        </Box>
+        {/* Service Logo */}
+        <Box display="flex" flexDirection="column" gap={1}>
+          {/* <InputLabel htmlFor="service_logo" sx={{ color: colors.grey[100] }}>
+            Service Logo
+          </InputLabel> */}
+          <Button
+            variant="contained"
+            title="Add Logo"
+            onClick={() => handleOpenForEditor("service_logo")}
+            sx={{
+              mt: 2,
+              backgroundColor: colors.blueAccent[200],
+            }}
+          >
+            Add Logo
+          </Button>
+          <Modal open={open} onClose={handleClose}>
+            <MediaLibrary onSelectImage={handleImageChange} />
+          </Modal>
+        </Box>
+
         <Button
           type="submit"
           variant="contained"
@@ -282,7 +307,7 @@ const UpdateService = () => {
           sx={{
             mt: 2,
             backgroundColor: colors.blueAccent[200],
-            '&:hover': { backgroundColor: colors.blueAccent[400] },
+            "&:hover": { backgroundColor: colors.blueAccent[400] },
           }}
         >
           Update Service

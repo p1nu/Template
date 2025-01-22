@@ -10,7 +10,7 @@ import {
   MenuItem,
   InputBase,
 } from "@mui/material";
-import { Editor } from "@tinymce/tinymce-react";
+import JoditEditor from "jodit-react";
 import axios from "axios";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
@@ -106,42 +106,17 @@ const AddJob = () => {
     }
   };
 
-  const editorSettings = {
-    apiKey: import.meta.env.VITE_TINYMCE_API_KEY,
-    onInit: (evt, editor) => (editorRef.current = editor),
-    value: job.job_desc,
-    init: {
-      height: 500,
-      menubar: true,
-      plugins: [
-        "anchor",
-        "autolink",
-        "charmap",
-        "codesample",
-        "emoticons",
-        "image",
-        "link",
-        "lists",
-        "media",
-        "searchreplace",
-        "table",
-        "visualblocks",
-        "wordcount",
-      ],
-      toolbar:
-        "undo redo | formatselect | bold italic underline | \
-        alignleft aligncenter alignright alignjustify | \
-        bullist numlist outdent indent | removeformat | image | help",
-      image_title: true,
-      automatic_uploads: false,
-      file_picker_types: "image",
-      file_picker_callback: function (cb, value, meta) {
-        openGallery((imageUrl) => {
-          cb(imageUrl, { alt: "Selected Image" });
-        });
-      },
+  const joditConfig = {
+    minHeight: 400,
+    uploader: {
+      insertImageAsBase64URI: true,
     },
-    onEditorChange: handleDescriptionChange,
+    events: {
+      blur: (editor) => {
+        const content = editorRef.current?.value;
+        setJob((prev) => ({ ...prev, job_desc: content }));
+      }
+    }
   };
 
   return (
@@ -291,12 +266,10 @@ const AddJob = () => {
             <InputLabel htmlFor="job_desc" sx={{ color: colors.grey[100], mb: "5px" }}>
               Job Description
             </InputLabel>
-            <Editor
-              apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
-              onInit={(evt, editor) => (editorRef.current = editor)}
+            <JoditEditor
+              ref={editorRef}
               value={job.job_desc}
-              init={editorSettings.init}
-              onEditorChange={handleDescriptionChange}
+              config={joditConfig}
             />
           </Box>
 

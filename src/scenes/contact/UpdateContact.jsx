@@ -147,6 +147,86 @@ const UpdateContact = () => {
           width="100%"
           boxShadow={3}
         >
+          {/* Company Selection */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            width="100%"
+            marginBottom="10px"
+          >
+            <InputLabel
+              htmlFor="contact_company_id"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Company
+            </InputLabel>
+            <FormControl fullWidth>
+              <Select
+                name="contact_company_id"
+                value={contact.contact_company_id}
+                onChange={handleChange}
+                sx={{
+                  backgroundColor: colors.grey[900],
+                  color: colors.grey[100],
+                }}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {companies.map((company) => (
+                  <MenuItem key={company.company_id} value={company.company_id}>
+                    {company.company_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          {/* Conditionally Render Service Selection */}
+          {contact.contact_company_id && (
+            <Box
+              display="flex"
+              flexDirection="column"
+              width="100%"
+              marginBottom="10px"
+            >
+              <InputLabel
+                htmlFor="contact_service_id"
+                sx={{ color: colors.grey[100], mb: "5px" }}
+              >
+                Service
+              </InputLabel>
+              <FormControl fullWidth>
+                <Select
+                  name="contact_service_id"
+                  value={contact.contact_service_id || "0"}
+                  onChange={handleChange}
+                  sx={{
+                    backgroundColor: colors.grey[900],
+                    color: colors.grey[100],
+                  }}
+                >
+                  <MenuItem value="0">
+                    <em>None</em>
+                  </MenuItem>
+                  {services.length > 0 ? (
+                    services.map((service) => (
+                      <MenuItem
+                        key={service.service_id}
+                        value={service.service_id || ""}
+                      >
+                        {service.service_name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem value="">
+                      <em>No Services Available</em>
+                    </MenuItem>
+                  )}
+                </Select>
+              </FormControl>
+            </Box>
+          )}
           {/* Phone Number and Email */}
           <Box
             display="flex"
@@ -289,86 +369,7 @@ const UpdateContact = () => {
             </Box>
           </Box>
 
-          {/* Company Selection */}
-          <Box
-            display="flex"
-            flexDirection="column"
-            width="100%"
-            marginBottom="10px"
-          >
-            <InputLabel
-              htmlFor="contact_company_id"
-              sx={{ color: colors.grey[100], mb: "5px" }}
-            >
-              Company
-            </InputLabel>
-            <FormControl fullWidth>
-              <Select
-                name="contact_company_id"
-                value={contact.contact_company_id}
-                onChange={handleChange}
-                sx={{
-                  backgroundColor: colors.grey[900],
-                  color: colors.grey[100],
-                }}
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                {companies.map((company) => (
-                  <MenuItem key={company.company_id} value={company.company_id}>
-                    {company.company_name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-
-          {/* Conditionally Render Service Selection */}
-          {contact.contact_company_id && (
-            <Box
-              display="flex"
-              flexDirection="column"
-              width="100%"
-              marginBottom="10px"
-            >
-              <InputLabel
-                htmlFor="contact_service_id"
-                sx={{ color: colors.grey[100], mb: "5px" }}
-              >
-                Service
-              </InputLabel>
-              <FormControl fullWidth>
-                <Select
-                  name="contact_service_id"
-                  value={contact.contact_service_id}
-                  onChange={handleChange}
-                  sx={{
-                    backgroundColor: colors.grey[900],
-                    color: colors.grey[100],
-                  }}
-                >
-                  <MenuItem value="">
-                    <em>None</em>
-                  </MenuItem>
-                  {services.length > 0 ? (
-                    services.map((service) => (
-                      <MenuItem
-                        key={service.service_id}
-                        value={service.service_id}
-                      >
-                        {service.service_name}
-                      </MenuItem>
-                    ))
-                  ) : (
-                    <MenuItem value="">
-                      <em>No Services Available</em>
-                    </MenuItem>
-                  )}
-                </Select>
-              </FormControl>
-            </Box>
-          )}
+          
 
           {/* Submit Button */}
           <Button

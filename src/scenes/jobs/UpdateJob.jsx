@@ -10,7 +10,6 @@ import {
   FormControl,
   InputLabel,
 } from '@mui/material';
-import { Editor } from '@tinymce/tinymce-react';
 import axios from 'axios';
 import { tokens } from '../../theme';
 import Header from '../../components/Header';
@@ -20,14 +19,15 @@ import { useGallery } from '../gallery/GalleryContext';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { format } from 'date-fns';
+import JoditEditor from 'jodit-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 const UpdateJob = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const { id } = useParams();
-  const API_BASE_URL = import.meta.env.VITE_API_URL;
 
   const [job, setJob] = useState({
     job_name: '',
@@ -75,9 +75,9 @@ const UpdateJob = () => {
   };
 
   // Handle description changes with TinyMCE
-  const handleDescriptionChange = (content) => {
-    setJob((prevJob) => ({ ...prevJob, job_desc: content }));
-  };
+  // const handleDescriptionChange = (content) => {
+  //   setJob((prevJob) => ({ ...prevJob, job_desc: content }));
+  // };
 
   // Handle form submission to update job
   const handleUpdateJob = async () => {
@@ -108,42 +108,18 @@ const UpdateJob = () => {
     }
   };
 
-  const editorSettings = {
-    apiKey: import.meta.env.VITE_TINYMCE_API_KEY,
-    onInit: (evt, editor) => (editorRef.current = editor),
-    value: job.job_desc,
-    init: {
-      height: 500,
-      menubar: true,
-      plugins: [
-        'anchor',
-        'autolink',
-        'charmap',
-        'codesample',
-        'emoticons',
-        'image',
-        'link',
-        'lists',
-        'media',
-        'searchreplace',
-        'table',
-        'visualblocks',
-        'wordcount',
-      ],
-      toolbar:
-        'undo redo | formatselect | bold italic underline | ' +
-        'alignleft aligncenter alignright alignjustify | ' +
-        'bullist numlist outdent indent | removeformat | image | help',
-      image_title: true,
-      automatic_uploads: false,
-      file_picker_types: 'image',
-      file_picker_callback: function (cb, value, meta) {
-        openGallery((imageUrl) => {
-          cb(imageUrl, { alt: 'Selected Image' });
-        });
-      },
+
+    const joditConfig = {
+    minHeight: 400,
+    uploader: {
+      insertImageAsBase64URI: true,
     },
-    onEditorChange: handleDescriptionChange,
+    events: {
+      blur: (editor) => {
+        const content = editorRef.current?.value;
+        setJob((prev) => ({ ...prev, job_desc: content }));
+      }
+    }
   };
 
   return (
@@ -288,12 +264,10 @@ const UpdateJob = () => {
             <InputLabel htmlFor="job_desc" sx={{ color: colors.grey[100], mb: '5px' }}>
               Job Description
             </InputLabel>
-            <Editor
-              apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
-              onInit={(evt, editor) => (editorRef.current = editor)}
+            <JoditEditor
+              ref={editorRef}
               value={job.job_desc}
-              init={editorSettings.init}
-              onEditorChange={handleDescriptionChange}
+              config={joditConfig}
             />
           </Box>
 
