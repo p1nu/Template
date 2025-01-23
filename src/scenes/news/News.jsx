@@ -1,15 +1,25 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Box, Button, InputBase, Typography, useTheme, FormControl, Select, MenuItem, IconButton } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import axios from 'axios';
-import { tokens } from '../../theme';
-import Header from '../../components/Header';
+import React, { useState, useEffect, useContext } from "react";
+import {
+  Box,
+  Button,
+  InputBase,
+  Typography,
+  useTheme,
+  FormControl,
+  Select,
+  MenuItem,
+  IconButton,
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import axios from "axios";
+import { tokens } from "../../theme";
+import Header from "../../components/Header";
 import { AuthContext } from "../global/AuthContext";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import DataTable from 'react-data-table-component';
-import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import DataTable from "react-data-table-component";
+import { useNavigate } from "react-router-dom";
 
 const News = () => {
   const API_BASE_URL = import.meta.env.VITE_API_URL;
@@ -20,7 +30,7 @@ const News = () => {
 
   const [news, setNews] = useState([]);
   const [filteredNews, setFilteredNews] = useState([]);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -29,8 +39,8 @@ const News = () => {
         setNews(response.data);
         setFilteredNews(response.data);
       } catch (error) {
-        console.error('Error fetching news:', error);
-        toast.error('Failed to load news');
+        console.error("Error fetching news:", error);
+        toast.error("Failed to load news");
       }
     };
 
@@ -40,7 +50,8 @@ const News = () => {
   useEffect(() => {
     const results = news.filter(
       (article) =>
-        (article.news_title && article.news_title.toLowerCase().includes(search.toLowerCase()))
+        article.news_title &&
+        article.news_title.toLowerCase().includes(search.toLowerCase())
     );
     setFilteredNews(results);
   }, [search, news]);
@@ -48,12 +59,16 @@ const News = () => {
   const handleDeleteNews = async (news_id) => {
     try {
       await axios.put(`${API_BASE_URL}/news/delete/${news_id}`);
-      toast.success('News deleted successfully');
-      setNews((prevNews) => prevNews.filter(article => article.news_id !== news_id));
-      setFilteredNews((prevFilteredNews) => prevFilteredNews.filter(article => article.news_id !== news_id));
+      toast.success("News deleted successfully");
+      setNews((prevNews) =>
+        prevNews.filter((article) => article.news_id !== news_id)
+      );
+      setFilteredNews((prevFilteredNews) =>
+        prevFilteredNews.filter((article) => article.news_id !== news_id)
+      );
     } catch (error) {
-      console.error('Error deleting news:', error);
-      toast.error('Error deleting news');
+      console.error("Error deleting news:", error);
+      toast.error("Error deleting news");
     }
   };
 
@@ -63,9 +78,14 @@ const News = () => {
 
   const columns = [
     {
-      name: 'Actions',
+      name: "Actions",
       cell: (row) => (
-        <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          width="100%"
+        >
           <IconButton onClick={() => handleEditNews(row.news_id)}>
             <EditIcon sx={{ color: colors.blueAccent[400] }} />
           </IconButton>
@@ -75,22 +95,43 @@ const News = () => {
         </Box>
       ),
       wrap: true,
-      width: '100px',
+      width: "100px",
     },
     {
-      name: 'ID',
+      name: "ID",
       selector: (row) => row.news_id,
       sortable: true,
       wrap: true,
+      width: "80px",
     },
     {
-      name: 'News Title',
+      name: "Cover Image",
+      selector: (row) => row.image_path,
+      sortable: true,
+      wrap: true,
+      width: "150px",
+      cell: (row) => (
+        <Box height={50} width={50}>
+          {row.image_path ? (
+            <img
+              src={`${API_BASE_URL}/uploads/${row.image_path}`}
+              alt={row.news_title}
+              style={{ height: "100%", width: "100%", objectFit: "contain" }}
+            />
+          ) : (
+            <Typography color={colors.grey[100]}>No Logo</Typography>
+          )}
+        </Box>
+      ),
+    },
+    {
+      name: "News Title",
       selector: (row) => row.news_title,
       sortable: true,
       wrap: true,
     },
     {
-      name: 'Date',
+      name: "Date",
       selector: (row) => new Date(row.news_date).toLocaleDateString(),
       sortable: true,
       wrap: true,
@@ -100,17 +141,11 @@ const News = () => {
   return (
     <Box m={2}>
       <Header title="News" subTitle="List of all news articles" />
-      <Box
-        display="flex"
-        justifyContent="start"
-        width="100%"
-        gap={2}
-        mb={2}
-      >
+      <Box display="flex" justifyContent="start" width="100%" gap={2} mb={2}>
         <Button
           variant="contained"
           color="primary"
-          onClick={() => navigate('/add-news')}
+          onClick={() => navigate("/add-news")}
           sx={{ backgroundColor: colors.blueAccent[200] }}
         >
           Add News
@@ -131,12 +166,12 @@ const News = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             sx={{
-              padding: '10px',
-              border: '1px solid #000',
-              borderRadius: '4px',
+              padding: "10px",
+              border: "1px solid #000",
+              borderRadius: "4px",
               backgroundColor: colors.grey[900],
               color: colors.grey[100],
-              width: '30%',
+              width: "30%",
             }}
           />
         </Box>

@@ -130,6 +130,25 @@ const Services = () => {
       width: "80px",
     },
     {
+      name: "Logo",
+      selector: (row) => row.service_logo,
+      sortable: true,
+      wrap: true,
+      cell: (row) => (
+        <Box height={50} width={50}>
+          {row.service_logo ? (
+            <img
+              src={`${API_BASE_URL}/uploads/${row.service_logo}`}
+              alt={row.service_name}
+              style={{ height: "100%", width: "100%", objectFit: "contain" }}
+            />
+          ) : (
+            <Typography color={colors.grey[100]}>No Logo</Typography>
+          )}
+        </Box>
+      ),
+    },
+    {
       name: "Service Name",
       selector: (row) => row.service_name,
       sortable: true,
@@ -173,15 +192,15 @@ const Services = () => {
     }
   };
 
-    // Get the set of company IDs that have products
-    const companyIdsWithService = new Set(
-      services.map((service) => service.service_company_id)
-    );
-  
-    // Filter companies to only include those that have products
-    const filteredCompanies = companies.filter((company) =>
-      companyIdsWithService.has(company.company_id)
-    );
+  // Get the set of company IDs that have products
+  const companyIdsWithService = new Set(
+    services.map((service) => service.service_company_id)
+  );
+
+  // Filter companies to only include those that have products
+  const filteredCompanies = companies.filter((company) =>
+    companyIdsWithService.has(company.company_id)
+  );
 
   return (
     <Box m={2}>

@@ -1,15 +1,22 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Box, Button, InputBase, Typography, useTheme, IconButton } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import axios from 'axios';
-import { tokens } from '../../theme';
-import Header from '../../components/Header';
+import React, { useState, useEffect, useContext } from "react";
+import {
+  Box,
+  Button,
+  InputBase,
+  Typography,
+  useTheme,
+  IconButton,
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import axios from "axios";
+import { tokens } from "../../theme";
+import Header from "../../components/Header";
 import { AuthContext } from "../global/AuthContext";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import DataTable from 'react-data-table-component';
-import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import DataTable from "react-data-table-component";
+import { useNavigate } from "react-router-dom";
 
 const CSR = () => {
   const API_BASE_URL = import.meta.env.VITE_API_URL;
@@ -20,7 +27,7 @@ const CSR = () => {
 
   const [csr, setCSR] = useState([]);
   const [filteredCSR, setFilteredCSR] = useState([]);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const fetchCSR = async () => {
@@ -30,8 +37,8 @@ const CSR = () => {
         setFilteredCSR(response.data);
         console.log(response.data);
       } catch (error) {
-        console.error('Error fetching CSR:', error);
-        toast.error('Failed to load CSR');
+        console.error("Error fetching CSR:", error);
+        toast.error("Failed to load CSR");
       }
     };
 
@@ -41,7 +48,8 @@ const CSR = () => {
   useEffect(() => {
     const results = csr.filter(
       (entry) =>
-        (entry.csr_name && entry.csr_name.toLowerCase().includes(search.toLowerCase()))
+        entry.csr_name &&
+        entry.csr_name.toLowerCase().includes(search.toLowerCase())
     );
     setFilteredCSR(results);
   }, [search, csr]);
@@ -49,12 +57,14 @@ const CSR = () => {
   const handleDeleteCSR = async (csr_id) => {
     try {
       await axios.delete(`${API_BASE_URL}/csr/delete/${csr_id}`);
-      toast.success('CSR deleted successfully');
-      setCSR((prevCSR) => prevCSR.filter(entry => entry.csr_id !== csr_id));
-      setFilteredCSR((prevFilteredCSR) => prevFilteredCSR.filter(entry => entry.csr_id !== csr_id));
+      toast.success("CSR deleted successfully");
+      setCSR((prevCSR) => prevCSR.filter((entry) => entry.csr_id !== csr_id));
+      setFilteredCSR((prevFilteredCSR) =>
+        prevFilteredCSR.filter((entry) => entry.csr_id !== csr_id)
+      );
     } catch (error) {
-      console.error('Error deleting CSR:', error);
-      toast.error('Error deleting CSR');
+      console.error("Error deleting CSR:", error);
+      toast.error("Error deleting CSR");
     }
   };
 
@@ -64,9 +74,14 @@ const CSR = () => {
 
   const columns = [
     {
-      name: 'Actions',
+      name: "Actions",
       cell: (row) => (
-        <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          width="100%"
+        >
           <IconButton onClick={() => handleEditCSR(row.csr_id)}>
             <EditIcon sx={{ color: colors.blueAccent[400] }} />
           </IconButton>
@@ -76,16 +91,37 @@ const CSR = () => {
         </Box>
       ),
       wrap: true,
-      width: '100px',
+      width: "100px",
     },
     {
-      name: 'ID',
+      name: "ID",
       selector: (row) => row.csr_id,
       sortable: true,
       wrap: true,
+      width: "80px",
     },
     {
-      name: 'Title',
+      name: "Cover Image",
+      selector: (row) => row.image_path,
+      sortable: true,
+      wrap: true,
+      width: "150px",
+      cell: (row) => (
+        <Box height={50} width={50}>
+          {row.image_path ? (
+            <img
+              src={`${API_BASE_URL}/uploads/${row.image_path}`}
+              alt={row.csr_name}
+              style={{ height: "100%", width: "100%", objectFit: "contain" }}
+            />
+          ) : (
+            <Typography color={colors.grey[100]}>No Logo</Typography>
+          )}
+        </Box>
+      ),
+    },
+    {
+      name: "Title",
       selector: (row) => row.csr_name,
       sortable: true,
       wrap: true,
@@ -101,17 +137,11 @@ const CSR = () => {
   return (
     <Box m={2}>
       <Header title="CSR" subTitle="List of all CSR entries" />
-      <Box
-        display="flex"
-        justifyContent="start"
-        width="100%"
-        gap={2}
-        mb={2}
-      >
+      <Box display="flex" justifyContent="start" width="100%" gap={2} mb={2}>
         <Button
           variant="contained"
           color="primary"
-          onClick={() => navigate('/add-csr')}
+          onClick={() => navigate("/add-csr")}
           sx={{ backgroundColor: colors.blueAccent[200] }}
         >
           Add CSR
@@ -132,12 +162,12 @@ const CSR = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             sx={{
-              padding: '10px',
-              border: '1px solid #000',
-              borderRadius: '4px',
+              padding: "10px",
+              border: "1px solid #000",
+              borderRadius: "4px",
               backgroundColor: colors.grey[900],
               color: colors.grey[100],
-              width: '30%',
+              width: "30%",
             }}
           />
         </Box>

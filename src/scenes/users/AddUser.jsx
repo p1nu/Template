@@ -65,7 +65,7 @@ const AddUser = () => {
         alignItems="center"
         justifyContent="center"
         height="77vh"
-        bgcolor={colors.grey[800]}
+        // bgcolor={colors.grey[800]}
       >
         <Box
           display="flex"

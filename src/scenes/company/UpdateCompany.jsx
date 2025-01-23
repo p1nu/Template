@@ -82,11 +82,8 @@ const UpdateCompany = () => {
   };
 
   const handleImageChange = (image) => {
-    const editor = editorRef.current;
-    if (editor && currentField) {
-      editor.selection.insertImage(`${API_BASE_URL}/uploads/${image.il_path}`);
-    }
-    handleClose();
+    setCompany((prevCompany) => ({ ...prevCompany, company_logo: image.il_path }));
+    toast.success('Logo selected successfully');
   };
 
   const handleSubmit = async (e) => {

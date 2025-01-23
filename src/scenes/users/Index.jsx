@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Box, Typography, useTheme, Button, InputBase, InputLabel } from "@mui/material";
+import {
+  Box,
+  Button,
+  InputBase,
+  Typography,
+  useTheme,
+  IconButton,
+  FormControl,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import DataTable from "react-data-table-component";
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
@@ -8,9 +18,20 @@ import Header from "../../components/Header";
 import { tokens } from '../../theme';
 import { format } from 'date-fns'; // Imported format from date-fns
 import mockUsers from '../data/mockData'; // Import the mock data for users
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 // import { AuthContext } from '../global/AuthContext';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+// Styled-component for alignment and spacing (if needed)
+const StyledBox = styled.div`
+  display: flex;
+  justify-content: ${({ $align }) => $align || "flex-start"};
+  align-items: center;
+  text-align: center;
+  width: 100%;
+`;
 
 const Users = () => {
   const API_BASE_URL = import.meta.env.VITE_API_URL;
@@ -73,13 +94,47 @@ const Users = () => {
   };
 
   const columns = [
-    { name: 'ID', selector: (row) => row.user_id, sortable: true, width: '60px' },
-    { name: 'Name', selector: (row) => row.user_name, sortable: true },
+    {
+      name: "Actions",
+      cell: (row) => (
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          width="100%"
+          gap={1}
+        >
+          <Link to={`/user/${row.user_id}`}>
+            <IconButton>
+              <EditIcon sx={{ color: colors.blueAccent[400] }} />
+            </IconButton>
+          </Link>
+          <IconButton onClick={() => handleDelete(row.user_id)}>
+            <DeleteIcon sx={{ color: colors.redAccent[400] }} />
+          </IconButton>
+        </Box>
+      ),
+      wrap: true,
+      width: "100px",
+    },
+    {
+      name: 'ID',
+      selector: (row) => row.user_id,
+      sortable: true,
+      wrap: true,
+      width: '80px'
+    },
+    {
+      name: 'Name',
+      selector: (row) => row.user_name,
+      sortable: true,
+      wrap: true,
+    },
     {
       name: 'Access Level',
       selector: (row) => row.user_role_id,
       sortable: true,
-      width: '50%',
+      wrap: true,
       cell: (row) => {
         let role;
 
@@ -90,93 +145,63 @@ const Users = () => {
         }
 
         return (
-          <Box display="flex" justifyContent="space-between" alignItems="center" textAlign="center" width="100%">
-            <Typography color={colors.grey[100]}>{role}</Typography>
-            <Link to={`/user/${row.user_id}`} style={{ marginLeft: 'auto' }}>
-              <Button variant="outlined" color="primary">
-                Edit
-              </Button>
-            </Link>
-            <Button
-              variant="outlined"
-              color="error"
-              sx={{ m: 1 }}
-              onClick={() => handleDelete(row.user_id)}
-            >
-              Delete
-            </Button>
-          </Box>
+          <Typography color={colors.grey[100]}>{role}</Typography>
         );
       },
     },
   ];
 
-  const customStyles = {
-    header: {
-      style: {
-        backgroundColor: colors.grey[900],
-        color: colors.grey[100],
-      },
-    },
-    headCells: {
-      style: {
-        color: colors.grey[100],
-        fontWeight: 'bold',
-        borderTop: `1px solid #000`,
-        borderBottom: `1px solid #000`,
-      },
-    },
-    cells: {
-      style: {
-        borderBottom: '1px solid #000',
-      },
-    },
-  };
-
-  const SubHeaderComponent = (
-    <Box display="flex" alignItems="center">
-      <InputBase
-        placeholder="Search Name"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        sx={{
-          ml: 2,
-          border: '1px solid',
-          borderColor: colors.grey[700],
-          borderRadius: '4px',
-          width: '150px',
-          height: '35px',
-          padding: '10px',
-          color: colors.grey[100],
-          bgcolor: colors.grey[900],
-        }}
-      />
-      <Link to="/add-user" style={{ textDecoration: 'none', marginLeft: '10px' }}>
-        <Button variant="contained" sx={{ bgcolor: colors.blueAccent[200] }}>
-          Add User
-        </Button>
-      </Link>
-    </Box>
-  );
-
   return (
-    <Box m="20px">
+    <Box m={2}>
       <Header title="Users" subTitle="Manage users" />
       <Box
-        m="10px 0 0 0"
-        height="auto"
+        display="flex"
+        justifyContent="start"
+        width="100%"
+        gap={2}
+        mb={2}
+      ></Box>
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        height="100%"
+        padding={2}
         bgcolor={colors.grey[800]}
-        padding="10px"
       >
+        <Box display="flex" justifyContent="start" width="100%" mb={2} gap={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/add-user")}
+            sx={{ backgroundColor: colors.blueAccent[200] }}
+          >
+            Add User
+          </Button>
+
+          <InputBase
+            placeholder="Search Name"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{
+              padding: "10px",
+              border: "1px solid #000",
+              borderRadius: "4px",
+              backgroundColor: colors.grey[900],
+              color: colors.grey[100],
+              width: "30%",
+            }}
+          />
+        </Box>
         <DataTable
           columns={columns}
           data={filteredUsers}
-          pagination
+          keyField="user_id"
+          pageSize={users.length > 10 ? 10 : users.length}
           highlightOnHover
+          pointerOnHover
           responsive
-          subHeader
-          subHeaderComponent={SubHeaderComponent}
-          customStyles={customStyles}
         />
       </Box>
       <ToastContainer theme='colored' autoClose={2000}/>
