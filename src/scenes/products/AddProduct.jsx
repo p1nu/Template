@@ -34,7 +34,9 @@ const AddProduct = () => {
 
   const [product, setProduct] = useState({
     product_name: "",
+    product_sub_title: "",
     product_desc: "",
+    product_sub_desc: "",
     category_id: "",
     product_price: "",
     product_image: "",
@@ -69,13 +71,20 @@ const AddProduct = () => {
 
     fetchCompanies();
     fetchCategories();
+  }, [API_BASE_URL]);
 
+  useEffect(() => {
     // Check if we are in edit mode
     if (location.state && location.state.product) {
+      console.log("Product from state:", location.state.product); // Add logging
       setProduct(location.state.product);
       setIsEditMode(true);
+      const filtered = categories.filter(
+        (category) => category.company_id === location.state.product.company_id
+      );
+      setFilteredCategories(filtered);
     }
-  }, [API_BASE_URL, location.state]);
+  }, [location.state, categories]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -101,12 +110,15 @@ const AddProduct = () => {
     if (
       !product.product_name ||
       !product.product_desc ||
-      !product.category_id ||
       !product.product_price ||
-      !product.product_image ||
       !product.company_id
     ) {
       toast.error("Please fill in all required fields");
+      return;
+    }
+
+    if (!product.category_id) {
+      toast.error("Please select a category");
       return;
     }
 
@@ -127,7 +139,7 @@ const AddProduct = () => {
       }, 3000);
     } catch (error) {
       console.error("Error saving product:", error);
-      toast.error("Error saving product");
+      toast.error("Error saving product:", error.message);
     } finally {
       setLoading(false);
     }
@@ -299,6 +311,35 @@ const AddProduct = () => {
             />
           </Box>
 
+          {/* Product Subtitle */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="product_sub_title"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Product Subtitle
+            </InputLabel>
+            <InputBase
+              id="product_sub_title"
+              placeholder="Product Subtitle"
+              name="product_sub_title"
+              value={product.product_sub_title}
+              onChange={handleChange}
+              sx={{
+                padding: "10px",
+                border: "1px solid #000",
+                borderRadius: "4px",
+                backgroundColor: colors.grey[900],
+                color: colors.grey[100],
+              }}
+            />
+          </Box>
+
           {/* Product Description */}
           <Box
             display="flex"
@@ -313,9 +354,42 @@ const AddProduct = () => {
               Product Description
             </InputLabel>
             <ReactQuill
+              key={product.product_desc} // Add key prop
               theme="snow"
               value={product.product_desc}
               onChange={handleEditorChange}
+              style={{
+                backgroundColor: colors.grey[900],
+                color: colors.grey[100],
+                borderRadius: "4px",
+                border: "1px solid #000",
+              }}
+            />
+          </Box>
+
+          {/* Product Sub Description */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="10px 0"
+            width="100%"
+          >
+            <InputLabel
+              htmlFor="product_sub_desc"
+              sx={{ color: colors.grey[100], mb: "5px" }}
+            >
+              Product Sub Description
+            </InputLabel>
+            <ReactQuill
+              key={product.product_sub_desc} // Add key prop
+              theme="snow"
+              value={product.product_sub_desc}
+              onChange={(content) =>
+                setProduct((prevProduct) => ({
+                  ...prevProduct,
+                  product_sub_desc: content,
+                }))
+              }
               style={{
                 backgroundColor: colors.grey[900],
                 color: colors.grey[100],

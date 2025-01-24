@@ -183,6 +183,8 @@ const MediaLibrary = ({ onSelectImage }) => {
                   "&:hover": {
                     border: `2px solid ${colors.primary[500]}`,
                   },
+                  height: "100px",
+                  widht: "100%",
                 }}
               >
                 <img
@@ -190,6 +192,7 @@ const MediaLibrary = ({ onSelectImage }) => {
                   alt={item.il_name}
                   loading="lazy"
                   onClick={() => handleSelectImage(item)}
+                  stype={{ cursor: "pointer", width: "100%", height: "100%" }}
                 />
                 <ImageListItemBar
                   title={item.il_name}
@@ -410,7 +413,7 @@ function MediaGallery() {
       {MediaLibrary(onSelectImage)}
       <>
         <Box height="70vh">
-          <ImageList sx={{ width: "100%", height: "inherit" }} cols={3}>
+          <ImageList sx={{ width: "100%", height: "inherit" }} cols={5}>
             {images.toReversed().map((item) => (
               <ImageListItem
                 key={item.il_id}
@@ -420,6 +423,7 @@ function MediaGallery() {
                   "&:hover": {
                     border: `2px solid ${colors.primary[500]}`,
                   },
+                  height: "250px",
                 }}
               >
                 <img
@@ -432,6 +436,7 @@ function MediaGallery() {
                       "_blank"
                     )
                   }
+                  style={{ cursor: "pointer", width: "100%", height: "100%", objectFit: "cover" }}
                 />
                 <ImageListItemBar
                   title={item.il_name}

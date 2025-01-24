@@ -9,6 +9,11 @@ import {
   Select,
   MenuItem,
   IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -35,6 +40,8 @@ const Products = () => {
   const [selectedCompany, setSelectedCompany] = useState("");
   const [categories, setCategories] = useState([]);
   const [companies, setCompanies] = useState([]);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -86,26 +93,47 @@ const Products = () => {
     setFilteredProducts(results);
   }, [search, products, selectedCategory, selectedCompany]);
 
-  const handleDeleteProduct = async (product_id) => {
+  const handleDeleteProduct = async () => {
     try {
-      await axios.delete(`${API_BASE_URL}/product/delete/${product_id}`);
+      await axios.delete(`${API_BASE_URL}/product/delete/${productToDelete}`);
       toast.success("Product deleted successfully");
       setProducts((prevProducts) =>
-        prevProducts.filter((product) => product.product_id !== product_id)
+        prevProducts.filter((product) => product.product_id !== productToDelete)
       );
       setFilteredProducts((prevFilteredProducts) =>
         prevFilteredProducts.filter(
-          (product) => product.product_id !== product_id
+          (product) => product.product_id !== productToDelete
         )
       );
+      setOpenConfirmDialog(false);
+      setProductToDelete(null);
     } catch (error) {
       console.error("Error deleting product:", error);
       toast.error("Error deleting product");
     }
   };
 
+  const handleOpenConfirmDialog = (product_id) => {
+    setProductToDelete(product_id);
+    setOpenConfirmDialog(true);
+  };
+
+  const handleCloseConfirmDialog = () => {
+    setOpenConfirmDialog(false);
+    setProductToDelete(null);
+  };
+
   const handleEditProduct = (product) => {
-    navigate("/add-product", { state: { product } });
+    // console.log("Editing product:", product); // Add logging
+    navigate("/add-product", { 
+      state: { 
+        product: {
+          ...product,
+          product_sub_title: product.product_sub_title || "",
+          product_sub_desc: product.product_sub_desc || ""
+        }
+      } 
+    });
   };
 
   const columns = [
@@ -121,7 +149,7 @@ const Products = () => {
           <IconButton onClick={() => handleEditProduct(row)}>
             <EditIcon sx={{ color: colors.blueAccent[400] }} />
           </IconButton>
-          <IconButton onClick={() => handleDeleteProduct(row.product_id)}>
+          <IconButton onClick={() => handleOpenConfirmDialog(row.product_id)}>
             <DeleteIcon sx={{ color: colors.redAccent[400] }} />
           </IconButton>
         </Box>
@@ -308,6 +336,25 @@ const Products = () => {
           responsive
         />
       </Box>
+      <Dialog
+        open={openConfirmDialog}
+        onClose={handleCloseConfirmDialog}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this product?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteProduct} color="primary" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
       <ToastContainer theme="colored" autoClose={2000} />
     </Box>
   );
