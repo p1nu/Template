@@ -282,7 +282,7 @@ const MediaLibrary = ({ onSelectImage }) => {
               </Box>
 
               <CustomTabPanel value={value} index={0}>
-                <Box mt={2} height={"50vh"} overflow="auto">
+                <Box mt={2} height={"62vh"} overflow="auto">
                   {displayImages()}
                 </Box>
               </CustomTabPanel>
