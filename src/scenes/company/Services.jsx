@@ -106,7 +106,15 @@ const Services = () => {
               variant="contained"
               sx={{ bgcolor: colors.blueAccent[200] }}
             >
-              Add Banner
+              Banner
+            </Button>
+          </Link>
+          <Link to={`/preview-banner/service/${row.service_id}`}>
+            <Button
+              variant="contained"
+              sx={{ bgcolor: colors.blueAccent[200] }}
+            >
+              Preview Banner
             </Button>
           </Link>
           <Link to={`/service/${row.service_id}`}>
@@ -120,7 +128,7 @@ const Services = () => {
         </Box>
       ),
       wrap: true,
-      width: "250px",
+      width: "350px",
     },
     {
       name: "ID",

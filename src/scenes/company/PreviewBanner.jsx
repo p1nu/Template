@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Box, Grid, Typography, Button, Modal, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -17,6 +17,7 @@ const PreviewBanner = () => {
   const { serviceId } = useParams();
   const [previewBanners, setPreviewBanners] = useState([]);
   const { open, handleOpen, handleClose } = useMediaGallery();
+  const navigate = useNavigate();
 
   const fetchPreviewBanners = async () => {
     try {
@@ -75,6 +76,13 @@ const PreviewBanner = () => {
         onClick={handleOpen}
       >
         Add Preview Banner
+      </Button>
+      <Button
+        variant="contained"
+        sx={{ mt: 2, backgroundColor: colors.blueAccent[200], ml: 2 }}
+        onClick={() => navigate(`/banner/service/${serviceId}`)}
+      >
+        Banner
       </Button>
       <Modal open={open} onClose={handleClose}>
         <MediaLibrary onSelectImage={handleSelectImage} />

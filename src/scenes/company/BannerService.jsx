@@ -79,52 +79,52 @@ const BannerService = () => {
   const handleSelectedBanner = (banner) => {
     setSelectedBanner(banner);
     setOpenTodo(true);
-  }
+  };
 
   // function close todo modal if nothing is selected
   const handleCloseTodo = () => {
     setSelectedBanner(null);
     setOpenTodo(false);
-  }
+  };
 
   // function to open preview modal 1
   const handleOpenPreview1 = () => {
     setOpenPreview1(true);
     setOpenTodo(false);
-  }
+  };
 
   // function to close preview modal 1
   const handleClosePreview1 = () => {
     setOpenPreview1(false);
     setSelectedBanner(null);
-  }
+  };
 
   // function to open preview modal 2
   const handleOpenPreview2 = () => {
     setOpenPreview2(true);
     setOpenTodo(false);
-  }
+  };
 
   // function to close preview modal 2
   const handleClosePreview2 = () => {
     setOpenPreview2(false);
     setSelectedBanner(null);
-  }
+  };
 
   // function to open preview modal 3
   const handleOpenPreview3 = () => {
     setOpenPreview3(true);
     setOpenTodo(false);
-  }
+  };
 
   // function to close preview modal 3
   const handleClosePreview3 = () => {
     setOpenPreview3(false);
     setSelectedBanner(null);
-  }
+  };
 
   // function add banner to preview 1
-  const handleAddToPreview1= async () => {
+  const handleAddToPreview1 = async () => {
     try {
       await axios.put(
         `${API_BASE_URL}/banner/${selectedBanner.banner_id}/add-to-preview1`
@@ -136,10 +136,10 @@ const BannerService = () => {
       toast.error("Failed to update banner.");
       console.log(error);
     }
-  }
+  };
 
   // function add banner to preview 2
-  const handleAddToPreview2= async () => {
+  const handleAddToPreview2 = async () => {
     try {
       await axios.put(
         `${API_BASE_URL}/banner/${selectedBanner.banner_id}/add-to-preview2`
@@ -150,10 +150,10 @@ const BannerService = () => {
     } catch (error) {
       toast.error("Failed to update banner.");
     }
-  }
+  };
 
   // function add banner to preview 3
-  const handleAddToPreview3= async () => {
+  const handleAddToPreview3 = async () => {
     try {
       await axios.put(
         `${API_BASE_URL}/banner/${selectedBanner.banner_id}/add-to-preview3`
@@ -164,13 +164,15 @@ const BannerService = () => {
     } catch (error) {
       toast.error("Failed to update banner.");
     }
-  }
+  };
 
   const navigate = useNavigate();
 
   return (
     <Box m="20px">
-      <Header title="Service Banner Images" />
+      <Typography variant="h4" gutterBottom>
+        Banners
+      </Typography>
 
       <Button
         variant="contained"
@@ -212,7 +214,11 @@ const BannerService = () => {
                   src={`${API_BASE_URL}/uploads/${banner.image_path}`}
                   alt={`Banner ${banner.banner_id}`}
                   loading="lazy"
-                  style={{ width: "100%", height: "100%", objectFit: "scale-down" }}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "scale-down",
+                  }}
                   onClick={() => handleSelectedBanner(banner)}
                 />
                 <ImageListItemBar
@@ -263,9 +269,15 @@ const BannerService = () => {
               flexDirection={"column"}
               gap={2}
             >
-              <Button variant="contained" onClick={handleOpenPreview1}>Add to Preview1</Button>
-              <Button variant="contained" onClick={handleOpenPreview2}>Add to Preview2</Button>
-              <Button variant="contained" onClick={handleOpenPreview3}>Add to Preview3</Button>
+              <Button variant="contained" onClick={handleOpenPreview1}>
+                Add to Preview1
+              </Button>
+              <Button variant="contained" onClick={handleOpenPreview2}>
+                Add to Preview2
+              </Button>
+              <Button variant="contained" onClick={handleOpenPreview3}>
+                Add to Preview3
+              </Button>
             </Box>
           </Box>
         </Modal>
