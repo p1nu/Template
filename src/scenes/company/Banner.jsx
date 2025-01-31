@@ -9,6 +9,7 @@ import {
   ImageListItemBar,
   IconButton,
   InputBase,
+  Grid,
 } from "@mui/material";
 import axios from "axios";
 import { useTheme } from "@mui/material/styles";
@@ -247,52 +248,55 @@ const Banner = () => {
       </Modal>
 
       {/* Display Banner Images */}
-      <Box mt={2} height="70vh">
-        <ImageList sx={{ width: "100%", height: "auto" }} cols={5} gap={16}>
+      <Box mt={2} height="70vh" overflow="auto">
+        <Grid container spacing={2}>
           {banners.toReversed().map((banner) => (
-            <ImageListItem
-              key={banner.banner_id}
-              sx={{
-                cursor: "pointer",
-                border: `2px solid ${colors.grey[800]}`,
-                "&:hover": {
-                  border: `2px solid ${colors.primary[500]}`,
-                },
-              }}
-            >
-              <img
-                src={`${API_BASE_URL}/uploads/${banner.image_path}`}
-                alt={`Banner ${banner.banner_id}`}
-                loading="lazy"
-                style={{ width: "100%", height: "auto" }}
-                onClick={() => handleImageSelect(banner)}
-              />
-              <ImageListItemBar
-                title={banner.banner_name}
-                actionIcon={
-                  <IconButton
-                    sx={{ color: "rgba(255, 255, 255, 0.54)" }}
-                    aria-label={`info about ${banner.banner_name}`}
-                    onClick={async () => {
-                      try {
-                        await axios.delete(
-                          `${API_BASE_URL}/banner/delete/${banner.banner_id}`
-                        );
-                        toast.success("Image deleted successfully");
-                        fetchBanners();
-                      } catch (error) {
-                        toast.error("An error occurred");
-                        console.error(error);
-                      }
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                }
-              />
-            </ImageListItem>
+            <Grid item xs={12} sm={6} md={4} lg={3} key={banner.banner_id}>
+              <Box
+                sx={{
+                  position: "relative",
+                  border: `2px solid ${colors.grey[800]}`,
+                  "&:hover": {
+                    border: `2px solid ${colors.primary[500]}`,
+                  },
+                  height: "200px",
+                  overflow: "hidden",
+                }}
+              >
+                <img
+                  src={`${API_BASE_URL}/uploads/${banner.image_path}`}
+                  alt={`Banner ${banner.banner_id}`}
+                  loading="lazy"
+                  style={{ width: "100%", height: "100%", objectFit: "scale-down" }}
+                  onClick={() => handleImageSelect(banner)}
+                />
+                <ImageListItemBar
+                  title={banner.banner_name}
+                  actionIcon={
+                    <IconButton
+                      sx={{ color: "rgba(255, 255, 255, 0.54)" }}
+                      aria-label={`info about ${banner.banner_name}`}
+                      onClick={async () => {
+                        try {
+                          await axios.delete(
+                            `${API_BASE_URL}/banner/delete/${banner.banner_id}`
+                          );
+                          toast.success("Image deleted successfully");
+                          fetchBanners();
+                        } catch (error) {
+                          toast.error("An error occurred");
+                          console.error(error);
+                        }
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  }
+                />
+              </Box>
+            </Grid>
           ))}
-        </ImageList>
+        </Grid>
         {/* Other components and JSX */}
 
         {/* Modal Component */}

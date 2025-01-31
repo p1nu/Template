@@ -119,7 +119,7 @@ const Gallery = () => {
                         style={{
                           width: '100%',
                           height: '200px',
-                          objectFit: 'cover',
+                          objectFit: 'scale-down',
                           borderRadius: '8px',
                         }}
                       />

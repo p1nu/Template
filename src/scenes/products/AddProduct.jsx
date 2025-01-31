@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import {
   Box,
   Button,
@@ -20,8 +20,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { MediaLibrary } from "../gallery/Index";
-import ReactQuill from "react-quill-new";
-import "react-quill-new/dist/quill.snow.css";
+import JoditEditor from "jodit-react";
 
 const AddProduct = () => {
   const API_BASE_URL = import.meta.env.VITE_API_URL;
@@ -47,6 +46,9 @@ const AddProduct = () => {
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+
+  const editorRef = useRef(null);
+  const subDescEditorRef = useRef(null);
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -107,6 +109,13 @@ const AddProduct = () => {
   };
 
   const handleSaveProduct = async () => {
+    // Ensure the JoditEditor components' values are updated before saving
+    setProduct((prevProduct) => ({
+      ...prevProduct,
+      product_desc: editorRef.current.value,
+      product_sub_desc: subDescEditorRef.current.value,
+    }));
+
     if (
       !product.product_name ||
       !product.product_desc ||
@@ -143,13 +152,6 @@ const AddProduct = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleEditorChange = (content) => {
-    setProduct((prevProduct) => ({
-      ...prevProduct,
-      product_desc: content,
-    }));
   };
 
   return (
@@ -353,11 +355,14 @@ const AddProduct = () => {
             >
               Product Description
             </InputLabel>
-            <ReactQuill
-              key={product.product_desc} // Add key prop
-              theme="snow"
+            <JoditEditor
+              ref={editorRef} // Add ref
               value={product.product_desc}
-              onChange={handleEditorChange}
+              onBlur={(newContent) => setProduct((prevProduct) => ({
+                ...prevProduct,
+                product_desc: newContent,
+              }))} // Use onBlur event
+              tabIndex={1}
               style={{
                 backgroundColor: colors.grey[900],
                 color: colors.grey[100],
@@ -380,16 +385,14 @@ const AddProduct = () => {
             >
               Product Sub Description
             </InputLabel>
-            <ReactQuill
-              key={product.product_sub_desc} // Add key prop
-              theme="snow"
+            <JoditEditor
+              ref={subDescEditorRef} // Correct the ref name
               value={product.product_sub_desc}
-              onChange={(content) =>
-                setProduct((prevProduct) => ({
-                  ...prevProduct,
-                  product_sub_desc: content,
-                }))
-              }
+              onBlur={(newContent) => setProduct((prevProduct) => ({
+                ...prevProduct,
+                product_sub_desc: newContent,
+              }))} // Use onBlur event
+              tabIndex={1}
               style={{
                 backgroundColor: colors.grey[900],
                 color: colors.grey[100],

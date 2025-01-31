@@ -10,6 +10,7 @@ import {
   ImageListItem,
   ImageListItemBar,
   IconButton,
+  Grid,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme.jsx";
@@ -172,19 +173,18 @@ const MediaLibrary = ({ onSelectImage }) => {
   const displayImages = () => {
     if (images.length > 0) {
       return (
-        <>
-          <ImageList sx={{ width: "100%", height: "inherit" }} cols={3}>
-            {images.toReversed().map((item) => (
-              <ImageListItem
-                key={item.il_id}
+        <Grid container spacing={2}>
+          {images.toReversed().map((item) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={item.il_id}>
+              <Box
                 sx={{
-                  cursor: "pointer",
+                  position: "relative",
                   border: `2px solid ${colors.grey[800]}`,
                   "&:hover": {
                     border: `2px solid ${colors.primary[500]}`,
                   },
-                  height: "100px",
-                  widht: "100%",
+                  height: "200px",
+                  overflow: "hidden",
                 }}
               >
                 <img
@@ -192,7 +192,12 @@ const MediaLibrary = ({ onSelectImage }) => {
                   alt={item.il_name}
                   loading="lazy"
                   onClick={() => handleSelectImage(item)}
-                  stype={{ cursor: "pointer", width: "100%", height: "100%" }}
+                  style={{
+                    cursor: "pointer",
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "scale-down",
+                  }}
                 />
                 <ImageListItemBar
                   title={item.il_name}
@@ -220,10 +225,10 @@ const MediaLibrary = ({ onSelectImage }) => {
                     </IconButton>
                   }
                 />
-              </ImageListItem>
-            ))}
-          </ImageList>
-        </>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
       );
     }
   };
@@ -277,7 +282,7 @@ const MediaLibrary = ({ onSelectImage }) => {
               </Box>
 
               <CustomTabPanel value={value} index={0}>
-                <Box mt={2} height={"50vh"}>
+                <Box mt={2} height={"50vh"} overflow="auto">
                   {displayImages()}
                 </Box>
               </CustomTabPanel>
@@ -351,7 +356,7 @@ const MediaLibrary = ({ onSelectImage }) => {
               </Box>
 
               <CustomTabPanel value={value} index={0}>
-                <Box mt={2} height={"50vh"}>
+                <Box mt={2} height={"50vh"} overflow="auto">
                   {displayImages()}
                 </Box>
               </CustomTabPanel>
@@ -411,19 +416,19 @@ function MediaGallery() {
       <Header title="Media Gallery" />
       {OpenMediaButton()}
       {MediaLibrary(onSelectImage)}
-      <>
-        <Box height="70vh">
-          <ImageList sx={{ width: "100%", height: "inherit" }} cols={5}>
-            {images.toReversed().map((item) => (
-              <ImageListItem
-                key={item.il_id}
+      <Box height="70vh" overflow="auto">
+        <Grid container spacing={2}>
+          {images.toReversed().map((item) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={item.il_id}>
+              <Box
                 sx={{
-                  cursor: "pointer",
+                  position: "relative",
                   border: `2px solid ${colors.grey[800]}`,
                   "&:hover": {
                     border: `2px solid ${colors.primary[500]}`,
                   },
-                  height: "250px",
+                  height: "200px",
+                  overflow: "hidden",
                 }}
               >
                 <img
@@ -436,7 +441,12 @@ function MediaGallery() {
                       "_blank"
                     )
                   }
-                  style={{ cursor: "pointer", width: "100%", height: "100%", objectFit: "cover" }}
+                  style={{
+                    cursor: "pointer",
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "scale-down",
+                  }}
                 />
                 <ImageListItemBar
                   title={item.il_name}
@@ -464,12 +474,12 @@ function MediaGallery() {
                     </IconButton>
                   }
                 />
-              </ImageListItem>
-            ))}
-          </ImageList>
-        </Box>
-        <ToastContainer theme="colored" autoClose={2000}/>
-      </>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+      <ToastContainer theme="colored" autoClose={2000} />
     </Box>
   );
 };
