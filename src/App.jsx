@@ -40,6 +40,7 @@ import Products from "./scenes/products/Products.jsx";
 import AddProduct from "./scenes/products/AddProduct.jsx";
 import Categories from "./scenes/products/Categories.jsx";
 import AddCategory from "./scenes/products/AddCategory.jsx";
+import PreviewBanner from "./scenes/company/PreviewBanner.jsx";
 
 
 function App() {
@@ -95,6 +96,7 @@ function App() {
               <Route path="/add-product" element={<AddProduct />} />
               <Route path="/categories" element={<Categories />} />
               <Route path="/add-category" element={<AddCategory />} />
+              <Route path="/preview-banner/service/:serviceId" element={<PreviewBanner />} />
             </Routes>
               <Gallery />
           </main>

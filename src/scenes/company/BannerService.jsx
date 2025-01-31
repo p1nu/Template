@@ -14,7 +14,7 @@ import axios from "axios";
 import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
 import { MediaLibrary } from "../gallery/Index";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useMediaGallery } from "../gallery/MediaGalleryContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -166,6 +166,8 @@ const BannerService = () => {
     }
   }
 
+  const navigate = useNavigate();
+
   return (
     <Box m="20px">
       <Header title="Service Banner Images" />
@@ -176,6 +178,13 @@ const BannerService = () => {
         onClick={handleOpen}
       >
         Add Service Banner Image
+      </Button>
+      <Button
+        variant="contained"
+        sx={{ mt: 2, backgroundColor: colors.blueAccent[200], ml: 2 }}
+        onClick={() => navigate(`/preview-banner/service/${serviceId}`)}
+      >
+        Preview Banner
       </Button>
 
       {/* Media Library Modal */}
