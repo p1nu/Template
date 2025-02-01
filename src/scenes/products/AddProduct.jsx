@@ -40,6 +40,7 @@ const AddProduct = () => {
     product_price: "",
     product_image: "",
     company_id: "",
+    status: null,
   });
   const [companies, setCompanies] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -192,97 +193,123 @@ const AddProduct = () => {
           width="100%"
           boxShadow={3}
         >
-          {/* Select Company */}
-          <Box
-            display="flex"
-            flexDirection="column"
-            margin="10px 0"
-            width="100%"
-          >
-            <InputLabel
-              htmlFor="company_id"
-              sx={{ color: colors.grey[100], mb: "5px" }}
-            >
-              Select Company
-            </InputLabel>
-            <FormControl fullWidth>
-              <Select
-                id="company_id"
-                name="company_id"
-                value={product.company_id}
-                onChange={handleChange}
-                displayEmpty
-                sx={{
-                  border: "1px solid #000",
-                  borderRadius: "4px",
-                  backgroundColor: colors.grey[900],
-                  color: colors.grey[100],
-                  "&:hover": {
-                    border: "1px solid #000 !important",
-                  },
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    border: "none",
-                  },
-                }}
+          {/* Select Company, Category, and Status */}
+          <Box display="flex" justifyContent="space-between" width="100%" margin="10px 0">
+            {/* Select Company */}
+            <Box width="32%">
+              <InputLabel
+                htmlFor="company_id"
+                sx={{ color: colors.grey[100], mb: "5px" }}
               >
-                <MenuItem value="" disabled>
-                  Select Company
-                </MenuItem>
-                {companies.map((company) => (
-                  <MenuItem key={company.company_id} value={company.company_id}>
-                    {company.company_name}
+                Select Company
+              </InputLabel>
+              <FormControl fullWidth>
+                <Select
+                  id="company_id"
+                  name="company_id"
+                  value={product.company_id}
+                  onChange={handleChange}
+                  displayEmpty
+                  sx={{
+                    border: "1px solid #000",
+                    borderRadius: "4px",
+                    backgroundColor: colors.grey[900],
+                    color: colors.grey[100],
+                    "&:hover": {
+                      border: "1px solid #000 !important",
+                    },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none",
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Company
                   </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-          {/* Product Category */}
-          <Box
-            display="flex"
-            flexDirection="column"
-            margin="10px 0"
-            width="100%"
-          >
-            <InputLabel
-              htmlFor="category_id"
-              sx={{ color: colors.grey[100], mb: "5px" }}
-            >
-              Product Category
-            </InputLabel>
-            <FormControl fullWidth>
-              <Select
-                id="category_id"
-                name="category_id"
-                value={product.category_id}
-                onChange={handleChange}
-                displayEmpty
-                disabled={!product.company_id}
-                sx={{
-                  border: "1px solid #000",
-                  borderRadius: "4px",
-                  backgroundColor: colors.grey[900],
-                  color: colors.grey[100],
-                  "&:hover": {
-                    border: "1px solid #000 !important",
-                  },
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    border: "none",
-                  },
-                }}
+                  {companies.map((company) => (
+                    <MenuItem key={company.company_id} value={company.company_id}>
+                      {company.company_name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+            {/* Product Category */}
+            <Box width="32%">
+              <InputLabel
+                htmlFor="category_id"
+                sx={{ color: colors.grey[100], mb: "5px" }}
               >
-                <MenuItem value="" disabled>
-                  Select Category
-                </MenuItem>
-                {filteredCategories.map((category) => (
-                  <MenuItem
-                    key={category.category_id}
-                    value={category.category_id}
-                  >
-                    {category.category_name}
+                Product Category
+              </InputLabel>
+              <FormControl fullWidth>
+                <Select
+                  id="category_id"
+                  name="category_id"
+                  value={product.category_id}
+                  onChange={handleChange}
+                  displayEmpty
+                  disabled={!product.company_id}
+                  sx={{
+                    border: "1px solid #000",
+                    borderRadius: "4px",
+                    backgroundColor: colors.grey[900],
+                    color: colors.grey[100],
+                    "&:hover": {
+                      border: "1px solid #000 !important",
+                    },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none",
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Category
                   </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                  {filteredCategories.map((category) => (
+                    <MenuItem
+                      key={category.category_id}
+                      value={category.category_id}
+                    >
+                      {category.category_name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+            {/* Product Status */}
+            <Box width="32%">
+              <InputLabel
+                htmlFor="status"
+                sx={{ color: colors.grey[100], mb: "5px" }}
+              >
+                Product Status
+              </InputLabel>
+              <FormControl fullWidth>
+                <Select
+                  id="status"
+                  name="status"
+                  value={product.status ?? null} // Ensure null is handled
+                  onChange={handleChange}
+                  displayEmpty
+                  sx={{
+                    border: "1px solid #000",
+                    borderRadius: "4px",
+                    backgroundColor: colors.grey[900],
+                    color: colors.grey[100],
+                    "&:hover": {
+                      border: "1px solid #000 !important",
+                    },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none",
+                    },
+                  }}
+                >
+                  <MenuItem value={null}>Active</MenuItem> {/* Ensure value is null */}
+                  <MenuItem value={1}>Inactive</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
           </Box>
           {/* Product Name */}
           <Box

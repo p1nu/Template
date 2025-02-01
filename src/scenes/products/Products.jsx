@@ -17,6 +17,8 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 import axios from "axios";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
@@ -51,6 +53,7 @@ const Products = () => {
         );
         setProducts(response.data);
         setFilteredProducts(response.data);
+        console.log("Products:", response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
         toast.error("Failed to load products");
@@ -158,11 +161,18 @@ const Products = () => {
       width: "100px",
     },
     {
-      name: "ID",
-      selector: (row) => row.product_id,
+      name: "Status",
+      selector: (row) => row.status,
       sortable: true,
       wrap: true,
       width: "80px",
+      cell: (row) => (
+        row.status === 1 ? (
+          <CancelIcon sx={{ color: colors.redAccent[400] }} />
+        ) : (
+          <CheckCircleIcon sx={{ color: colors.greenAccent[400] }} />
+        )
+      ),
     },
     {
       name: "Image",
