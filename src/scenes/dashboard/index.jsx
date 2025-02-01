@@ -29,7 +29,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DataTable from "react-data-table-component";
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -170,6 +170,7 @@ const Footer = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <ToastContainer theme="colored" autoClose={2000} />
     </Paper>
   );
 }
