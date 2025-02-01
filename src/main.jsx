@@ -10,7 +10,7 @@ import { GalleryProvider } from "./scenes/gallery/GalleryContext";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/admin">
       <AuthProvider>
         <MediaGalleryProvider>
           <GalleryProvider>

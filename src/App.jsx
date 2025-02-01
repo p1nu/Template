@@ -1,6 +1,8 @@
 import { ColorModeContext, useMode } from "./theme";
 import { CssBaseline, ThemeProvider, Box } from "@mui/material";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate, BrowserRouter as Router } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "./scenes/global/AuthContext";
 import Topbar from "./scenes/global/Topbar";
 import Sidenav from "./scenes/global/Sidenav";
 import Users from "./scenes/users/Index.jsx";
@@ -46,6 +48,7 @@ import PreviewBanner from "./scenes/company/PreviewBanner.jsx";
 function App() {
   const [theme, colorMode] = useMode();
   const location = useLocation();
+  const { user } = useContext(AuthContext);
 
   const isLoginPage = location.pathname === "/login";
 
@@ -60,45 +63,45 @@ function App() {
           <main className="content" style={{ flexGrow: 1, overflow: 'auto' }}>
             {!isLoginPage && <Topbar />}
             <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/users" element={<Users />} />
+              <Route path="/" element={user ? <Dashboard /> : <Navigate to="/login" />} />
+              <Route path="/users" element={user ? <Users /> : <Navigate to="/login" />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/add-user" element={<AddUser />} />
-              <Route path="/user/:id" element={<UpdateUser />} />
-              <Route path="/company" element={<Company />} />
-              <Route path="/banner/company/:id" element={<Banner />} />
-              <Route path="/banner/service/:id" element={<BannerService />} />
-              <Route path="/add-company" element={<AddCompany />} />
-              <Route path="/company/:id" element={<UpdateCompany />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/company/service/:id" element={<ServiceCompany />} />
-              <Route path="/add-service" element={<AddService />} />
-              <Route path="/add-service/:id" element={<AddServiceByCompany />} />
-              <Route path="/service/:id" element={<UpdateService />} />
-              <Route path="/gallery" element={<MediaGallery />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/add-contact" element={<AddContact />} />
-              <Route path="/contact/:id" element={<UpdateContact />} />
-              <Route path="/news" element={<News />} />
-              <Route path="/add-news" element={<AddNews />} />
-              <Route path="/news/:id" element={<UpdateNews />} />
-              <Route path="/csr" element={<CSR />} />
-              <Route path="/add-csr" element={<AddCSR />} />
-              <Route path="/csr/:id" element={<UpdateCSR />} />
-              <Route path="/mission/:id" element={<Mission />} />
-              <Route path="/add-mission/:id" element={<AddMissoin />} />
-              <Route path="/update-mission/:id" element={<UpdateMission />} />
-              <Route path="/jobs" element={<Jobs />} />
-              <Route path="/add-job" element={<AddJob />} />
-              <Route path="/job/:id" element={<UpdateJob />} />
-              <Route path="/test" element={<Test />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/add-product" element={<AddProduct />} />
-              <Route path="/categories" element={<Categories />} />
-              <Route path="/add-category" element={<AddCategory />} />
-              <Route path="/preview-banner/service/:serviceId" element={<PreviewBanner />} />
+              <Route path="/add-user" element={user ? <AddUser /> : <Navigate to="/login" />} />
+              <Route path="/user/:id" element={user ? <UpdateUser /> : <Navigate to="/login" />} />
+              <Route path="/company" element={user ? <Company /> : <Navigate to="/login" />} />
+              <Route path="/banner/company/:id" element={user ? <Banner /> : <Navigate to="/login" />} />
+              <Route path="/banner/service/:id" element={user ? <BannerService /> : <Navigate to="/login" />} />
+              <Route path="/add-company" element={user ? <AddCompany /> : <Navigate to="/login" />} />
+              <Route path="/company/:id" element={user ? <UpdateCompany /> : <Navigate to="/login" />} />
+              <Route path="/services" element={user ? <Services /> : <Navigate to="/login" />} />
+              <Route path="/company/service/:id" element={user ? <ServiceCompany /> : <Navigate to="/login" />} />
+              <Route path="/add-service" element={user ? <AddService /> : <Navigate to="/login" />} />
+              <Route path="/add-service/:id" element={user ? <AddServiceByCompany /> : <Navigate to="/login" />} />
+              <Route path="/service/:id" element={user ? <UpdateService /> : <Navigate to="/login" />} />
+              <Route path="/gallery" element={user ? <MediaGallery /> : <Navigate to="/login" />} />
+              <Route path="/contact" element={user ? <Contact /> : <Navigate to="/login" />} />
+              <Route path="/add-contact" element={user ? <AddContact /> : <Navigate to="/login" />} />
+              <Route path="/contact/:id" element={user ? <UpdateContact /> : <Navigate to="/login" />} />
+              <Route path="/news" element={user ? <News /> : <Navigate to="/login" />} />
+              <Route path="/add-news" element={user ? <AddNews /> : <Navigate to="/login" />} />
+              <Route path="/news/:id" element={user ? <UpdateNews /> : <Navigate to="/login" />} />
+              <Route path="/csr" element={user ? <CSR /> : <Navigate to="/login" />} />
+              <Route path="/add-csr" element={user ? <AddCSR /> : <Navigate to="/login" />} />
+              <Route path="/csr/:id" element={user ? <UpdateCSR /> : <Navigate to="/login" />} />
+              <Route path="/mission/:id" element={user ? <Mission /> : <Navigate to="/login" />} />
+              <Route path="/add-mission/:id" element={user ? <AddMissoin /> : <Navigate to="/login" />} />
+              <Route path="/update-mission/:id" element={user ? <UpdateMission /> : <Navigate to="/login" />} />
+              <Route path="/jobs" element={user ? <Jobs /> : <Navigate to="/login" />} />
+              <Route path="/add-job" element={user ? <AddJob /> : <Navigate to="/login" />} />
+              <Route path="/job/:id" element={user ? <UpdateJob /> : <Navigate to="/login" />} />
+              <Route path="/test" element={user ? <Test /> : <Navigate to="/login" />} />
+              <Route path="/products" element={user ? <Products /> : <Navigate to="/login" />} />
+              <Route path="/add-product" element={user ? <AddProduct /> : <Navigate to="/login" />} />
+              <Route path="/categories" element={user ? <Categories /> : <Navigate to="/login" />} />
+              <Route path="/add-category" element={user ? <AddCategory /> : <Navigate to="/login" />} />
+              <Route path="/preview-banner/service/:serviceId" element={user ? <PreviewBanner /> : <Navigate to="/login" />} />
             </Routes>
-              <Gallery />
+            <Gallery />
           </main>
         </div>
       </ThemeProvider>
